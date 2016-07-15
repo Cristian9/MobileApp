@@ -35,11 +35,12 @@ var app = (function(){
     }
 
 	function StyleApp(topParam) {
-        var heightCuerpo=window.innerHeight - 101;//92/*46*/;
+        var heightCuerpo=window.innerHeight - 50;//92/*46*/;
+        alert(window.innerHeight);
         var style = document.createElement('style');
         style.type = 'text/css';
         style.innerHTML = '.auxCSS { position:absolute; z-index:2; left:0; top:' + 
-                topParam + 'px; /*width:100%;*/ height: ' + heightCuerpo + 'px; overflow:auto;}';
+                topParam + 'px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
 
         document.getElementsByTagName('head')[0].appendChild(style);
     }
@@ -76,7 +77,7 @@ var app = (function(){
             func = option.func,
             args = option.args || "",
             elem = option.elem || "list",
-            ptop = option.ptop;
+            ptop = option.ptop || 0;
             //pwid = option.pwid;
 
         window.localStorage.setItem('href', href);
@@ -98,6 +99,7 @@ var app = (function(){
             theme : 'b',
             textonly : false
         });*/
+        myScroll = new iScroll('wrapper', { hideScrollbar: true });
         myApp.showPreloader('Espere, por favor...');
 
         $.ajax({
@@ -181,7 +183,8 @@ myApp.onPageInit("menu", function(page){
 myApp.onPageInit("listadoCursos", function(page){
 	app.getMainList({
 		href : 'list-courses',
-		func : 'renderDefaultList'
+		func : 'renderDefaultList',
+		ptop : 50
 	});
 });
 
