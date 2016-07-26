@@ -5,6 +5,9 @@
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
         <param name="onload" value="true" />
     </feature>
+    <feature name="SpinnerPlugin">
+        <param name="android-package" value="it.mobimentum.phonegapspinnerplugin.SpinnerPlugin" />
+    </feature>
     <allow-intent href="market:*" />
     <icon density="ldpi" src="resources/android/ldpi.png" />
     <name>UTP Preguntados</name>

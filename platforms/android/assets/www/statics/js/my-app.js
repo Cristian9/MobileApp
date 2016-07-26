@@ -25,18 +25,24 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function(){
 
-	var API = "http://10.30.15.218/API_Preguntados",
+	var API = "http://10.30.15.218/CodeApiMobile",
 		numberPage = 1,
 		timerInicial = 30,
-		myScroll;
+        dataQuestion = "",
+        pageDinamic,
+        totalQuestions,
+        initNumberQuestion = 0,
+        initPuntajeQuestion = 0,
+		myScroll,
+        Handle_Mi_Timer = null,
+        Contador = 30;
 
 	String.prototype.ucfirst = function(){
         return this.charAt(0).toUpperCase() + this.substr(1);
     }
 
 	function StyleApp(topParam) {
-        var heightCuerpo=window.innerHeight - 50;//92/*46*/;
-        alert(window.innerHeight);
+        var heightCuerpo=window.innerHeight - 92;//92/*46*/;
         var style = document.createElement('style');
         style.type = 'text/css';
         style.innerHTML = '.auxCSS { position:absolute; z-index:2; left:0; top:' + 
@@ -63,10 +69,30 @@ var app = (function(){
         var lista = '';
 
         for (var i = 0; i < data.length; i++) {
-            lista += '<li><a class="item item-icon-left" alt="' + data[i].id + '">';
-            lista += '<i class="icon ion-compose"></i>' + data[i].description.toLowerCase().ucfirst();
+            lista += '<li><a class="item item-icon-left icon-book" alt="' + data[i].id + '">&nbsp;&nbsp;';
+            lista += 	data[i].description.toLowerCase().ucfirst();
             lista += '</a></li>';
         }
+
+        return lista;
+    }
+
+    function renderListRetos(data) {
+
+    }
+
+    function renderListUsuarios(data) {
+        var lista = "";
+
+        for (var i = 0; i < data.length; i++) {
+            lista += '<li class="item-content"><div class="item-inner">' + 
+                '<div class="item-title">' + 
+                    data[i].usuario.toLowerCase().ucfirst() + 
+                '</div>' + 
+                '<div class="item-after">' + 
+                    '<button class="button button-positive btn-retar" alt="'+data[i].username+'">Retar</button>' + 
+                '</div></div></li>';
+        };
 
         return lista;
     }
@@ -93,13 +119,6 @@ var app = (function(){
             numberPage > 1 && (numberPage = 1);
         }
 
-        /*$.mobile.loading('show', {
-            text : 'Cargando...',
-            textVisible : true,
-            theme : 'b',
-            textonly : false
-        });*/
-        myScroll = new iScroll('wrapper', { hideScrollbar: true });
         myApp.showPreloader('Espere, por favor...');
 
         $.ajax({
@@ -114,8 +133,6 @@ var app = (function(){
         })
         .done(function(data){
             var data = eval(data);
-            
-            //$.mobile.loading("hide");
             myApp.hidePreloader();
             if(data[0] == null) {
                 $('#' + elem).html($("<center style='padding:11%; color:#B33831; font-size:15px; font-weight:bold;'></center>")
@@ -149,184 +166,243 @@ var app = (function(){
                 myApp.alert('Hubo un error, verifique sus datos', 'Error!!!');
             } else {
             	myApp.closeModal('.popup-login');
+                window.localStorage.setItem("userSession", $('#txtuser').val());
+            	$('.pages').empty();
             	mainView.router.loadPage('views/mainMenu/menu.html');
             }
 		});
 	}
 
+    function fillButton (obj, n, pts) {
+        clearInterval(Handle_Mi_Timer);
+
+        var correct = $(obj).attr('alt');
+
+        initPuntajeQuestion += pts;
+
+        if(correct == '1') {
+            $(obj).removeClass('active').addClass('button-fill color-green');
+        } else {
+
+            $(obj).removeClass('active').addClass('button-fill color-red');
+
+            $('.button').each(function(){
+                if($(this).attr('alt') == 1) {
+                    $(this).removeClass('active').addClass('button-fill color-green');
+                }
+            });
+        }
+
+        nextQuestion(n, 800);
+    }
+
+    function nextQuestion(n, delay) {
+        $('.siguiente_' + (n-1)).delay(delay).animate({'left' : '-100%'}, function(){
+            $('.questions-content').empty().append(app.listQuestions(n));
+            $('.siguiente_' + n).removeClass('innactive').animate({'right' : '0'});
+        }); 
+    }
+
+    function PreloadQuestions() {
+        initNumberQuestion = 0;
+        initPuntajeQuestion = 0;
+
+        $.getJSON(API + '/getQuestions/', {
+            course : window.localStorage.getItem("courseId"),
+            unidad : window.localStorage.getItem("unidadId")
+        })
+        .done(function(data){
+            dataQuestion = data;
+            totalQuestions = dataQuestion.length;
+        });
+    }
+
+    function reset_timer() {
+        Contador = 30;
+        $('.timer').html(Contador);
+        Handle_Mi_Timer = window.setInterval(function(){
+            Contador--;
+
+            if(Contador == 0) {
+
+                nextQuestion(initNumberQuestion, 100);
+                clearInterval(Handle_Mi_Timer);
+            }
+
+            $('.timer').html(Contador);
+
+        }, 1000);
+    }
+
+    function listQuestions(index) {
+        var correct,
+            respuesta,
+            puntaje,
+            templateQuestion = "";
+
+        initNumberQuestion += 1;
+
+        clearInterval(Handle_Mi_Timer);
+        reset_timer();
+
+        if(index == '0') {
+            var visible = 'active';
+            var rightS = '0';
+        }else {
+            var visible = 'innactive';
+            var rightS = '-100%';
+        }
+
+        if(totalQuestions < 1) {
+            templateQuestion = "<h1>Ups, algos ha salido mal, intente</h1>";
+        } else {
+            if (index < totalQuestions){
+                templateQuestion = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" + 
+                            "<h2 class='page_title timer' style='text-align:right;'>30</h2>" +
+                            "<div class='wrapper-questions'>" +
+                            "<div class='scroller'>" + 
+                            "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>" 
+                                + (index + 1) + '.- ' + dataQuestion[index].preguntas + "</div>" + 
+                            "<div class='content-block answer'>";
+
+                for(var j = 0; j < dataQuestion[index].Respuesta.length; j++) {
+                    correct = dataQuestion[index].Respuesta[j].is_correct;
+                    respuesta = dataQuestion[index].Respuesta[j].respuesta;
+                    puntaje = dataQuestion[index].Respuesta[j].puntaje;
+
+                    templateQuestion += "<p><a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ")'" + 
+                        " class='button button-round active " + correct + "' alt='" + correct + "'>" + respuesta + "</a></p>";
+                }
+                templateQuestion += "</div></div></div></div>";
+            } else {
+                templateQuestion = "<h1>Terminaste</h1>";
+
+                updRetos();
+            }
+        }
+
+        return templateQuestion;
+    }
+
+    function saveRetos() {
+        $.post(API + '/save_retos/', {
+            user_retador    :   window.localStorage.getItem('userSession'),
+            unidad_id       :   window.localStorage.getItem('unidadId') || "",
+            courseId        :   window.localStorage.getItem('courseId') || "",
+            user_retado     :   window.localStorage.getItem('userRetado') || "",
+            id_temageneral  :   window.localStorage.getItem('themeGeneral') || ""
+        })
+        .done(function(data){
+            window.localStorage.setItem('lastID', data);
+        });
+    }
+
+    function updRetos() {
+        $.post(API + '/update_retos/', {
+            countCorrect    :   initPuntajeQuestion,
+            idQuestion      :   window.localStorage.getItem('lastID'),
+            username        :   window.localStorage.getItem('userSession')
+        })
+        .done(function(data){
+            console.log(data);
+        });
+    }
+
 	return {
-		viewLogin : viewLogin,
-		login 	  : login,
-		InitmenuSlide : InitmenuSlide,
-		getMainList : getMainList
+		viewLogin          :    viewLogin,
+		login 	           :    login,
+		InitmenuSlide      :    InitmenuSlide,
+		getMainList        :    getMainList,
+        PreloadQuestions   :    PreloadQuestions,
+        listQuestions      :    listQuestions,
+        fillButton         :    fillButton,
+        saveRetos          :    saveRetos
 	}
 
 })();
 
-/*
-// Export selectors engine
-var $$ = Dom7;
-
-// Add main View
-var mainView = myApp.addView('.view-main', {
-    // Enable dynamic Navbar
-    dynamicNavbar: false
-});*/
-
 myApp.onPageInit("menu", function(page){
-	$('.main-nav ul li').on("touchstart", function(){
+	$('.main-nav ul li').on("click", function(){
 		var href = $(this).attr('id');
+		$('.pages').empty();
 		mainView.router.loadPage('views/' + href + "/" + href + ".html");
 	});
 });
 
-myApp.onPageInit("listadoCursos", function(page){
+myApp.onPageAfterAnimation("listadoCursos", function(page){
 	app.getMainList({
 		href : 'list-courses',
 		func : 'renderDefaultList',
 		ptop : 50
 	});
+
+	$('#list').on("click", "a", function(){
+		var courseCode = $(this).attr('alt');
+	    var courseName = $(this).text();
+	    window.localStorage.setItem("courseId", courseCode);
+	    window.localStorage.setItem("courseName", courseName.trim());
+	    mainView.router.loadPage("views/ListaCursos/ListaUnidades.html");
+	});
 });
 
+myApp.onPageInit("listadoUnidades", function(page){
+	$('.page_title').text("Temas disponibles en " + window.localStorage.getItem("courseName"));
+})
 
-/*$$(document).on('pageInit', function (e) {
-	//app.InitmenuSlide();
-  		$(".swipebox").swipebox();
-		
-		$("#ContactForm").validate({
-			submitHandler: function(form) {
-				ajaxContact(form);
-				return false;
-			}
-		});
-		
-		$("#RegisterForm").validate();
-		$("#LoginForm").validate();
-		$("#ForgotForm").validate();
-		
-		$('a.backbutton').click(function(){
-			parent.history.back();
-			return false;
-		});
-		
+myApp.onPageAfterAnimation("listadoUnidades", function(page){
+	app.getMainList({
+		href : 'list-unidad',
+		func : 'renderDefaultList',
+		args : window.localStorage.getItem("courseId"),
+		elem : 'list-unidad',
+		ptop : 50
+	});
 
-		$(".posts li").hide();	
-		size_li = $(".posts li").size();
-		x=4;
-		$('.posts li:lt('+x+')').show();
-		$('#loadMore').click(function () {
-			x= (x+1 <= size_li) ? x+1 : size_li;
-			$('.posts li:lt('+x+')').show();
-			if(x == size_li){
-				$('#loadMore').hide();
-				$('#showLess').show();
-			}
-		});
-        
+	$('#list-unidad').on("click", "a", function(){
+		var unidadId = $(this).attr('alt');
+	    var unidadName = $(this).text();
+	    window.localStorage.setItem("unidadId", unidadId);
+	    window.localStorage.setItem("unidadName", unidadName.trim());
+	  	
+	    mainView.router.loadPage("views/ListaCursos/ListaUsuarios.html");
+	});
+});
 
-	$("a.switcher").bind("click", function(e){
-		e.preventDefault();
-		
-		var theid = $(this).attr("id");
-		var theproducts = $("ul#photoslist");
-		var classNames = $(this).attr('class').split(' ');
-		
-		
-		if($(this).hasClass("active")) {
-			// if currently clicked button has the active class
-			// then we do nothing!
-			return false;
-		} else {
-			// otherwise we are clicking on the inactive button
-			// and in the process of switching views!
+myApp.onPageAfterAnimation("listadoUsuarios", function(page){
+    
+    $('#list-users').off("click");
+	app.getMainList({
+		href : 'list-users',
+		func : 'renderListUsuarios',
+		args : window.localStorage.getItem("courseId"),
+		elem : 'list-users',
+		ptop : 50
+	});
 
-  			if(theid == "view13") {
-				$(this).addClass("active");
-				$("#view11").removeClass("active");
-				$("#view11").children("img").attr("src","images/switch_11.png");
-				
-				$("#view12").removeClass("active");
-				$("#view12").children("img").attr("src","images/switch_12.png");
-			
-				var theimg = $(this).children("img");
-				theimg.attr("src","images/switch_13_active.png");
-			
-				// remove the list class and change to grid
-				theproducts.removeClass("photo_gallery_11");
-				theproducts.removeClass("photo_gallery_12");
-				theproducts.addClass("photo_gallery_13");
+	$('#list-users').on("click", ".btn-retar", function(){
+		var username = $(this).attr('alt');
+		window.localStorage.setItem("userRetado", username);
+        app.saveRetos();
+		myApp.alert('Se ha enviado una notificación al usuario', 'Preguntados UTP', function () {
+	        mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
+	    });
+	});
+});
 
-			}
-			
-			else if(theid == "view12") {
-				$(this).addClass("active");
-				$("#view11").removeClass("active");
-				$("#view11").children("img").attr("src","images/switch_11.png");
-				
-				$("#view13").removeClass("active");
-				$("#view13").children("img").attr("src","images/switch_13.png");
-			
-				var theimg = $(this).children("img");
-				theimg.attr("src","images/switch_12_active.png");
-			
-				// remove the list class and change to grid
-				theproducts.removeClass("photo_gallery_11");
-				theproducts.removeClass("photo_gallery_13");
-				theproducts.addClass("photo_gallery_12");
+myApp.onPageAfterAnimation("listadoRetos", function(data){
+    /*app.getMainList({
+        href : 'list-retos-recibidos',
+        func : 'renderListUsuarios',
+        args : window.localStorage.getItem("courseId"),
+        elem : 'list-users',
+        ptop : 50
+    });*/
+});
 
-			} 
-			else if(theid == "view11") {
-				$("#view12").removeClass("active");
-				$("#view12").children("img").attr("src","images/switch_12.png");
-				
-				$("#view13").removeClass("active");
-				$("#view13").children("img").attr("src","images/switch_13.png");
-			
-				var theimg = $(this).children("img");
-				theimg.attr("src","images/switch_11_active.png");
-			
-				// remove the list class and change to grid
-				theproducts.removeClass("photo_gallery_12");
-				theproducts.removeClass("photo_gallery_13");
-				theproducts.addClass("photo_gallery_11");
+myApp.onPageBeforeAnimation("ListaPreguntas", function(page){
+    app.PreloadQuestions();
+});
 
-			} 
-			
-		}
-
-	});	
-	
-	document.addEventListener('touchmove', function(event) {
-	   if(event.target.parentNode.className.indexOf('navbarpages') != -1 || event.target.className.indexOf('navbarpages') != -1 ) {
-		event.preventDefault(); }
-	}, false);
-	
-	// Add ScrollFix
-	/*var scrollingContent = document.getElementById("pages_maincontent");
-	new ScrollFix(scrollingContent);
-	
-	
-	var ScrollFix = function(elem) {
-		// Variables to track inputs
-		var startY = startTopScroll = deltaY = undefined,
-	
-		elem = elem || elem.querySelector(elem);
-	
-		// If there is no element, then do nothing	
-		if(!elem)
-			return;
-	
-		// Handle the start of interactions
-		elem.addEventListener('touchstart', function(event){
-			startY = event.touches[0].pageY;
-			startTopScroll = elem.scrollTop;
-	
-			if(startTopScroll <= 0)
-				elem.scrollTop = 1;
-	
-			if(startTopScroll + elem.offsetHeight >= elem.scrollHeight)
-				elem.scrollTop = elem.scrollHeight - elem.offsetHeight - 1;
-		}, false);
-	};
-
-})*/
+myApp.onPageAfterAnimation("ListaPreguntas", function(page){
+    $('.questions-content').append(app.listQuestions(0));
+});

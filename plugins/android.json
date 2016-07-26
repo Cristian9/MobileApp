@@ -9,6 +9,9 @@
     "installed_plugins": {
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "com.utp.preguntados"
+        },
+        "it.mobimentum.phonegapspinnerplugin": {
+            "PACKAGE_NAME": "com.utp.preguntados"
         }
     },
     "dependent_plugins": {}
