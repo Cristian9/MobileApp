@@ -24,7 +24,7 @@ var mainView = myApp.addView('.view-main', {
 });
 
 var app = (function(){
-
+    new FastClick(document.body);
 	var API = "http://10.30.15.218/CodeApiMobile",
 		numberPage = 1,
 		timerInicial = 30,
@@ -62,7 +62,8 @@ var app = (function(){
     }
 
 	function viewLogin() {
-		myApp.popup('.popup-login');
+		//myApp.popup('.popup-login');
+        myApp.loginScreen()
 	}
 
 	function renderDefaultList(data) {
@@ -77,8 +78,38 @@ var app = (function(){
         return lista;
     }
 
-    function renderListRetos(data) {
+    function renderListRetosEnviados(data) {
+        var html = "";
+        if(data.Enviado == "")
+            return false;
 
+        html = data.Enviado.map(function(elem){
+            return ('<li class="item-content">' + 
+                        '<div class="item-inner" alt="'+elem.id_reto+'|'+elem.unidad_id+'|'+elem.curso_id+'|'+elem.id_temageneral+'">' + 
+                            '<div class="item-title">'+elem.nikname+'<div class="item-after-down">Pendiente</div></div>' + 
+                            '<div class="item-title">'+elem.para_ganar+'<div class="item-after-down">Para ganar</div></div>' + 
+                        '</div>' + 
+                    '</li>');
+        }).join(" ");
+
+        return html;
+    }
+
+    function renderListRetosRecibidos(data){
+        var html = "";
+        if(data.Recibido == "")
+            return false;
+
+        html = data.Recibido.map(function(elem){
+            return ('<li class="item-content">' + 
+                        '<div class="item-inner"  alt="'+elem.id_reto+'|'+elem.unidad_id+'|'+elem.curso_id+'|'+elem.id_temageneral+'">' + 
+                            '<div class="item-title">'+elem.nikname+'<div class="item-after-down">Pendiente</div></div>' + 
+                            '<div class="item-title">'+elem.para_perder+'<div class="item-after-down">Para perder</div></div>' + 
+                        '</div>' + 
+                    '</li>');
+        }).join(" ");
+
+        return html;
     }
 
     function renderListUsuarios(data) {
@@ -128,7 +159,7 @@ var app = (function(){
             dataType    : "json",
             data        : {
                 'page'  : numberPage,
-                'course': args
+                'args'  : args
             }
         })
         .done(function(data){
@@ -165,7 +196,7 @@ var app = (function(){
             if(!data) {
                 myApp.alert('Hubo un error, verifique sus datos', 'Error!!!');
             } else {
-            	myApp.closeModal('.popup-login');
+            	myApp.closeModal('.login-screen');
                 window.localStorage.setItem("userSession", $('#txtuser').val());
             	$('.pages').empty();
             	mainView.router.loadPage('views/mainMenu/menu.html');
@@ -177,8 +208,6 @@ var app = (function(){
         clearInterval(Handle_Mi_Timer);
 
         var correct = $(obj).attr('alt');
-
-        initPuntajeQuestion += pts;
 
         if(correct == '1') {
             $(obj).removeClass('active').addClass('button-fill color-green');
@@ -192,15 +221,15 @@ var app = (function(){
                 }
             });
         }
-
-        nextQuestion(n, 800);
+        nextQuestion(n, 800, pts); 
     }
 
-    function nextQuestion(n, delay) {
+    function nextQuestion(n, delay, pts) {
         $('.siguiente_' + (n-1)).delay(delay).animate({'left' : '-100%'}, function(){
+            initPuntajeQuestion += pts;
             $('.questions-content').empty().append(app.listQuestions(n));
             $('.siguiente_' + n).removeClass('innactive').animate({'right' : '0'});
-        }); 
+        });
     }
 
     function PreloadQuestions() {
@@ -297,6 +326,15 @@ var app = (function(){
         });
     }
 
+    function dateRetoAceptado(id) {
+        $.post(API + '/updateDateReto/', {
+            idReto : id
+        })
+        .done(function(data){
+            console.log(data);
+        })
+    }
+
     function updRetos() {
         $.post(API + '/update_retos/', {
             countCorrect    :   initPuntajeQuestion,
@@ -308,6 +346,21 @@ var app = (function(){
         });
     }
 
+    function getRetos() {
+        myApp.showPreloader('Espere, por favor...');
+        $.getJSON(API + '/list-retos/', {
+            args : window.localStorage.getItem("userSession")
+        })
+        .done(function(data){
+            myApp.hidePreloader();
+            var htmlSend = renderListRetosEnviados(data);
+            var htmlRecerve = renderListRetosRecibidos(data);
+
+            $('#send').html(htmlSend);
+            $('#receive').html(htmlRecerve);
+        });
+    }
+
 	return {
 		viewLogin          :    viewLogin,
 		login 	           :    login,
@@ -316,7 +369,9 @@ var app = (function(){
         PreloadQuestions   :    PreloadQuestions,
         listQuestions      :    listQuestions,
         fillButton         :    fillButton,
-        saveRetos          :    saveRetos
+        saveRetos          :    saveRetos,
+        getRetos           :    getRetos,
+        dateRetoAceptado   :    dateRetoAceptado
 	}
 
 })();
@@ -389,14 +444,36 @@ myApp.onPageAfterAnimation("listadoUsuarios", function(page){
 	});
 });
 
-myApp.onPageAfterAnimation("listadoRetos", function(data){
-    /*app.getMainList({
-        href : 'list-retos-recibidos',
-        func : 'renderListUsuarios',
-        args : window.localStorage.getItem("courseId"),
-        elem : 'list-users',
-        ptop : 50
-    });*/
+myApp.onPageAfterAnimation("listadoRetos", function(page){
+    app.getRetos();
+
+    var idReto,
+        idUnidad,
+        idCourse,
+        idTemaGe;
+
+    $('#receive').off("click");
+
+    $('#receive').on("click", ".item-inner", function(){
+        var items = $(this).attr('alt');
+        var args = items.split("|");
+
+        idReto   = args[0];
+        idUnidad = args[1];
+        idCourse = args[2];
+        idTemaGe = args[3];
+
+        window.localStorage.setItem("courseId", idCourse);
+        window.localStorage.setItem("unidadId", idUnidad);
+        window.localStorage.setItem('lastID', idReto);
+        myApp.popup(".popup-about");
+    });
+
+    $('#btnAceptarReto').click(function(){
+        app.dateRetoAceptado(idReto);
+        myApp.closeModal();
+        mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
+    });
 });
 
 myApp.onPageBeforeAnimation("ListaPreguntas", function(page){

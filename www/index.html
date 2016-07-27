@@ -82,8 +82,8 @@
 			</ul>
 		</div>
 
-		<!-- Login Popup -->
-		<div class="popup popup-login">
+		<!-- Login Popup 
+		<div class="popup popup-login modal-in">
 			<div class="content-block-login">
 				<h4>LOGIN</h4>
 				<div class="form_logo"><img src="statics/img/logo.png" alt="" title="" /></div>
@@ -102,6 +102,22 @@
 				</div>
 				<div class="close_loginpopup_button"><a href="#" class="close-popup"><img src="statics/img/icons/white/menu_close.png" alt="" title="" /></a></div>
 			</div>
+		</div>-->
+
+		<div class="popup popup-about" style="display: block;">
+			<div class="content-block">
+				<h4>Aceptar Reto</h4>
+				<div class="form_logo"><img src="statics/img/images.png" alt="" title="" /></div>
+				<div class="row">
+				  <div class="col-50">
+				    <a href="#" class="button button-big button-red close-popup">Cancelar</a>
+				  </div>
+				  <div class="col-50">
+				    <a href="#" class="button button-big button-green" id="btnAceptarReto">Aceptar</a>
+				  </div>
+				</div>
+				<div class="close_loginpopup_button"><a href="#" class="close-popup"><img src="statics/img/icons/white/menu_close.png" alt="" title="" /></a></div>
+			</div>
 		</div>
 
 		<div class="views">
@@ -112,7 +128,45 @@
 
 					<div data-page="indice" class="page  no-toolbar no-navbar">
 						<div class="page-content">
-							<div class="logo"><img src="statics/img/logo.png" alt="" title="" /></div>
+							<div class="login-screen">
+								<div class="view">
+									<div class="page">
+										<div class="page-content login-screen-content">
+											<div class="logo"><img src="statics/img/logo.png" alt="" title="" /></div>
+											<div class="login-screen-title">Inicia Sesi&oacute;n</div>
+											<div class="loginform">
+												<form>
+													<div class="list-block">
+														<ul>
+											                <li class="item-content">
+											                	<div class="item-inner">
+											                		<div class="item-title label">C&oacute;digo</div>
+											                		<div class="item-input">
+											                			<input type="text" id="txtuser" name="username">
+											                		</div>
+											                  	</div>
+											                </li>
+								                			<li class="item-content">
+								                  				<div class="item-inner">
+								                    				<div class="item-title label">Password</div>
+							                    					<div class="item-input">
+							                      						<input type="password" id="txtpassword" name="password">
+							                    					</div>
+								                  				</div>
+								                			</li>
+								              			</ul>
+								            		</div>
+								            		<div class="list-block">
+								              			<ul>
+								                			<li><input type="button" class="form_submit" id="btn-login" value="SIGN IN" /></li>
+								              			</ul>
+								            		</div>
+								          		</form>
+											</div>
+							        	</div>
+							      	</div>
+							    </div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -123,6 +177,7 @@
 		<script src="statics/js/jquery.validate.min.js" type="text/javascript"></script>
 		<script type="text/javascript" src="statics/js/framework7.js"></script>
 		<script type="text/javascript" src="statics/js/iscroll.js"></script>
+		<script type="text/javascript" src="statics/js/fastclick.js"></script>
 		<script type="text/javascript" src="statics/js/my-app.js"></script>
 		<script type="text/javascript" src="statics/js/jquery.swipebox.js"></script>
 		<script type="text/javascript">

@@ -75,7 +75,7 @@ background-size: cover;
 /* MAIN NAV LINKS */
 /*===============================================*/	
 .main-nav ul li{
-background: #562037;
+/*background: #562037;*/
 border-bottom:1px #692c46 solid;
 }
 .main-nav ul li a{
