@@ -124,7 +124,7 @@ var app = (function () {
                         '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">'+e.resultado+'</div></div>' +
                             '<div class="item-title">'+
-                                '<button class="button button-positive btn-retar">Ver detalle</button>' + 
+                                '<button class="button button-fill">Ver detalle</button>' + 
                             '</div>' +
                         '</div>' +
                     '</li>');
@@ -143,7 +143,7 @@ var app = (function () {
                         '<div class="item-inner">' +
                             '<div class="item-title-row"><div class="item-title">' + item.usuario.toLowerCase().ucfirst() + '</div></div>' +
                             '<div class="item-after">' +
-                                '<button class="button button-positive btn-retar" alt="' + item.username + '">Retar</button>' +
+                                '<button class="button button-fill btn-retar" alt="' + item.username + '">Retar</button>' +
                             '</div>' +
                         '</div>'+
                     '</li>');
@@ -311,12 +311,17 @@ var app = (function () {
         } else {
             if (index < totalQuestions) {
                 templateQuestion = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
-                        "<h2 class='page_title timer' style='text-align:right;'>30</h2>" +
-                        "<div class='wrapper-questions'>" +
-                        "<div class='scroller'>" +
-                        "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>"
-                        + (index + 1) + '.- ' + dataQuestion[index].preguntas + "</div>" +
-                        "<div class='content-block answer'>";
+                            "<h2 class='row'>" + 
+                            "<div class='col-33' style='text-align: center;'></div>" +
+                            "<div class='col-33' style='text-align: center;font-weight:normal;'>"+(index + 1)+" / "+totalQuestions+"</div>" + 
+                            "<div class='col-33 timer' style='text-align: right; padding-right:20px;font-weight:normal;'>30</div>" + 
+                            "</h2>" +
+                            "<div class='wrapper-questions'>" +
+                            "<div class='scroller'>" +
+                            "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>"
+                                    + (index + 1) + '.- ' + dataQuestion[index].preguntas + 
+                            "</div>" +
+                            "<div class='content-block answer'>";
 
                 for (var j = 0; j < dataQuestion[index].Respuesta.length; j++) {
                     correct = dataQuestion[index].Respuesta[j].is_correct;
@@ -438,11 +443,9 @@ myApp.onPageAfterAnimation("listadoCursos", function (page) {
     });
 });
 
-myApp.onPageInit("listadoUnidades", function (page) {
-    $('.page_title').text("Temas disponibles en " + window.localStorage.getItem("courseName"));
-})
-
 myApp.onPageAfterAnimation("listadoUnidades", function (page) {
+    $('.page_title').text("Temas disponibles en " + window.localStorage.getItem("courseName"));
+    
     app.getMainList({
         href: 'list-unidad',
         func: 'renderDefaultList',
@@ -470,7 +473,6 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
     $('#list-users').on("touchstart", ".btn-retar", function () {
         var username = $(this).attr('alt');
         window.localStorage.setItem("userRetado", username);
-        app.saveRetos();
         myApp.alert('Se ha enviado una notificación al usuario', 'Preguntados UTP', function () {
             mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
         });
@@ -510,6 +512,7 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
 });
 
 myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
+    app.saveRetos();
     app.PreloadQuestions();
 });
 
