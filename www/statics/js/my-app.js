@@ -383,12 +383,12 @@ var app = (function () {
         })
         .done(function (data) {
             myApp.hidePreloader();
-            var htmlSend        = renderListRetosEnviados(data);
-            var htmlRecerve     = renderListRetosRecibidos(data);
+            var htmlEnviado     = renderListRetosEnviados(data);
+            var htmlRecibido    = renderListRetosRecibidos(data);
             var htmlHistorial   = renderListRetosHistorial(data); 
 
-            $('#send').html(htmlSend);
-            $('#receive').html(htmlRecerve);
+            $('#send').html(htmlEnviado);
+            $('#receive').html(htmlRecibido);
             $('#history').html(htmlHistorial);
         });
     }
