@@ -70,7 +70,7 @@ var app = (function () {
         var lista = '';
 
         for (var i = 0; i < data.length; i++) {
-            lista += '<li><a class="item item-icon-left icon-book" alt="' + data[i].id + '">&nbsp;&nbsp;';
+            lista += '<li><a href="#" class="item item-icon-left icon-book" alt="' + data[i].id + '">&nbsp;&nbsp;';
             lista += data[i].description.toLowerCase().ucfirst();
             lista += '</a></li>';
         }
@@ -83,12 +83,12 @@ var app = (function () {
         if (data.Enviado == "")
             return false;
 
-        html = data.Enviado.map(function (elem) {
+        html = data.Enviado.map(function (e) {
             return ('<li class="item-content">' +
-                    '<div class="item-inner" alt="' + elem.id_reto + '|' + elem.unidad_id + '|' + elem.curso_id + '|' + elem.id_temageneral + '">' +
-                    '<div class="item-title">' + elem.nikname + '<div class="item-after-down">Pendiente</div></div>' +
-                    '<div class="item-title">' + elem.para_ganar + '<div class="item-after-down">Para ganar</div></div>' +
-                    '</div>' +
+                        '<div class="item-inner" alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
+                            '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
+                            '<div class="item-title">' + e.para_ganar + '<div class="item-after-down">Para ganar</div></div>' +
+                        '</div>' +
                     '</li>');
         }).join(" ");
 
@@ -100,42 +100,46 @@ var app = (function () {
         if (data.Recibido == "")
             return false;
 
-        html = data.Recibido.map(function (elem) {
+        html = data.Recibido.map(function (e) {
             return ('<li class="item-content">' +
-                    '<div class="item-inner"  alt="' + elem.id_reto + '|' + elem.unidad_id + '|' + elem.curso_id + '|' + elem.id_temageneral + '">' +
-                    '<div class="item-title">' + elem.nikname + '<div class="item-after-down">Pendiente</div></div>' +
-                    '<div class="item-title">' + elem.para_perder + '<div class="item-after-down">Para perder</div></div>' +
-                    '</div>' +
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
+                            '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
+                            '<div class="item-title">' + e.para_perder + '<div class="item-after-down">Para perder</div></div>' +
+                        '</div>' +
+                    '</li>');
+        }).join(" ");
+
+        return html;
+    }
+    
+
+    function renderListUsuarios(data) {
+        var html = "";
+
+        html = data.map(function(item) {
+            return ('<li class="item-content">' + 
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-inner">' +
+                            '<div class="item-title-row"><div class="item-title">' + item.usuario.toLowerCase().ucfirst() + '</div></div>' +
+                            '<div class="item-after">' +
+                                '<button class="button button-positive btn-retar" alt="' + item.username + '">Retar</button>' +
+                            '</div>' +
+                            //'<div class="item-subtitle">'+item.username+'</div>' + 
+                        '</div>'+
                     '</li>');
         }).join(" ");
 
         return html;
     }
 
-    function renderListUsuarios(data) {
-        var lista = "";
-
-        for (var i = 0; i < data.length; i++) {
-            lista += '<li class="item-content"><div class="item-inner">' +
-                    '<div class="item-title">' +
-                    data[i].usuario.toLowerCase().ucfirst() +
-                    '</div>' +
-                    '<div class="item-after">' +
-                    '<button class="button button-positive btn-retar" alt="' + data[i].username + '">Retar</button>' +
-                    '</div></div></li>';
-        }
-        ;
-
-        return lista;
-    }
-
     function getMainList(option) {
 
         var href = option.href,
-                func = option.func,
-                args = option.args || "",
-                elem = option.elem || "list",
-                ptop = option.ptop || 0;
+            func = option.func,
+            args = option.args || "",
+            elem = option.elem || "list",
+            ptop = option.ptop || 0;
         //pwid = option.pwid;
 
         window.localStorage.setItem('href', href);
@@ -163,24 +167,24 @@ var app = (function () {
                 'args': args
             }
         })
-                .done(function (data) {
-                    var data = eval(data);
-                    myApp.hidePreloader();
-                    if (data[0] == null) {
-                        $('#' + elem).html($("<center style='padding:11%; color:#B33831; font-size:15px; font-weight:bold;'></center>")
-                                .append('No hay registros para mostrar'));
+        .done(function (data) {
+            var data = eval(data);
+            myApp.hidePreloader();
+            if (data[0] == null) {
+                $('#' + elem).html($("<center style='padding:11%; color:#B33831; font-size:15px; font-weight:bold;'></center>")
+                        .append('No hay registros para mostrar'));
 
-                        return false;
-                    }
+                return false;
+            }
 
-                    var list = eval(func + "(data)");
+            var list = eval(func + "(data)");
 
-                    $('#' + elem).empty().html(list);
+            $('#' + elem).empty().html(list);
 
-                    //$('#pullUp, #pullDown').removeClass('hide').addClass('show');
+            //$('#pullUp, #pullDown').removeClass('hide').addClass('show');
 
-                    //ScrollMove();
-                });
+            //ScrollMove();
+        });
 
         //new FastClick(document.body);
     }
@@ -191,18 +195,18 @@ var app = (function () {
             user: $('#txtuser').val(),
             pass: $('#txtpassword').val()
         })
-                .done(function (data) {
-                    myApp.hidePreloader();
-                    var data = eval(data);
-                    if (!data) {
-                        myApp.alert('Hubo un error, verifique sus datos', 'Error!!!');
-                    } else {
-                        myApp.closeModal('.login-screen');
-                        window.localStorage.setItem("userSession", $('#txtuser').val());
-                        $('.pages').empty();
-                        mainView.router.loadPage('views/mainMenu/menu.html');
-                    }
-                });
+        .done(function (data) {
+            myApp.hidePreloader();
+            var data = eval(data);
+            if (!data) {
+                myApp.alert('Hubo un error, verifique sus datos', 'Error!!!');
+            } else {
+                myApp.closeModal('.login-screen');
+                window.localStorage.setItem("userSession", $('#txtuser').val());
+                $('.pages').empty();
+                mainView.router.loadPage('views/mainMenu/menu.html');
+            }
+        });
     }
 
     function fillButton(obj, n, pts) {
@@ -211,14 +215,14 @@ var app = (function () {
         var correct = $(obj).attr('alt');
 
         if (correct == '1') {
-            $(obj).removeClass('active').addClass('button-fill color-green');
+            $(obj).removeClass('active active-state').addClass('button-fill color-green');
         } else {
 
-            $(obj).removeClass('active').addClass('button-fill color-red');
+            $(obj).removeClass('active active-state').addClass('button-fill color-red');
 
             $('.button').each(function () {
                 if ($(this).attr('alt') == 1) {
-                    $(this).removeClass('active').addClass('button-fill color-green');
+                    $(this).removeClass('active active-state').addClass('button-fill color-green');
                 }
             });
         }
@@ -241,10 +245,10 @@ var app = (function () {
             course: window.localStorage.getItem("courseId"),
             unidad: window.localStorage.getItem("unidadId")
         })
-                .done(function (data) {
-                    dataQuestion = data;
-                    totalQuestions = dataQuestion.length;
-                });
+        .done(function (data) {
+            dataQuestion = data;
+            totalQuestions = dataQuestion.length;
+        });
     }
 
     function reset_timer() {
@@ -266,9 +270,9 @@ var app = (function () {
 
     function listQuestions(index) {
         var correct,
-                respuesta,
-                puntaje,
-                templateQuestion = "";
+            respuesta,
+            puntaje,
+            templateQuestion = "";
 
         initNumberQuestion += 1;
 
@@ -322,18 +326,19 @@ var app = (function () {
             user_retado: window.localStorage.getItem('userRetado') || "",
             id_temageneral: window.localStorage.getItem('themeGeneral') || ""
         })
-                .done(function (data) {
-                    window.localStorage.setItem('lastID', data);
-                });
+        .done(function (data) {
+            window.localStorage.setItem('lastID', data);
+        });
     }
 
     function dateRetoAceptado(id) {
         $.post(API + '/updateDateReto/', {
-            idReto: id
+            idReto: id,
+            username : window.localStorage.getItem('userSession')
         })
-                .done(function (data) {
-                    console.log(data);
-                })
+        .done(function (data) {
+            console.log(data);
+        })
     }
 
     function updRetos() {
@@ -342,9 +347,9 @@ var app = (function () {
             idQuestion: window.localStorage.getItem('lastID'),
             username: window.localStorage.getItem('userSession')
         })
-                .done(function (data) {
-                    console.log(data);
-                });
+        .done(function (data) {
+            console.log(data);
+        });
     }
 
     function getRetos() {
@@ -352,14 +357,24 @@ var app = (function () {
         $.getJSON(API + '/list-retos/', {
             args: window.localStorage.getItem("userSession")
         })
-                .done(function (data) {
-                    myApp.hidePreloader();
-                    var htmlSend = renderListRetosEnviados(data);
-                    var htmlRecerve = renderListRetosRecibidos(data);
+        .done(function (data) {
+            myApp.hidePreloader();
+            var htmlSend = renderListRetosEnviados(data);
+            var htmlRecerve = renderListRetosRecibidos(data);
 
-                    $('#send').html(htmlSend);
-                    $('#receive').html(htmlRecerve);
-                });
+            $('#send').html(htmlSend);
+            $('#receive').html(htmlRecerve);
+        });
+    }
+
+    function searchUser(keyword) {
+        $.getJSON(API + '/list-users/', {
+            username : window.localStorage.getItem("userSession"),
+            keywords : $.trim(keyword)
+        })
+        .done(function(data){
+            $('#list-users').html(renderListUsuarios(data));
+        });
     }
 
     return {
@@ -372,7 +387,8 @@ var app = (function () {
         fillButton: fillButton,
         saveRetos: saveRetos,
         getRetos: getRetos,
-        dateRetoAceptado: dateRetoAceptado
+        dateRetoAceptado: dateRetoAceptado,
+        searchUser : searchUser
     }
 
 })();
@@ -426,16 +442,11 @@ myApp.onPageAfterAnimation("listadoUnidades", function (page) {
 
 myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
 
-    $('#list-users').off("click");
-    app.getMainList({
-        href: 'list-users',
-        func: 'renderListUsuarios',
-        args: window.localStorage.getItem("courseId"),
-        elem: 'list-users',
-        ptop: 50
+    $('#autocomplete-dropdown').keyup(function(){
+        app.searchUser($(this).val());
     });
 
-    $('#list-users').on("click", ".btn-retar", function () {
+    $('#list-users').on("touchstart", ".btn-retar", function () {
         var username = $(this).attr('alt');
         window.localStorage.setItem("userRetado", username);
         app.saveRetos();
@@ -449,9 +460,9 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
     app.getRetos();
 
     var idReto,
-            idUnidad,
-            idCourse,
-            idTemaGe;
+        idUnidad,
+        idCourse,
+        idTemaGe;
 
     $('#receive').off("click");
 
