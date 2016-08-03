@@ -311,17 +311,13 @@ var app = (function () {
         } else {
             if (index < totalQuestions) {
                 templateQuestion = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
-                            "<h2 class='row'>" + 
-                            "<div class='col-33' style='text-align: center;'></div>" +
-                            "<div class='col-33' style='text-align: center;font-weight:normal;'>"+(index + 1)+" / "+totalQuestions+"</div>" + 
+                            "<h2 class='row'><div class='col-33'></div>" +
+                            "<div class='col-33' style='text-align: center;font-weight:normal;'>" + (index + 1) + " / " + totalQuestions + "</div>" + 
                             "<div class='col-33 timer' style='text-align: right; padding-right:20px;font-weight:normal;'>30</div>" + 
-                            "</h2>" +
-                            "<div class='wrapper-questions'>" +
-                            "<div class='scroller'>" +
+                            "</h2><div class='wrapper-questions'><div class='scroller'>" +
                             "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>"
                                     + (index + 1) + '.- ' + dataQuestion[index].preguntas + 
-                            "</div>" +
-                            "<div class='content-block answer'>";
+                            "</div><div class='content-block answer'>";
 
                 for (var j = 0; j < dataQuestion[index].Respuesta.length; j++) {
                     correct = dataQuestion[index].Respuesta[j].is_correct;
@@ -344,6 +340,7 @@ var app = (function () {
 
     function saveRetos() {
         $.post(API + '/save_retos/', {
+            id_reto : window.localStorage.getItem('lastID') || null,
             user_retador: window.localStorage.getItem('userSession'),
             unidad_id: window.localStorage.getItem('unidadId') || "",
             courseId: window.localStorage.getItem('courseId') || "",
@@ -351,7 +348,9 @@ var app = (function () {
             id_temageneral: window.localStorage.getItem('themeGeneral') || ""
         })
         .done(function (data) {
-            window.localStorage.setItem('lastID', data);
+            if(data != "") {
+                window.localStorage.setItem('lastID', data);
+            }
         });
     }
 
@@ -373,6 +372,7 @@ var app = (function () {
         })
         .done(function (data) {
             console.log(data);
+            window.localStorage.removeItem('lastID');
         });
     }
 
