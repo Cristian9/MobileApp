@@ -112,6 +112,26 @@ var app = (function () {
 
         return html;
     }
+
+    function renderListRetosHistorial(data) {
+        var html = "";
+        if (data.Historial == "")
+            return false;
+
+        html = data.Historial.map(function (e) {
+            return ('<li class="item-content">' +
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
+                            '<div class="item-title">' + e.nikname + '<div class="item-after-down">'+e.resultado+'</div></div>' +
+                            '<div class="item-title">'+
+                                '<button class="button button-positive btn-retar">Ver detalle</button>' + 
+                            '</div>' +
+                        '</div>' +
+                    '</li>');
+        }).join(" ");
+
+        return html;
+    }
     
 
     function renderListUsuarios(data) {
@@ -125,7 +145,6 @@ var app = (function () {
                             '<div class="item-after">' +
                                 '<button class="button button-positive btn-retar" alt="' + item.username + '">Retar</button>' +
                             '</div>' +
-                            //'<div class="item-subtitle">'+item.username+'</div>' + 
                         '</div>'+
                     '</li>');
         }).join(" ");
@@ -359,11 +378,13 @@ var app = (function () {
         })
         .done(function (data) {
             myApp.hidePreloader();
-            var htmlSend = renderListRetosEnviados(data);
-            var htmlRecerve = renderListRetosRecibidos(data);
+            var htmlSend        = renderListRetosEnviados(data);
+            var htmlRecerve     = renderListRetosRecibidos(data);
+            var htmlHistorial   = renderListRetosHistorial(data); 
 
             $('#send').html(htmlSend);
             $('#receive').html(htmlRecerve);
+            $('#history').html(htmlHistorial);
         });
     }
 
