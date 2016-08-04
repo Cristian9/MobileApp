@@ -523,7 +523,6 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
 });
 
 myApp.onPageAfterAnimation("listadoRetos", function (page) {
-    console.log(page);
     app.getRetos('all');
 
     var idReto,
@@ -570,5 +569,6 @@ myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
 });
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
+
     app.getRetos('detalle', window.localStorage.getItem('Reto'));
 });

@@ -569,5 +569,6 @@ myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
 });
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
+
     app.getRetos('detalle', window.localStorage.getItem('Reto'));
 });
