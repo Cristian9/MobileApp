@@ -263,11 +263,22 @@ body, ul, li {
 }
 
 .content-block-title {
-    color: #17999a;
+    color: #17759a;
     font-weight: bold;
     /*border-bottom: solid 1px #17999a;*/
     padding: 0 0 15px 0;
     text-transform:none;
+    font-size: 1.2em;
+}
+
+.wrapper-detalle .content-block-title {
+    text-align: center;
+    color: #3a3a3a;
+    font-weight: bold;
+    /*border-bottom: solid 1px #17999a;*/
+    padding: 0 0 15px 0;
+    text-transform:none;
+    font-size: 1.2em;
 }
 
 .item-media img {

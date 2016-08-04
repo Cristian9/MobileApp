@@ -80,10 +80,10 @@ var app = (function () {
 
     function renderListRetosEnviados(data) {
         var html = "";
-        if (data.Enviado == "")
+        if (data == "")
             return false;
 
-        html = data.Enviado.map(function (e) {
+        html = data.map(function (e) {
             return ('<li class="item-content">' +
                         '<div class="item-inner" alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
@@ -97,10 +97,10 @@ var app = (function () {
 
     function renderListRetosRecibidos(data) {
         var html = "";
-        if (data.Recibido == "")
+        if (data == "")
             return false;
 
-        html = data.Recibido.map(function (e) {
+        html = data.map(function (e) {
             return ('<li class="item-content">' +
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
                         '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
@@ -115,17 +115,51 @@ var app = (function () {
 
     function renderListRetosHistorial(data) {
         var html = "";
-        if (data.Historial == "")
+        if (data == "")
             return false;
 
-        html = data.Historial.map(function (e) {
+        html = data.map(function (e) {
+
+            var color = (e.resultado == "Has perdido") ? "red" : "green";
+
             return ('<li class="item-content">' +
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                        '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
-                            '<div class="item-title">' + e.nikname + '<div class="item-after-down">'+e.resultado+'</div></div>' +
-                            '<div class="item-title">'+
-                                '<button class="button button-fill">Ver detalle</button>' + 
+                        '<div class="item-inner">' +
+                            '<div class="item-title">' + e.nikname + 
+                                '<div class="item-after-down" style="color:' + color + '">' + e.resultado + ' (' + e.origen + ')</div>' + 
                             '</div>' +
+                            '<div class="item-title">'+
+                                '<button class="button button-fill btnHistorial" alt="' + e.id_reto + '">Ver detalle</button>' + 
+                            '</div>' +
+                        '</div>' +
+                    '</li>');
+        }).join(" ");
+
+        return html;
+    }
+
+    function renderListRetosDetalle(data) {
+        var html = "";
+        if(data == "")
+            return false;
+
+        html = data.map(function(e){
+            return ('<li class="item-content">' + 
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-inner">' +
+                            '<div class="item-title">' + e.myNik + 
+                                //'<div class="item-after-down">' + e.resultado + ' (' + e.origen + ')</div>' + 
+                            '</div>' +
+                            '<div class="item-title">' + e.mi_punto + '<div class="item-after-down">'+e.miTiempo+'</div></div>' +
+                        '</div>' +
+                    '</li>' + 
+                    '<li class="item-content">' +
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-inner">' +
+                            '<div class="item-title">' + e.nikname + 
+                                //'<div class="item-after-down">' + e.resultado + ' (' + e.origen + ')</div>' + 
+                            '</div>' +
+                            '<div class="item-title">' + e.punto_rival + '<div class="item-after-down">'+e.tiempoRival+'</div></div>' +
                         '</div>' +
                     '</li>');
         }).join(" ");
@@ -376,20 +410,29 @@ var app = (function () {
         });
     }
 
-    function getRetos() {
+    function getRetos(get, id) {
         myApp.showPreloader('Espere, por favor...');
         $.getJSON(API + '/list-retos/', {
-            args: window.localStorage.getItem("userSession")
+            args: window.localStorage.getItem("userSession"),
+            get : get,
+            id : id || ""
         })
         .done(function (data) {
             myApp.hidePreloader();
-            var htmlEnviado     = renderListRetosEnviados(data);
-            var htmlRecibido    = renderListRetosRecibidos(data);
-            var htmlHistorial   = renderListRetosHistorial(data); 
 
-            $('#send').html(htmlEnviado);
-            $('#receive').html(htmlRecibido);
-            $('#history').html(htmlHistorial);
+            if (typeof data.Detalle == "undefined") {
+                var htmlEnviado     = renderListRetosEnviados(data.Enviado);
+                var htmlRecibido    = renderListRetosRecibidos(data.Recibido);
+                var htmlHistorial   = renderListRetosHistorial(data.Historial); 
+
+                $('#send').html(htmlEnviado);
+                $('#receive').html(htmlRecibido);
+                $('#history').html(htmlHistorial);
+            } else {
+                var htmlDetalle = renderListRetosDetalle(data.Detalle);
+                $('.content-block-title').html(data.Detalle[0].resultado);
+                $('#detalle').html(htmlDetalle);
+            }
         });
     }
 
@@ -480,7 +523,7 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
 });
 
 myApp.onPageAfterAnimation("listadoRetos", function (page) {
-    app.getRetos();
+    app.getRetos('all');
 
     var idReto,
         idUnidad,
@@ -509,6 +552,11 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         myApp.closeModal();
         mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
     });
+
+    $('#history').on("touchstart", '.btnHistorial', function(){
+        window.localStorage.setItem('Reto', $(this).attr('alt'));
+        mainView.router.loadPage("views/misRetos/misRetosDetalle.html");
+    });
 });
 
 myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
@@ -518,4 +566,8 @@ myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
 
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
+});
+
+myApp.onPageBeforeAnimation("detalleRetos", function(page){
+    app.getRetos('detalle', window.localStorage.getItem('Reto'));
 });
