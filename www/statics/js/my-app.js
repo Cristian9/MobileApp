@@ -85,6 +85,7 @@ var app = (function () {
 
         html = data.map(function (e) {
             return ('<li class="item-content">' +
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
                         '<div class="item-inner" alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
                             '<div class="item-title">' + e.para_ganar + '<div class="item-after-down">Para ganar</div></div>' +
@@ -190,6 +191,10 @@ var app = (function () {
         }).join(" ");
 
         return html;
+    }
+
+    function renderResumenReto(data) {
+
     }
 
     function getMainList(option) {
@@ -331,7 +336,7 @@ var app = (function () {
         var correct,
             respuesta,
             puntaje,
-            templateQuestion = "";
+            Quiz = "";
 
         initNumberQuestion += 1;
 
@@ -347,35 +352,39 @@ var app = (function () {
         }
 
         if (totalQuestions < 1) {
-            templateQuestion = "<h1>Ups, algos ha salido mal, intente</h1>";
+            Quiz = "<h1>Ups, algos ha salido mal, intente</h1>";
         } else {
             if (index < totalQuestions) {
-                templateQuestion = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
-                            "<h2 class='row'><div class='col-33'></div>" +
-                            "<div class='col-33' style='text-align: center;font-weight:normal;'>" + (index + 1) + " / " + totalQuestions + "</div>" + 
-                            "<div class='col-33 timer' style='text-align: right; padding-right:20px;font-weight:normal;'>30</div>" + 
-                            "</h2><div class='wrapper-questions'><div class='scroller'>" +
-                            "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>"
-                                    + (index + 1) + '.- ' + dataQuestion[index].preguntas + 
-                            "</div><div class='content-block answer'>";
+                Quiz = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
+                            "<h2 class='row'>" + 
+                                "<div class='col-33'></div>" +
+                                "<div class='col-33' style='text-align: center;font-weight:normal;'>" + (index + 1) + " / " + totalQuestions + "</div>" + 
+                                "<div class='col-33 timer' style='text-align: right; padding-right:20px;font-weight:normal;'>30</div>" + 
+                            "</h2>" + 
+                            "<div class='wrapper-questions'>" + 
+                                "<div class='scroller'>" + 
+                                    "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>" + 
+                                        + (index + 1) + '.- ' + dataQuestion[index].preguntas +
+                                    "</div>" + 
+                                    "<div class='content-block answer'>";
 
                 for (var j = 0; j < dataQuestion[index].Respuesta.length; j++) {
                     correct = dataQuestion[index].Respuesta[j].is_correct;
                     respuesta = dataQuestion[index].Respuesta[j].respuesta;
                     puntaje = dataQuestion[index].Respuesta[j].puntaje;
 
-                    templateQuestion += "<p><a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ")'" +
-                            " class='button button-round active " + correct + "' alt='" + correct + "'>" + respuesta + "</a></p>";
+                    Quiz += "<p>" + 
+                                "<a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ")'" +
+                                    " class='button button-round active " + correct + "' alt='" + correct + "'>" + respuesta + "</a>" + 
+                            "</p>";
                 }
-                templateQuestion += "</div></div></div></div>";
+                Quiz += "</div></div></div></div>";
             } else {
-                templateQuestion = "<h1>Terminaste</h1>";
-
                 updRetos();
             }
         }
 
-        return templateQuestion;
+        return Quiz;
     }
 
     function saveRetos() {
@@ -412,7 +421,42 @@ var app = (function () {
         })
         .done(function (data) {
             console.log(data);
-            window.localStorage.removeItem('lastID');
+            $.getJSON(API + "/get_resumen_juego/", {
+                id : window.localStorage.getItem('lastID'),
+                uid : window.localStorage.getItem('userSession')
+            })
+            .done(function(e){
+                var html = e.Resumen.map(function(item){
+                    return('<div class="wrapper-resumen">' +
+                                '<h2>Faltan ' + item.para_ganar + ' para ganar</h2>' +
+                                '<div class="row">' + 
+                                    '<div class="col-33">' + 
+                                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                                        '<div class="item-title">' + item.myNik + "</div>" + 
+                                    '</div>' + 
+                                    '<div class="col-33" style="font-size: 2em;">' + item.correctas_retador + '</div>' + 
+                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego + '</div>' + 
+                                '</div>' + 
+                            '</div>' + 
+                            '<div class="wrapper-resumen">' +
+                                '<div class="row">' + 
+                                    '<div class="col-33">' + 
+                                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                                        '<div class="item-title">' + item.nikRival + "</div>" + 
+                                    '</div>' + 
+                                    '<div class="col-33" style="font-size: 2em;"></div>' + 
+                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">Pendiente</div>' + 
+                                '</div>' + 
+                            '</div>' + 
+                            '<div class="wrapper-resumen">' +
+                                '<a href="views/mainMenu/menu.html" class="button button-big button-round active">Continuar</a>' + 
+                            '</div>');
+                }).join(" ");
+
+                $('.questions-content').html(html);
+                
+                window.localStorage.removeItem('lastID');
+            });
         });
     }
 

@@ -295,6 +295,10 @@ body, ul, li {
     font-size: 1.4em;
     color:#000;
 }
+.wrapper-resumen {
+    padding: 0 20px 40px 30px;
+    text-align: center;
+}
 
 .clear{ 
     clear:both; 
