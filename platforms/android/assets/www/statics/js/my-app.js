@@ -426,16 +426,17 @@ var app = (function () {
                 uid : window.localStorage.getItem('userSession')
             })
             .done(function(e){
+                window.localStorage.removeItem('lastID');
                 var html = e.Resumen.map(function(item){
                     return('<div class="wrapper-resumen">' +
-                                '<h2>Faltan ' + item.para_ganar + ' para ganar</h2>' +
+                                '<h2>' + item.para_ganar + '</h2>' +
                                 '<div class="row">' + 
                                     '<div class="col-33">' + 
                                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
                                         '<div class="item-title">' + item.myNik + "</div>" + 
                                     '</div>' + 
-                                    '<div class="col-33" style="font-size: 2em;">' + item.correctas_retador + '</div>' + 
-                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego + '</div>' + 
+                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' + 
+                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' + 
                                 '</div>' + 
                             '</div>' + 
                             '<div class="wrapper-resumen">' +
@@ -444,8 +445,8 @@ var app = (function () {
                                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
                                         '<div class="item-title">' + item.nikRival + "</div>" + 
                                     '</div>' + 
-                                    '<div class="col-33" style="font-size: 2em;"></div>' + 
-                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">Pendiente</div>' + 
+                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' + 
+                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' + 
                                 '</div>' + 
                             '</div>' + 
                             '<div class="wrapper-resumen">' +
@@ -454,7 +455,6 @@ var app = (function () {
                 }).join(" ");
 
                 $('.questions-content').html(html);
-                window.localStorage.removeItem('lastID');
             });
         });
     }
