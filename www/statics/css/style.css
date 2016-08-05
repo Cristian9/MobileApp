@@ -236,30 +236,30 @@ body, ul, li {
 }
 
 .pregunta {
-  position: relative;
-  top: 50px;
-  text-align: center;
-  border-bottom: solid 1px #ddd;
-  padding-bottom: 15px;
-  font-size: 20px;
-  font-family: calibri;
+    position: relative;
+    top: 50px;
+    text-align: center;
+    border-bottom: solid 1px #ddd;
+    padding-bottom: 15px;
+    font-size: 20px;
+    font-family: calibri;
 }
 
 .item {
-  border-color: #ddd;
-  background-color: #fff;
-  color:#444;
-  position: relative;
-  z-index: 2;
-  display: block;
-  margin: -1px;
-  border-width: 1px;
-  border-style: solid;
-  font-size: 16px;
-  padding: 16px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    border-color: #ddd;
+    background-color: #fff;
+    color:#444;
+    position: relative;
+    z-index: 2;
+    display: block;
+    margin: -1px;
+    border-width: 1px;
+    border-style: solid;
+    font-size: 16px;
+    padding: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .content-block-title {
@@ -288,6 +288,12 @@ body, ul, li {
 .item-after-down {
     font-size: .8em;
     color: #807e7e;
+}
+
+.item-after-point {
+    display: inline;
+    font-size: 1.4em;
+    color:#000;
 }
 
 .clear{ 

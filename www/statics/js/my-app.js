@@ -150,7 +150,10 @@ var app = (function () {
                             '<div class="item-title">' + e.myNik + 
                                 //'<div class="item-after-down">' + e.resultado + ' (' + e.origen + ')</div>' + 
                             '</div>' +
-                            '<div class="item-title">' + e.mi_punto + '<div class="item-after-down">'+e.miTiempo+'</div></div>' +
+                            '<div class="item-title" style="text-align: center;">' +
+                                '<div class="item-after-point">' + e.mi_punto + '</div>' + 
+                                '<div class="item-after-down">'+e.miTiempo+'</div>' + 
+                            '</div>' +
                         '</div>' +
                     '</li>' + 
                     '<li class="item-content">' +
@@ -159,7 +162,10 @@ var app = (function () {
                             '<div class="item-title">' + e.nikname + 
                                 //'<div class="item-after-down">' + e.resultado + ' (' + e.origen + ')</div>' + 
                             '</div>' +
-                            '<div class="item-title">' + e.punto_rival + '<div class="item-after-down">'+e.tiempoRival+'</div></div>' +
+                            '<div class="item-title" style="text-align: center;">' +
+                                '<div class="item-after-point">' + e.punto_rival + '</div>' + 
+                                '<div class="item-after-down">'+e.tiempoRival+'</div>' + 
+                            '</div>' +
                         '</div>' +
                     '</li>');
         }).join(" ");
@@ -437,11 +443,15 @@ var app = (function () {
     }
 
     function searchUser(keyword) {
+        
+        $('.page_title').html('<div style="display: inline; margin-right: 40%">Listado de usuarios</div><span class="preloader"></span>');
+
         $.getJSON(API + '/list-users/', {
             username : window.localStorage.getItem("userSession"),
             keywords : $.trim(keyword)
         })
         .done(function(data){
+            $('.page_title').find('span').remove();
             $('#list-users').html(renderListUsuarios(data));
         });
     }
