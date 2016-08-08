@@ -15,7 +15,7 @@ var myApp = new Framework7({
     pushStateRoot: undefined,
     pushStateNoAnimation: false,
     pushStateSeparator: '#!/',
-    template7Pages: false
+    template7Pages: true
 });
 
 var mainView = myApp.addView('.view-main', {
@@ -41,12 +41,11 @@ var app = (function () {
         return this.charAt(0).toUpperCase() + this.substr(1);
     }
 
-    function StyleApp(topParam) {
+    function StyleApp() {
         var heightCuerpo = window.innerHeight - 92;//92/*46*/;
         var style = document.createElement('style');
         style.type = 'text/css';
-        style.innerHTML = '.auxCSS { position:absolute; z-index:2; left:0; top:' +
-                topParam + 'px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
+        style.innerHTML = '.auxCSS { position:absolute; z-index:2; left:0; top:50px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
 
         document.getElementsByTagName('head')[0].appendChild(style);
     }
@@ -57,12 +56,9 @@ var app = (function () {
 
         // Creamos los 2 scroll mediante el plugin iscroll, uno para el menœ principal y otro para el cuerpo
         myScroll = new iScroll('wrapper', {hideScrollbar: true});
-
-        //new FastClick(document.body);
     }
 
     function viewLogin() {
-        //myApp.popup('.popup-login');
         myApp.loginScreen()
     }
 
@@ -86,7 +82,7 @@ var app = (function () {
         html = data.map(function (e) {
             return ('<li class="item-content">' +
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                        '<div class="item-inner" alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
+                        '<div class="item-inner" alt="' + e.id_reto + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
                             '<div class="item-title">' + e.para_ganar + '<div class="item-after-down">Para ganar</div></div>' +
                         '</div>' +
@@ -149,10 +145,9 @@ var app = (function () {
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
                         '<div class="item-inner">' +
                             '<div class="item-title">' + e.myNik + 
-                                //'<div class="item-after-down">' + e.resultado + ' (' + e.origen + ')</div>' + 
                             '</div>' +
                             '<div class="item-title" style="text-align: center;">' +
-                                '<div class="item-after-point">' + e.mi_punto + '</div>' + 
+                                '<div class="item-after-point">' + e.mis_correctas + '</div>' + 
                                 '<div class="item-after-down">'+e.miTiempo+'</div>' + 
                             '</div>' +
                         '</div>' +
@@ -161,10 +156,9 @@ var app = (function () {
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
                         '<div class="item-inner">' +
                             '<div class="item-title">' + e.nikname + 
-                                //'<div class="item-after-down">' + e.resultado + ' (' + e.origen + ')</div>' + 
                             '</div>' +
                             '<div class="item-title" style="text-align: center;">' +
-                                '<div class="item-after-point">' + e.punto_rival + '</div>' + 
+                                '<div class="item-after-point">' + e.correctas_rival + '</div>' + 
                                 '<div class="item-after-down">'+e.tiempoRival+'</div>' + 
                             '</div>' +
                         '</div>' +
@@ -194,48 +188,57 @@ var app = (function () {
     }
 
     function renderResumenReto(data) {
+        var html = data.Resumen.map(function(item){
+            return('<div class="wrapper-resumen">' +
+                        '<h2>' + item.para_ganar + '</h2>' +
+                        '<div class="row">' + 
+                            '<div class="col-33">' + 
+                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                                '<div class="item-title">' + item.myNik + "</div>" + 
+                            '</div>' + 
+                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' + 
+                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' + 
+                        '</div>' + 
+                    '</div>' + 
+                    '<div class="wrapper-resumen">' +
+                        '<div class="row">' + 
+                            '<div class="col-33">' + 
+                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                                '<div class="item-title">' + item.nikRival + "</div>" + 
+                            '</div>' + 
+                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' + 
+                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' + 
+                        '</div>' + 
+                    '</div>' + 
+                    '<div class="wrapper-resumen">' +
+                        '<a href="views/mainMenu/menu.html" class="button button-big button-round active">Ir al menú principal</a>' + 
+                    '</div>');
+        }).join(" ");
 
+        return html;
     }
 
-    function getMainList(option) {
+    function getDataApiJSON(option) {
 
         var href = option.href,
             func = option.func,
-            args = option.args || "",
-            elem = option.elem || "list",
-            ptop = option.ptop || 0;
-        //pwid = option.pwid;
+            elem = option.elem,
+            args = option.args || "";
 
-        window.localStorage.setItem('href', href);
 
-        StyleApp(ptop);
+        StyleApp();
 
         $('#wrapper').addClass('auxCSS');
 
-        if (typeof myScroll != "undefined" && myScroll != null) {
-            myScroll.destroy();
-            myScroll = null;
-
-            numberPage > 1 && (numberPage = 1);
-        }
-
         myApp.showPreloader('Espere, por favor...');
 
-        $.ajax({
-            type: 'GET',
-            url: API + "/" + href + "/",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: {
-                'page': numberPage,
-                'args': args
-            }
-        })
+        $.getJSON(API + "/" + href + "/", args)
         .done(function (data) {
-            var data = eval(data);
+
             myApp.hidePreloader();
+
             if (data[0] == null) {
-                $('#' + elem).html($("<center style='padding:11%; color:#B33831; font-size:15px; font-weight:bold;'></center>")
+                $(elem).html($("<center style='padding:11%; color:#B33831; font-size:15px; font-weight:bold;'></center>")
                         .append('No hay registros para mostrar'));
 
                 return false;
@@ -243,14 +246,10 @@ var app = (function () {
 
             var list = eval(func + "(data)");
 
-            $('#' + elem).empty().html(list);
-
-            //$('#pullUp, #pullDown').removeClass('hide').addClass('show');
-
-            //ScrollMove();
+            $(elem).empty().html(list);
         });
 
-        //new FastClick(document.body);
+        new FastClick(document.body);
     }
 
     function login() {
@@ -413,6 +412,20 @@ var app = (function () {
         })
     }
 
+    function getResumenReto() {
+        myApp.showPreloader('Espere, por favor...');
+        $.getJSON(API + "/get_resumen_juego/", {
+            id : window.localStorage.getItem('lastID'),
+            uid : window.localStorage.getItem('userSession')
+        })
+        .done(function(e){
+            myApp.hidePreloader();
+            window.localStorage.removeItem('lastID');
+            var resumen = renderResumenReto(e);
+            $('.resumen-questions').html(resumen);
+        });
+    }
+
     function updRetos() {
         $.post(API + '/update_retos/', {
             countCorrect: initPuntajeQuestion,
@@ -421,41 +434,7 @@ var app = (function () {
         })
         .done(function (data) {
             console.log(data);
-            $.getJSON(API + "/get_resumen_juego/", {
-                id : window.localStorage.getItem('lastID'),
-                uid : window.localStorage.getItem('userSession')
-            })
-            .done(function(e){
-                window.localStorage.removeItem('lastID');
-                var html = e.Resumen.map(function(item){
-                    return('<div class="wrapper-resumen">' +
-                                '<h2>' + item.para_ganar + '</h2>' +
-                                '<div class="row">' + 
-                                    '<div class="col-33">' + 
-                                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                                        '<div class="item-title">' + item.myNik + "</div>" + 
-                                    '</div>' + 
-                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' + 
-                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' + 
-                                '</div>' + 
-                            '</div>' + 
-                            '<div class="wrapper-resumen">' +
-                                '<div class="row">' + 
-                                    '<div class="col-33">' + 
-                                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                                        '<div class="item-title">' + item.nikRival + "</div>" + 
-                                    '</div>' + 
-                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' + 
-                                    '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' + 
-                                '</div>' + 
-                            '</div>' + 
-                            '<div class="wrapper-resumen">' +
-                                '<a href="views/mainMenu/menu.html" class="button button-big button-round active">Continuar</a>' + 
-                            '</div>');
-                }).join(" ");
-
-                $('.questions-content').html(html);
-            });
+            mainView.router.loadPage("views/misRetos/misRetosResumen.html");
         });
     }
 
@@ -487,7 +466,7 @@ var app = (function () {
 
     function searchUser(keyword) {
         
-        $('.page_title').html('<div style="display: inline; margin-right: 40%">Listado de usuarios</div><span class="preloader"></span>');
+        $('.page_title').html('<div style="display: inline;">Listado de usuarios</div><span class="preloader" style="float: right;"></span>');
 
         $.getJSON(API + '/list-users/', {
             username : window.localStorage.getItem("userSession"),
@@ -503,14 +482,15 @@ var app = (function () {
         viewLogin: viewLogin,
         login: login,
         InitmenuSlide: InitmenuSlide,
-        getMainList: getMainList,
+        getDataApiJSON: getDataApiJSON,
         PreloadQuestions: PreloadQuestions,
         listQuestions: listQuestions,
         fillButton: fillButton,
         saveRetos: saveRetos,
         getRetos: getRetos,
         dateRetoAceptado: dateRetoAceptado,
-        searchUser : searchUser
+        searchUser : searchUser,
+        getResumenReto : getResumenReto
     }
 
 })();
@@ -524,10 +504,10 @@ myApp.onPageInit("menu", function (page) {
 });
 
 myApp.onPageAfterAnimation("listadoCursos", function (page) {
-    app.getMainList({
+    app.getDataApiJSON({
         href: 'list-courses',
-        func: 'renderDefaultList',
-        ptop: 50
+        elem: '#list',
+        func: 'renderDefaultList'
     });
 
     $('#list').on("click", "a", function () {
@@ -542,12 +522,13 @@ myApp.onPageAfterAnimation("listadoCursos", function (page) {
 myApp.onPageAfterAnimation("listadoUnidades", function (page) {
     $('.page_title').text("Temas disponibles en " + window.localStorage.getItem("courseName"));
     
-    app.getMainList({
+    app.getDataApiJSON({
         href: 'list-unidad',
         func: 'renderDefaultList',
-        args: window.localStorage.getItem("courseId"),
-        elem: 'list-unidad',
-        ptop: 50
+        args: {
+            courseId : window.localStorage.getItem("courseId")
+        },
+        elem: '#list-unidad'
     });
 
     $('#list-unidad').on("click", "a", function () {
@@ -610,11 +591,21 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         window.localStorage.setItem('Reto', $(this).attr('alt'));
         mainView.router.loadPage("views/misRetos/misRetosDetalle.html");
     });
+
+    $('#send').on('click', '.item-inner', function(){
+        var id_reto = $(this).attr('alt');
+        window.localStorage.setItem('lastID', id_reto),
+        mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+    });
 });
 
 myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
     app.saveRetos();
     app.PreloadQuestions();
+});
+
+myApp.onPageAfterAnimation("resumenRetos", function(page){
+    app.getResumenReto();
 });
 
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
