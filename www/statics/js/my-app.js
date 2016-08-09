@@ -15,7 +15,7 @@ var myApp = new Framework7({
     pushStateRoot: undefined,
     pushStateNoAnimation: false,
     pushStateSeparator: '#!/',
-    template7Pages: true
+    template7Pages: false
 });
 
 var mainView = myApp.addView('.view-main', {
