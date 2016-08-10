@@ -11,7 +11,7 @@ var myApp = new Framework7({
     swipeBackPageThreshold: 1,
     swipePanel: "left",
     swipePanelCloseOpposite: true,
-    pushState: false,
+    pushState: true,
     pushStateRoot: undefined,
     pushStateNoAnimation: false,
     pushStateSeparator: '#!/',
