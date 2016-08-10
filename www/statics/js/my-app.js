@@ -11,11 +11,11 @@ var myApp = new Framework7({
     swipeBackPageThreshold: 1,
     swipePanel: "left",
     swipePanelCloseOpposite: true,
-    pushState: true,
+    pushState: false,
     pushStateRoot: undefined,
     pushStateNoAnimation: false,
     pushStateSeparator: '#!/',
-    template7Pages: false
+    template7Pages: true
 });
 
 var mainView = myApp.addView('.view-main', {
@@ -265,14 +265,15 @@ var app = (function () {
                 myApp.alert('Hubo un error, verifique sus datos', 'Error!!!');
             } else {
                 myApp.closeModal('.login-screen');
-                window.localStorage.setItem("userSession", $('#txtuser').val());
+                sessionStorage.setItem('userConnected', data[0].firstname);
+                sessionStorage.setItem("userSession", $('#txtuser').val());
                 $('.pages').empty();
                 mainView.router.loadPage('views/mainMenu/menu.html');
             }
         });
     }
 
-    function fillButton(obj, n, pts) {
+    function fillButton(obj, n, pts, idrpta, idprta) {
         clearInterval(Handle_Mi_Timer);
 
         var correct = $(obj).attr('alt');
@@ -289,12 +290,22 @@ var app = (function () {
                 }
             });
         }
-        nextQuestion(n, 800, pts);
+        nextQuestion(n, 800, pts, idrspta, idprta);
     }
 
-    function nextQuestion(n, delay, pts) {
+    function nextQuestion(n, delay, pts, idrspta, idprta) {
         $('.siguiente_' + (n - 1)).delay(delay).animate({'left': '-100%'}, function () {
+            
             initPuntajeQuestion += pts;
+            $.post(API + "/save_selected_rpta/", {
+                username : sessionStorage.getItem('userSession'),
+                courseid : sessionStorage.getItem('courseId') || "",
+                unidadid : sessionStorage.getItem('unidadId') || "",
+                generalt : sessionStorage.getItem('idtemageneral') || "",
+                pregunta : idprta,
+                respuest : idrspta
+            });
+
             $('.questions-content').empty().append(app.listQuestions(n));
             $('.siguiente_' + n).removeClass('innactive').animate({'right': '0'});
         });
@@ -305,8 +316,8 @@ var app = (function () {
         initPuntajeQuestion = 0;
 
         $.getJSON(API + '/getQuestions/', {
-            course: window.localStorage.getItem("courseId"),
-            unidad: window.localStorage.getItem("unidadId")
+            course: sessionStorage.getItem("courseId"),
+            unidad: sessionStorage.getItem("unidadId")
         })
         .done(function (data) {
             dataQuestion = data;
@@ -354,6 +365,7 @@ var app = (function () {
             Quiz = "<h1>Ups, algos ha salido mal, intente</h1>";
         } else {
             if (index < totalQuestions) {
+                idPregunta = dataQuestion[index].id_preguntas;
                 Quiz = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
                             "<h2 class='row'>" + 
                                 "<div class='col-33'></div>" +
@@ -371,10 +383,11 @@ var app = (function () {
                     correct = dataQuestion[index].Respuesta[j].is_correct;
                     respuesta = dataQuestion[index].Respuesta[j].respuesta;
                     puntaje = dataQuestion[index].Respuesta[j].puntaje;
+                    idrspta = dataQuestion[index].Respuesta[j].id_respuesta;
 
                     Quiz += "<p>" + 
-                                "<a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ")'" +
-                                    " class='button button-round active " + correct + "' alt='" + correct + "'>" + respuesta + "</a>" + 
+                                "<a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
+                                    " class='button button-round active' alt='" + correct + "'>" + respuesta + "</a>" + 
                             "</p>";
                 }
                 Quiz += "</div></div></div></div>";
@@ -388,16 +401,16 @@ var app = (function () {
 
     function saveRetos() {
         $.post(API + '/save_retos/', {
-            id_reto : window.localStorage.getItem('lastID') || null,
-            user_retador: window.localStorage.getItem('userSession'),
-            unidad_id: window.localStorage.getItem('unidadId') || "",
-            courseId: window.localStorage.getItem('courseId') || "",
-            user_retado: window.localStorage.getItem('userRetado') || "",
-            id_temageneral: window.localStorage.getItem('themeGeneral') || ""
+            id_reto : sessionStorage.getItem('lastID') || null,
+            user_retador: sessionStorage.getItem('userSession'),
+            unidad_id: sessionStorage.getItem('unidadId') || "",
+            courseId: sessionStorage.getItem('courseId') || "",
+            user_retado: sessionStorage.getItem('userRetado') || "",
+            id_temageneral: sessionStorage.getItem('themeGeneral') || ""
         })
         .done(function (data) {
             if(data != "") {
-                window.localStorage.setItem('lastID', data);
+                sessionStorage.setItem('lastID', data);
             }
         });
     }
@@ -405,7 +418,7 @@ var app = (function () {
     function dateRetoAceptado(id) {
         $.post(API + '/updateDateReto/', {
             idReto: id,
-            username : window.localStorage.getItem('userSession')
+            username : sessionStorage.getItem('userSession')
         })
         .done(function (data) {
             console.log(data);
@@ -415,12 +428,12 @@ var app = (function () {
     function getResumenReto() {
         myApp.showPreloader('Espere, por favor...');
         $.getJSON(API + "/get_resumen_juego/", {
-            id : window.localStorage.getItem('lastID'),
-            uid : window.localStorage.getItem('userSession')
+            id : sessionStorage.getItem('lastID'),
+            uid : sessionStorage.getItem('userSession')
         })
         .done(function(e){
             myApp.hidePreloader();
-            window.localStorage.removeItem('lastID');
+            sessionStorage.removeItem('lastID');
             var resumen = renderResumenReto(e);
             $('.resumen-questions').html(resumen);
         });
@@ -429,8 +442,8 @@ var app = (function () {
     function updRetos() {
         $.post(API + '/update_retos/', {
             countCorrect: initPuntajeQuestion,
-            idQuestion: window.localStorage.getItem('lastID'),
-            username: window.localStorage.getItem('userSession')
+            idQuestion: sessionStorage.getItem('lastID'),
+            username: sessionStorage.getItem('userSession')
         })
         .done(function (data) {
             console.log(data);
@@ -441,7 +454,7 @@ var app = (function () {
     function getRetos(get, id) {
         myApp.showPreloader('Espere, por favor...');
         $.getJSON(API + '/list-retos/', {
-            args: window.localStorage.getItem("userSession"),
+            args: sessionStorage.getItem("userSession"),
             get : get,
             id : id || ""
         })
@@ -469,12 +482,19 @@ var app = (function () {
         $('.page_title').html('<div style="display: inline;">Listado de usuarios</div><span class="preloader" style="float: right;"></span>');
 
         $.getJSON(API + '/list-users/', {
-            username : window.localStorage.getItem("userSession"),
+            username : sessionStorage.getItem("userSession"),
             keywords : $.trim(keyword)
         })
         .done(function(data){
             $('.page_title').find('span').remove();
             $('#list-users').html(renderListUsuarios(data));
+        });
+    }
+
+    function logout() {
+        myApp.confirm('Seguro que quiere salir?', 'Preguntados UTP', function(){
+            sessionStorage.clear();
+            location.reload();
         });
     }
 
@@ -490,12 +510,19 @@ var app = (function () {
         getRetos: getRetos,
         dateRetoAceptado: dateRetoAceptado,
         searchUser : searchUser,
-        getResumenReto : getResumenReto
+        getResumenReto : getResumenReto,
+        logout : logout
     }
 
 })();
 
 myApp.onPageInit("menu", function (page) {
+    $('.user_details').html('<p>Usuario conectado, <span>'+sessionStorage.getItem('userConnected')+'</span></p>');
+    
+    $$('#close').on("touchstart", function(){
+        app.logout();
+    });
+
     $('.main-nav ul li').on("click", function () {
         var href = $(this).attr('id');
         $('.pages').empty();
@@ -513,20 +540,20 @@ myApp.onPageAfterAnimation("listadoCursos", function (page) {
     $('#list').on("click", "a", function () {
         var courseCode = $(this).attr('alt');
         var courseName = $(this).text();
-        window.localStorage.setItem("courseId", courseCode);
-        window.localStorage.setItem("courseName", courseName.trim());
+        sessionStorage.setItem("courseId", courseCode);
+        sessionStorage.setItem("courseName", courseName.trim());
         mainView.router.loadPage("views/ListaCursos/ListaUnidades.html");
     });
 });
 
 myApp.onPageAfterAnimation("listadoUnidades", function (page) {
-    $('.page_title').text("Temas disponibles en " + window.localStorage.getItem("courseName"));
+    $('.page_title').text("Temas disponibles en " + sessionStorage.getItem("courseName"));
     
     app.getDataApiJSON({
         href: 'list-unidad',
         func: 'renderDefaultList',
         args: {
-            courseId : window.localStorage.getItem("courseId")
+            courseId : sessionStorage.getItem("courseId")
         },
         elem: '#list-unidad'
     });
@@ -534,8 +561,8 @@ myApp.onPageAfterAnimation("listadoUnidades", function (page) {
     $('#list-unidad').on("click", "a", function () {
         var unidadId = $(this).attr('alt');
         var unidadName = $(this).text();
-        window.localStorage.setItem("unidadId", unidadId);
-        window.localStorage.setItem("unidadName", unidadName.trim());
+        sessionStorage.setItem("unidadId", unidadId);
+        sessionStorage.setItem("unidadName", unidadName.trim());
 
         mainView.router.loadPage("views/ListaCursos/ListaUsuarios.html");
     });
@@ -549,7 +576,7 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
 
     $('#list-users').on("touchstart", ".btn-retar", function () {
         var username = $(this).attr('alt');
-        window.localStorage.setItem("userRetado", username);
+        sessionStorage.setItem("userRetado", username);
         myApp.alert('Se ha enviado una notificación al usuario', 'Preguntados UTP', function () {
             mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
         });
@@ -575,9 +602,9 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         idCourse = args[2];
         idTemaGe = args[3];
 
-        window.localStorage.setItem("courseId", idCourse);
-        window.localStorage.setItem("unidadId", idUnidad);
-        window.localStorage.setItem('lastID', idReto);
+        sessionStorage.setItem("courseId", idCourse);
+        sessionStorage.setItem("unidadId", idUnidad);
+        sessionStorage.setItem('lastID', idReto);
         myApp.popup(".popup-about");
     });
 
@@ -588,13 +615,13 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
     });
 
     $('#history').on("touchstart", '.btnHistorial', function(){
-        window.localStorage.setItem('Reto', $(this).attr('alt'));
+        sessionStorage.setItem('Reto', $(this).attr('alt'));
         mainView.router.loadPage("views/misRetos/misRetosDetalle.html");
     });
 
     $('#send').on('click', '.item-inner', function(){
         var id_reto = $(this).attr('alt');
-        window.localStorage.setItem('lastID', id_reto),
+        sessionStorage.setItem('lastID', id_reto),
         mainView.router.loadPage("views/misRetos/misRetosResumen.html");
     });
 });
@@ -614,5 +641,5 @@ myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
 
-    app.getRetos('detalle', window.localStorage.getItem('Reto'));
+    app.getRetos('detalle', sessionStorage.getItem('Reto'));
 });
