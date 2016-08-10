@@ -25,7 +25,7 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function () {
     new FastClick(document.body);
-    var API = "http://10.30.15.218/CodeApiMobile",
+    var phpApiMgr = "http://10.30.15.218/CodeApiMobile",
         numberPage = 1,
         timerInicial = 30,
         dataQuestion = "",
@@ -232,7 +232,7 @@ var app = (function () {
 
         myApp.showPreloader('Espere, por favor...');
 
-        $.getJSON(API + "/" + href + "/", args)
+        $.getJSON(phpApiMgr + "/" + href + "/", args)
         .done(function (data) {
 
             myApp.hidePreloader();
@@ -254,7 +254,7 @@ var app = (function () {
 
     function login() {
         myApp.showPreloader('Espere, por favor...');
-        $.post(API + '/login/', {
+        $.post(phpApiMgr + '/login/', {
             user: $('#txtuser').val(),
             pass: $('#txtpassword').val()
         })
@@ -295,9 +295,9 @@ var app = (function () {
 
     function nextQuestion(n, delay, pts, idrspta, idprta) {
         $('.siguiente_' + (n - 1)).delay(delay).animate({'left': '-100%'}, function () {
-            
+
             initPuntajeQuestion += pts;
-            $.post(API + "/save_selected_rpta/", {
+            $.post(phpApiMgr + "/save_selected_rpta/", {
                 username : sessionStorage.getItem('userSession'),
                 courseid : sessionStorage.getItem('courseId') || "",
                 unidadid : sessionStorage.getItem('unidadId') || "",
@@ -315,7 +315,7 @@ var app = (function () {
         initNumberQuestion = 0;
         initPuntajeQuestion = 0;
 
-        $.getJSON(API + '/getQuestions/', {
+        $.getJSON(phpApiMgr + '/getQuestions/', {
             course: sessionStorage.getItem("courseId"),
             unidad: sessionStorage.getItem("unidadId")
         })
@@ -400,7 +400,7 @@ var app = (function () {
     }
 
     function saveRetos() {
-        $.post(API + '/save_retos/', {
+        $.post(phpApiMgr + '/save_retos/', {
             id_reto : sessionStorage.getItem('lastID') || null,
             user_retador: sessionStorage.getItem('userSession'),
             unidad_id: sessionStorage.getItem('unidadId') || "",
@@ -416,7 +416,7 @@ var app = (function () {
     }
 
     function dateRetoAceptado(id) {
-        $.post(API + '/updateDateReto/', {
+        $.post(phpApiMgr + '/updateDateReto/', {
             idReto: id,
             username : sessionStorage.getItem('userSession')
         })
@@ -427,7 +427,7 @@ var app = (function () {
 
     function getResumenReto() {
         myApp.showPreloader('Espere, por favor...');
-        $.getJSON(API + "/get_resumen_juego/", {
+        $.getJSON(phpApiMgr + "/get_resumen_juego/", {
             id : sessionStorage.getItem('lastID'),
             uid : sessionStorage.getItem('userSession')
         })
@@ -440,7 +440,7 @@ var app = (function () {
     }
 
     function updRetos() {
-        $.post(API + '/update_retos/', {
+        $.post(phpApiMgr + '/update_retos/', {
             countCorrect: initPuntajeQuestion,
             idQuestion: sessionStorage.getItem('lastID'),
             username: sessionStorage.getItem('userSession')
@@ -453,7 +453,7 @@ var app = (function () {
 
     function getRetos(get, id) {
         myApp.showPreloader('Espere, por favor...');
-        $.getJSON(API + '/list-retos/', {
+        $.getJSON(phpApiMgr + '/list-retos/', {
             args: sessionStorage.getItem("userSession"),
             get : get,
             id : id || ""
@@ -481,7 +481,7 @@ var app = (function () {
         
         $('.page_title').html('<div style="display: inline;">Listado de usuarios</div><span class="preloader" style="float: right;"></span>');
 
-        $.getJSON(API + '/list-users/', {
+        $.getJSON(phpApiMgr + '/list-users/', {
             username : sessionStorage.getItem("userSession"),
             keywords : $.trim(keyword)
         })
