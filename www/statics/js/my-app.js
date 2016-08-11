@@ -1,7 +1,4 @@
 // Initialize your app
-
-var $$ = Dom7;
-
 var myApp = new Framework7({
     animateNavBackIcon: true,
     // Enable templates auto precompilation
@@ -17,6 +14,8 @@ var myApp = new Framework7({
     pushStateSeparator: '#!/',
     template7Pages: true
 });
+
+var $$ = Dom7;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -264,9 +263,12 @@ var app = (function () {
             if (!data) {
                 myApp.alert('Hubo un error, verifique sus datos', 'Error!!!');
             } else {
+
+                for(session in data[0]) {
+                    sessionStorage.setItem(session, data[0][session]);
+                }
                 myApp.closeModal('.login-screen');
-                sessionStorage.setItem('userConnected', data[0].firstname);
-                sessionStorage.setItem("userSession", $('#txtuser').val());
+
                 $('.pages').empty();
                 mainView.router.loadPage('views/mainMenu/menu.html');
             }
@@ -298,7 +300,7 @@ var app = (function () {
 
             initPuntajeQuestion += pts;
             $.post(phpApiMgr + "/save_selected_rpta/", {
-                username : sessionStorage.getItem('userSession'),
+                username : sessionStorage.getItem('username'),
                 courseid : sessionStorage.getItem('courseId') || "",
                 unidadid : sessionStorage.getItem('unidadId') || "",
                 generalt : sessionStorage.getItem('idtemageneral') || "",
@@ -401,12 +403,12 @@ var app = (function () {
 
     function saveRetos() {
         $.post(phpApiMgr + '/save_retos/', {
-            id_reto : sessionStorage.getItem('lastID') || null,
-            user_retador: sessionStorage.getItem('userSession'),
-            unidad_id: sessionStorage.getItem('unidadId') || "",
-            courseId: sessionStorage.getItem('courseId') || "",
-            user_retado: sessionStorage.getItem('userRetado') || "",
-            id_temageneral: sessionStorage.getItem('themeGeneral') || ""
+            id_reto         : sessionStorage.getItem('lastID') || null,
+            user_retador    : sessionStorage.getItem('username'),
+            unidad_id       : sessionStorage.getItem('unidadId') || "",
+            courseId        : sessionStorage.getItem('courseId') || "",
+            user_retado     : sessionStorage.getItem('userRetado') || "",
+            id_temageneral  : sessionStorage.getItem('themeGeneral') || ""
         })
         .done(function (data) {
             if(data != "") {
@@ -418,7 +420,7 @@ var app = (function () {
     function dateRetoAceptado(id) {
         $.post(phpApiMgr + '/updateDateReto/', {
             idReto: id,
-            username : sessionStorage.getItem('userSession')
+            username : sessionStorage.getItem('username')
         })
         .done(function (data) {
             console.log(data);
@@ -429,7 +431,7 @@ var app = (function () {
         myApp.showPreloader('Espere, por favor...');
         $.getJSON(phpApiMgr + "/get_resumen_juego/", {
             id : sessionStorage.getItem('lastID'),
-            uid : sessionStorage.getItem('userSession')
+            uid : sessionStorage.getItem('username')
         })
         .done(function(e){
             myApp.hidePreloader();
@@ -443,7 +445,7 @@ var app = (function () {
         $.post(phpApiMgr + '/update_retos/', {
             countCorrect: initPuntajeQuestion,
             idQuestion: sessionStorage.getItem('lastID'),
-            username: sessionStorage.getItem('userSession')
+            username: sessionStorage.getItem('username')
         })
         .done(function (data) {
             console.log(data);
@@ -454,7 +456,7 @@ var app = (function () {
     function getRetos(get, id) {
         myApp.showPreloader('Espere, por favor...');
         $.getJSON(phpApiMgr + '/list-retos/', {
-            args: sessionStorage.getItem("userSession"),
+            args: sessionStorage.getItem("username"),
             get : get,
             id : id || ""
         })
@@ -482,7 +484,7 @@ var app = (function () {
         $('.page_title').html('<div style="display: inline;">Listado de usuarios</div><span class="preloader" style="float: right;"></span>');
 
         $.getJSON(phpApiMgr + '/list-users/', {
-            username : sessionStorage.getItem("userSession"),
+            username : sessionStorage.getItem("username"),
             keywords : $.trim(keyword)
         })
         .done(function(data){
@@ -491,33 +493,45 @@ var app = (function () {
         });
     }
 
+    function getUserProfile(uid) {
+        $.getJSON(phpApiMgr + '/get_profile/', {
+            username : uid || sessionStorage.getItem('username')
+        })
+        .done(function(data){
+            $('#ganadas').text(data.Ganados[0].ganado);
+            $('#perdidas').text(data.Perdidos[0].perdido);
+            $('#punto').text(data.Puntaje[0].total);
+        });
+    }
+
     function logout() {
         myApp.confirm('Seguro que quiere salir?', 'Preguntados UTP', function(){
             sessionStorage.clear();
-            location.reload();
+            document.location.href = "index.html";
         });
     }
 
     return {
-        viewLogin: viewLogin,
-        login: login,
-        InitmenuSlide: InitmenuSlide,
-        getDataApiJSON: getDataApiJSON,
-        PreloadQuestions: PreloadQuestions,
-        listQuestions: listQuestions,
-        fillButton: fillButton,
-        saveRetos: saveRetos,
-        getRetos: getRetos,
-        dateRetoAceptado: dateRetoAceptado,
-        searchUser : searchUser,
-        getResumenReto : getResumenReto,
-        logout : logout
+        viewLogin           :   viewLogin,
+        login               :   login,
+        InitmenuSlide       :   InitmenuSlide,
+        getDataApiJSON      :   getDataApiJSON,
+        PreloadQuestions    :   PreloadQuestions,
+        listQuestions       :   listQuestions,
+        fillButton          :   fillButton,
+        save_retos          :   saveRetos,
+        getRetos            :   getRetos,
+        dateRetoAceptado    :   dateRetoAceptado,
+        searchUser          :   searchUser,
+        getResumenReto      :   getResumenReto,
+        logout              :   logout,
+        getUserProfile      :   getUserProfile
     }
 
 })();
 
 myApp.onPageInit("menu", function (page) {
-    $('.user_details').html('<p>Usuario conectado, <span>'+sessionStorage.getItem('userConnected')+'</span></p>');
+    $('.user_details').html('<p>Usuario conectado, <span>'+sessionStorage.getItem('firstname')+'</span></p>');
     
     $$('#close').on("touchstart", function(){
         app.logout();
@@ -642,4 +656,18 @@ myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
 
     app.getRetos('detalle', sessionStorage.getItem('Reto'));
+});
+
+myApp.onPageBeforeAnimation("profile", function(page){
+    var apellido = sessionStorage.getItem('lastname').split(" ");
+    $('.header-text h3').html(sessionStorage.getItem('firstname') + " " + apellido[0]);
+    $('.header-text p').html(sessionStorage.getItem('nikname') + ' <i class="icon ion-compose"></i>');
+
+    app.getUserProfile();
+
+    $$('.ion-compose').on("touchstart", function(){
+        myApp.prompt("Ingrese un Nikname", "Editar", function(value){
+            myApp.alert(value);
+        });
+    });
 });

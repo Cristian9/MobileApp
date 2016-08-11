@@ -245,6 +245,44 @@ body, ul, li {
     font-family: calibri;
 }
 
+.contact-header {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    position: relative;
+    top: 84px;
+}
+
+.contact-page .item-photo {
+    margin: 20px;
+    -webkit-flex-shrink: 0;
+    -ms-flex: 0 0 auto;
+    flex-shrink:0;
+}
+
+.contact-page .item-photo img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: block;
+}
+
+.contact-page .header-text {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: 10px;
+}
+
+.contact-page .header-text h3 {
+    font-weight: 500;
+    margin-bottom: 0em;
+}
+
+.contact-page .header-text p {
+    margin-top: .5em;
+}
+
 .item {
     border-color: #ddd;
     background-color: #fff;
