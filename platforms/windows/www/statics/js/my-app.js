@@ -300,6 +300,7 @@ var app = (function () {
 
             initPuntajeQuestion += pts;
             $.post(phpApiMgr + "/save_selected_rpta/", {
+                reto_id  : sessionStorage.getItem('lastID'),
                 username : sessionStorage.getItem('username'),
                 courseid : sessionStorage.getItem('courseId') || "",
                 unidadid : sessionStorage.getItem('unidadId') || "",
@@ -504,6 +505,18 @@ var app = (function () {
         });
     }
 
+    function editNickUser(nik) {
+        $.post(phpApiMgr + '/change_nick/', {
+            userid : sessionStorage.getItem('usuario_id'),
+            niknam : nik
+        })
+        .done(function(data){
+            sessionStorage.setItem('nikname', nik);
+            $('.header-text p').html(nik + ' <i class="icon ion-compose"></i>');
+            myApp.alert("Tu Nikname ha cambiado");
+        });
+    }
+
     function logout() {
         myApp.confirm('Seguro que quiere salir?', 'Preguntados UTP', function(){
             sessionStorage.clear();
@@ -519,13 +532,14 @@ var app = (function () {
         PreloadQuestions    :   PreloadQuestions,
         listQuestions       :   listQuestions,
         fillButton          :   fillButton,
-        save_retos          :   saveRetos,
+        saveRetos           :   saveRetos,
         getRetos            :   getRetos,
         dateRetoAceptado    :   dateRetoAceptado,
         searchUser          :   searchUser,
         getResumenReto      :   getResumenReto,
         logout              :   logout,
-        getUserProfile      :   getUserProfile
+        getUserProfile      :   getUserProfile,
+        editNickUser        :   editNickUser
     }
 
 })();
@@ -654,7 +668,6 @@ myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
 });
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
-
     app.getRetos('detalle', sessionStorage.getItem('Reto'));
 });
 
@@ -667,9 +680,10 @@ myApp.onPageBeforeAnimation("profile", function(page){
 
     $$('.ion-compose').on("touchstart", function(){
         myApp.prompt("Ingrese un Nikname", "Editar", function(value){
-            alert(1);
-            myApp.alert(value);
-            alert(2);
+            if($.trim(value) == "")
+                return false;
+
+            app.editNickUser($.trim(value));
         });
     });
 });
