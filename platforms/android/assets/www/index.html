@@ -173,7 +173,9 @@
         <script type="text/javascript" src="cordova.js"></script>
         <!--<script type="text/javascript" src="statics/js/jquery.swipebox.js"></script>-->
         <script type="text/javascript">
-            $(function () {
+            document.addEventListener("deviceready",onDeviceReady,false);
+
+            function onDeviceReady() {
                 app.viewLogin();
                 var btnLogin = document.getElementById('btn-login');
                 var txtpassword = document.getElementById('txtpassword');
@@ -186,7 +188,7 @@
                         app.login();
                     }
                 });
-            });
+            }
         </script> 
     </body>
 </html>

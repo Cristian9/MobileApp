@@ -11,6 +11,32 @@
                         {
                             "xml": "<feature name=\"SpinnerPlugin\"><param name=\"ios-package\" value=\"SpinnerPlugin\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"PushNotification\"><param name=\"ios-package\" value=\"PushPlugin\" /></feature>",
+                            "count": 1
+                        }
+                    ]
+                }
+            },
+            "*-Info.plist": {
+                "parents": {
+                    "UIBackgroundModes": [
+                        {
+                            "xml": "<array><string>remote-notification</string></array>",
+                            "count": 1
+                        }
+                    ],
+                    "GCM_SENDER_ID": [
+                        {
+                            "xml": "<string>721393051486</string>",
+                            "count": 1
+                        }
+                    ],
+                    "IS_GCM_ENABLED": [
+                        {
+                            "xml": "<true />",
+                            "count": 1
                         }
                     ]
                 }
@@ -23,6 +49,10 @@
         },
         "it.mobimentum.phonegapspinnerplugin": {
             "PACKAGE_NAME": "com.utp.preguntados"
+        },
+        "phonegap-plugin-push": {
+            "SENDER_ID": "721393051486",
+            "PACKAGE_NAME": "com.utp.preguntados"
         }
     },
     "dependent_plugins": {},
@@ -34,10 +64,19 @@
             "clobbers": [
                 "window.spinnerplugin"
             ]
+        },
+        {
+            "id": "phonegap-plugin-push.PushNotification",
+            "file": "plugins/phonegap-plugin-push/www/push.js",
+            "pluginId": "phonegap-plugin-push",
+            "clobbers": [
+                "PushNotification"
+            ]
         }
     ],
     "plugin_metadata": {
         "cordova-plugin-whitelist": "1.2.2",
-        "it.mobimentum.phonegapspinnerplugin": "1.2.1"
+        "it.mobimentum.phonegapspinnerplugin": "1.2.1",
+        "phonegap-plugin-push": "1.8.1"
     }
 }

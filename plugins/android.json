@@ -12,6 +12,10 @@
         },
         "it.mobimentum.phonegapspinnerplugin": {
             "PACKAGE_NAME": "com.utp.preguntados"
+        },
+        "phonegap-plugin-push": {
+            "SENDER_ID": "374982523203",
+            "PACKAGE_NAME": "com.utp.preguntados"
         }
     },
     "dependent_plugins": {}

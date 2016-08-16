@@ -18,6 +18,9 @@
     <feature name="SpinnerPlugin">
         <param name="ios-package" value="SpinnerPlugin" />
     </feature>
+    <feature name="PushNotification">
+        <param name="ios-package" value="PushPlugin" />
+    </feature>
     <name>UTP Preguntados</name>
     <description>
         Aprende jugando con Preguntados UTP.

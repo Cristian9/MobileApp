@@ -251,6 +251,37 @@ var app = (function () {
         new FastClick(document.body);
     }
 
+    function getDeviceIdentifier() {
+        var push = PushNotification.init({
+            "android" : {
+                "senderID" : "374982523203"
+            },
+            "ios" : {
+                "alert" : "true",
+                "badge" : "true",
+                "sound" : "true"
+            },
+            "windows" : {}
+        });
+
+        //console.log(push);
+
+        push.on("registration", function(data){
+            sessionStorage.setItem('identifier', data.registrationId);
+            $.post(phpApiMgr + "/registerDevice/", {
+                identifier  : data.registrationId,
+                userid      : sessionStorage.getItem("usuario_id")
+            })
+            .done(function(data){
+                console.log(data);
+            });
+        });
+
+        push.on("error", function(e){
+            console.log(e.message);
+        });
+    }
+
     function login() {
         myApp.showPreloader('Espere, por favor...');
         $.post(phpApiMgr + '/login/', {
@@ -267,6 +298,9 @@ var app = (function () {
                 for(session in data[0]) {
                     sessionStorage.setItem(session, data[0][session]);
                 }
+
+                getDeviceIdentifier();
+
                 myApp.closeModal('.login-screen');
 
                 $('.pages').empty();
@@ -414,6 +448,15 @@ var app = (function () {
         .done(function (data) {
             if(data != "") {
                 sessionStorage.setItem('lastID', data);
+
+                $.post(phpApiMgr + '/sendNotification/', {
+                    toUser : sessionStorage.getItem('userRetado'),
+                    fromUser : sessionStorage.getItem('nikname')
+                })
+                .done(function(data){
+                    console.log(data)
+                    //myApp.alert(data);
+                });
             }
         });
     }
@@ -665,6 +708,14 @@ myApp.onPageAfterAnimation("resumenRetos", function(page){
 
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
+
+    document.addEventListener("deviceready", function(){
+        document.addEventListener("backbutton", function(){
+            myApp.confirm("Si cancelas el juego perderás automáticamente, Deseas salir?", function(){
+                mainView.router.loadPage("views/mainMenu/menu.html");
+            });
+        }, false);
+    }, false);
 });
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
@@ -674,11 +725,11 @@ myApp.onPageBeforeAnimation("detalleRetos", function(page){
 myApp.onPageBeforeAnimation("profile", function(page){
     var apellido = sessionStorage.getItem('lastname').split(" ");
     $('.header-text h3').html(sessionStorage.getItem('firstname') + " " + apellido[0]);
-    $('.header-text p').html(sessionStorage.getItem('nikname') + ' <i class="icon ion-compose"></i>');
+    $('.header-text p').html(sessionStorage.getItem('nikname') + ' <i class="icon ion-compose" id="compose"></i>');
 
     app.getUserProfile();
 
-    $$('.ion-compose').on("touchstart", function(){
+    $$('.header-text').on("touchstart", "#compose", function(){
         myApp.prompt("Ingrese un Nikname", "Editar", function(value){
             if($.trim(value) == "")
                 return false;
