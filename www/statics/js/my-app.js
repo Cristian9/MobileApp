@@ -175,7 +175,8 @@ var app = (function () {
             return ('<li class="item-content">' + 
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
                         '<div class="item-inner">' +
-                            '<div class="item-title-row"><div class="item-title">' + item.usuario.toLowerCase().ucfirst() + '</div></div>' +
+                            '<div class="item-title">' + item.uname +
+                            '<div class="item-after-down">' + item.usuario + '</div></div>' +
                             '<div class="item-after">' +
                                 '<button class="button button-fill btn-retar" alt="' + item.username + '">Retar</button>' +
                             '</div>' +
@@ -485,15 +486,18 @@ var app = (function () {
         });
     }
 
-    function updRetos() {
+    function updRetos(cancelled) {
         $.post(phpApiMgr + '/update_retos/', {
             countCorrect: initPuntajeQuestion,
             idQuestion: sessionStorage.getItem('lastID'),
-            username: sessionStorage.getItem('username')
+            username: sessionStorage.getItem('username'),
+            cancelled : cancelled || ""
         })
         .done(function (data) {
             console.log(data);
-            mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+            if(cancelled == "") {
+                mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+            }
         });
     }
 
@@ -560,6 +564,14 @@ var app = (function () {
         });
     }
 
+    function cancelReto() {
+        myApp.confirm("Si cancelas el juego perderás automáticamente, Deseas salir?", function(){
+            clearInterval(Handle_Mi_Timer);
+            updRetos('cancelled');
+            mainView.router.loadPage("views/mainMenu/menu.html");
+        });
+    }
+
     function logout() {
         myApp.confirm('Seguro que quiere salir?', 'Preguntados UTP', function(){
             sessionStorage.clear();
@@ -582,7 +594,8 @@ var app = (function () {
         getResumenReto      :   getResumenReto,
         logout              :   logout,
         getUserProfile      :   getUserProfile,
-        editNickUser        :   editNickUser
+        editNickUser        :   editNickUser,
+        cancelReto          :   cancelReto
     }
 
 })();
@@ -596,9 +609,12 @@ myApp.onPageInit("menu", function (page) {
 
     $('.main-nav ul li').on("click", function () {
         var href = $(this).attr('id');
-        $('.pages').empty();
         mainView.router.loadPage('views/' + href + "/" + href + ".html");
     });
+
+    if(typeof document.removeEventListener("backbutton", app.cancelReto) !== "undefined") {
+        document.removeEventListener("backbutton", app.cancelReto);
+    }
 });
 
 myApp.onPageAfterAnimation("listadoCursos", function (page) {
@@ -710,11 +726,7 @@ myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
 
     document.addEventListener("deviceready", function(){
-        document.addEventListener("backbutton", function(){
-            myApp.confirm("Si cancelas el juego perderás automáticamente, Deseas salir?", function(){
-                mainView.router.loadPage("views/mainMenu/menu.html");
-            });
-        }, false);
+        document.addEventListener("backbutton", app.cancelReto, false);
     }, false);
 });
 
