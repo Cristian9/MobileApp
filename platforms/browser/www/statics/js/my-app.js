@@ -570,7 +570,7 @@ var app = (function () {
     }
 
     function cancelReto() {
-        myApp.confirm("Si cancelas el juego te quitaremos 3 puntos por penalidad, Seguro que deseas salir?", function(){
+        myApp.confirm("Perderá si sale del juego, Seguro que deseas salir?", "Cuidado!!!", function(){
             clearInterval(Handle_Mi_Timer);
             updRetos('cancelled');
             mainView.router.loadPage("views/mainMenu/menu.html");
@@ -730,14 +730,14 @@ myApp.onPageAfterAnimation("resumenRetos", function(page){
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
 
-    /*document.addEventListener("deviceready", function(){
+    document.addEventListener("deviceready", function(){
         document.addEventListener("backbutton", app.cancelReto, false);
-    }, false);*/
+    }, false);
 });
 
-myApp.onPageBack("ListaPreguntas", function (page) {
+/*myApp.onPageBack("ListaPreguntas", function (page) {
     app.cancelReto();
-});
+});*/
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
     app.getRetos('detalle', sessionStorage.getItem('Reto'));
