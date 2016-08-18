@@ -194,7 +194,7 @@ var app = (function () {
                         '<div class="row">' + 
                             '<div class="col-33">' + 
                                 '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                                '<div class="item-title">' + item.myNik + "</div>" + 
+                                '<div class="item-title">' + item.nikRetador + "</div>" + 
                             '</div>' + 
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' + 
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' + 
@@ -204,7 +204,7 @@ var app = (function () {
                         '<div class="row">' + 
                             '<div class="col-33">' + 
                                 '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                                '<div class="item-title">' + item.nikRival + "</div>" + 
+                                '<div class="item-title">' + item.nikRetado + "</div>" + 
                             '</div>' + 
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' + 
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' + 
@@ -449,15 +449,6 @@ var app = (function () {
         .done(function (data) {
             if(data != "") {
                 sessionStorage.setItem('lastID', data);
-
-                $.post(phpApiMgr + '/sendNotification/', {
-                    toUser : sessionStorage.getItem('userRetado'),
-                    fromUser : sessionStorage.getItem('nikname')
-                })
-                .done(function(data){
-                    console.log(data)
-                    //myApp.alert(data);
-                });
             }
         });
     }
@@ -475,8 +466,8 @@ var app = (function () {
     function getResumenReto() {
         myApp.showPreloader('Espere, por favor...');
         $.getJSON(phpApiMgr + "/get_resumen_juego/", {
-            id : sessionStorage.getItem('lastID'),
-            uid : sessionStorage.getItem('username')
+            id : sessionStorage.getItem('lastID')
+            //uid : sessionStorage.getItem('username')
         })
         .done(function(e){
             myApp.hidePreloader();
@@ -494,9 +485,23 @@ var app = (function () {
             cancelled : cancelled || ""
         })
         .done(function (data) {
-            console.log(data);
-            if(cancelled == "") {
-                mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+            if(typeof cancelled == "undefined") {
+                
+                $.post(phpApiMgr + '/sendNotification/', {
+                    toUser : sessionStorage.getItem('userRetado'),
+                    fromUser : sessionStorage.getItem('nikname')
+                })
+                .done(function(){
+                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+                })
+                .fail(function(){
+                    myApp.alert("Notificación no enviada");
+                })
+                .always(function(){
+                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+                });
+            } else {
+                sessionStorage.removeItem('lastID');
             }
         });
     }
@@ -565,7 +570,7 @@ var app = (function () {
     }
 
     function cancelReto() {
-        myApp.confirm("Si cancelas el juego perderás automáticamente, Deseas salir?", function(){
+        myApp.confirm("Si cancelas el juego te quitaremos 3 puntos por penalidad, Seguro que deseas salir?", function(){
             clearInterval(Handle_Mi_Timer);
             updRetos('cancelled');
             mainView.router.loadPage("views/mainMenu/menu.html");
@@ -613,10 +618,7 @@ myApp.onPageInit("menu", function (page) {
     });
 
     if(typeof document.removeEventListener("backbutton", app.cancelReto) !== "undefined") {
-        document.removeEventListener("backbutton", app.cancelReto)
-        console.log('ocurre');
-    } else {
-        console.log('no ocure');
+        document.removeEventListener("backbutton", app.cancelReto);
     }
 });
 
@@ -728,9 +730,13 @@ myApp.onPageAfterAnimation("resumenRetos", function(page){
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
 
-    document.addEventListener("deviceready", function(){
+    /*document.addEventListener("deviceready", function(){
         document.addEventListener("backbutton", app.cancelReto, false);
-    }, false);
+    }, false);*/
+});
+
+myApp.onPageBack("ListaPreguntas", function (page) {
+    app.cancelReto();
 });
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
