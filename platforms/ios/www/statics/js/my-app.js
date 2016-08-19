@@ -15,7 +15,7 @@ var myApp = new Framework7({
     template7Pages: true
 });
 
-var $$ = Dom7;
+// var $$ = Dom7;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -246,7 +246,7 @@ var app = (function () {
 
             var list = eval(func + "(data)");
 
-            $(elem).empty().html(list);
+            $(elem).html(list);
         });
 
         new FastClick(document.body);
@@ -304,7 +304,7 @@ var app = (function () {
 
                 myApp.closeModal('.login-screen');
 
-                $('.pages').empty();
+                //$('.pages').empty();
                 mainView.router.loadPage('views/mainMenu/menu.html');
             }
         });
@@ -399,8 +399,9 @@ var app = (function () {
             var rightS = '-100%';
         }
 
-        if (totalQuestions < 1) {
-            Quiz = "<h1>Ups, algos ha salido mal, intente</h1>";
+        if (typeof totalQuestions == "undefined" || totalQuestions < 1) {
+            sessionStorage.setItem('error', 1);
+            mainView.router.loadPage("views/mainMenu/menu.html");
         } else {
             if (index < totalQuestions) {
                 idPregunta = dataQuestion[index].id_preguntas;
@@ -606,9 +607,18 @@ var app = (function () {
 })();
 
 myApp.onPageInit("menu", function (page) {
+    if(sessionStorage.getItem('error') != null) {
+        myApp.showPreloader('Ha ocurrido un error inesperado, inicializando...');
+
+        setTimeout(function(){
+            myApp.hidePreloader();
+            sessionStorage.removeItem('error');
+        }, 3000);
+    }
+
     $('.user_details').html('<p>Usuario conectado, <span>'+sessionStorage.getItem('firstname')+'</span></p>');
     
-    $$('#close').on("touchstart", function(){
+    $('#close').on("touchstart", function(){
         app.logout();
     });
 
@@ -669,7 +679,7 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
     $('#list-users').on("touchstart", ".btn-retar", function () {
         var username = $(this).attr('alt');
         sessionStorage.setItem("userRetado", username);
-        myApp.alert('Se ha enviado una notificación al usuario', 'Preguntados UTP', function () {
+        myApp.confirm('Se enviará una notificación al usuario seleccionado, Desea continuar?', 'Preguntados UTP', function () {
             mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
         });
     });
@@ -750,7 +760,7 @@ myApp.onPageBeforeAnimation("profile", function(page){
 
     app.getUserProfile();
 
-    $$('.header-text').on("touchstart", "#compose", function(){
+    $('.header-text').on("touchstart", "#compose", function(){
         myApp.prompt("Ingrese un Nikname", "Editar", function(value){
             if($.trim(value) == "")
                 return false;
