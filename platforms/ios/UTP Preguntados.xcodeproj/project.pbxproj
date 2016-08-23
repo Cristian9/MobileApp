@@ -47,6 +47,11 @@
 		C279CE9147E741EDACD4E167 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8701681559504CC0902059AC /* AddressBook.framework */; };
 		D164D6E6031C42A78279AD90 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2BB46AF020AC47558A56C62B /* libsqlite3.tbd */; };
 		D7DF94FBD5A242AEB300FBCC /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 11013C9E1D44433181117313 /* libz.tbd */; };
+		61C8F959AD2548CA8C773CF9 /* SQLitePlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = EF87379191F64B5CB77B0AE5 /* SQLitePlugin.m */; };
+		01F4BE21D22E4C139BCC57DB /* sqlite3.c in Resources */ = {isa = PBXBuildFile; fileRef = 97D7D4CA3D144D92BCE2CA30 /* sqlite3.c */; settings = {COMPILER_FLAGS = "-DSQLITE_TEMP_STORE=2 -DSQLITE_THREADSAFE=2 -DSQLITE_ENABLE_FTS3 -DSQLITE_ENABLE_FTS3_PARENTHESIS -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_COLUMN_METADATA -DSQLITE_ENABLE_RTREE -DSQLITE_LOCKING_STYLE=1 -DSQLITE_OMIT_BUILTIN_TEST -DSQLITE_OMIT_LOAD_EXTENSION"; }; };
+		DE7CA08BC49B4A62AEFD50A8 /* CDVNotification.m in Sources */ = {isa = PBXBuildFile; fileRef = 58964A5E9D854A5BB7921BAA /* CDVNotification.m */; };
+		27CE581A253349B7822F840D /* CDVNotification.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 36A23CFF7F54402C903AE4D0 /* CDVNotification.bundle */; };
+		221DC55D0941449881ECECB4 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F4906FC3704DA48C50D537 /* AudioToolbox.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,6 +141,14 @@
 		8701681559504CC0902059AC /* AddressBook.framework */ = {isa = PBXFileReference; name = "AddressBook.framework"; path = "System/Library/Frameworks/AddressBook.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 		2BB46AF020AC47558A56C62B /* libsqlite3.tbd */ = {isa = PBXFileReference; name = "libsqlite3.tbd"; path = "usr/lib/libsqlite3.tbd"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = sourcecode.text-based-dylib-definition; explicitFileType = undefined; includeInIndex = 0; };
 		11013C9E1D44433181117313 /* libz.tbd */ = {isa = PBXFileReference; name = "libz.tbd"; path = "usr/lib/libz.tbd"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = sourcecode.text-based-dylib-definition; explicitFileType = undefined; includeInIndex = 0; };
+		EF87379191F64B5CB77B0AE5 /* SQLitePlugin.m */ = {isa = PBXFileReference; name = "SQLitePlugin.m"; path = "cordova-sqlite-storage/SQLitePlugin.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		97D7D4CA3D144D92BCE2CA30 /* sqlite3.c */ = {isa = PBXFileReference; name = "sqlite3.c"; path = "cordova-sqlite-storage/sqlite3.c"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6A276182EE29494B86159A0A /* SQLitePlugin.h */ = {isa = PBXFileReference; name = "SQLitePlugin.h"; path = "cordova-sqlite-storage/SQLitePlugin.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		D94A24BF95934905A428D856 /* sqlite3.h */ = {isa = PBXFileReference; name = "sqlite3.h"; path = "cordova-sqlite-storage/sqlite3.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		58964A5E9D854A5BB7921BAA /* CDVNotification.m */ = {isa = PBXFileReference; name = "CDVNotification.m"; path = "cordova-plugin-dialogs/CDVNotification.m"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; explicitFileType = undefined; includeInIndex = 0; };
+		E66D0263B81445FDA3927023 /* CDVNotification.h */ = {isa = PBXFileReference; name = "CDVNotification.h"; path = "cordova-plugin-dialogs/CDVNotification.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		36A23CFF7F54402C903AE4D0 /* CDVNotification.bundle */ = {isa = PBXFileReference; name = "CDVNotification.bundle"; path = "CDVNotification.bundle"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.plug-in; explicitFileType = undefined; includeInIndex = 0; };
+		C3F4906FC3704DA48C50D537 /* AudioToolbox.framework */ = {isa = PBXFileReference; name = "AudioToolbox.framework"; path = "System/Library/Frameworks/AudioToolbox.framework"; sourceTree = SDKROOT; fileEncoding = undefined; lastKnownFileType = wrapper.framework; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,6 +186,7 @@
 				C279CE9147E741EDACD4E167 /* AddressBook.framework in Frameworks */,
 				D164D6E6031C42A78279AD90 /* libsqlite3.tbd in Frameworks */,
 				D7DF94FBD5A242AEB300FBCC /* libz.tbd in Frameworks */,
+				221DC55D0941449881ECECB4 /* AudioToolbox.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,6 +248,7 @@
 				0207DA571B56EA530066E2B4 /* Images.xcassets */,
 				3047A50E1AB8057F00498E2A /* config */,
 				8D1107310486CEB800E47090 /* UTP Preguntados-Info.plist */,
+				36A23CFF7F54402C903AE4D0 /* CDVNotification.bundle */,
 			);
 			name = Resources;
 			path = "UTP Preguntados/Resources";
@@ -271,6 +286,7 @@
 				8701681559504CC0902059AC /* AddressBook.framework */,
 				2BB46AF020AC47558A56C62B /* libsqlite3.tbd */,
 				11013C9E1D44433181117313 /* libz.tbd */,
+				C3F4906FC3704DA48C50D537 /* AudioToolbox.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -317,6 +333,12 @@
 				4AE5AD3559FF452D954C31D1 /* GCMReceiverDelegate.h */,
 				F5A0773A16F74A91AAA7121E /* GCMService.h */,
 				57A6AE2C72DF4989A19CAA8A /* GoogleCloudMessaging.h */,
+				EF87379191F64B5CB77B0AE5 /* SQLitePlugin.m */,
+				97D7D4CA3D144D92BCE2CA30 /* sqlite3.c */,
+				6A276182EE29494B86159A0A /* SQLitePlugin.h */,
+				D94A24BF95934905A428D856 /* sqlite3.h */,
+				58964A5E9D854A5BB7921BAA /* CDVNotification.m */,
+				E66D0263B81445FDA3927023 /* CDVNotification.h */,
 			);
 			name = Plugins;
 			path = "UTP Preguntados/Plugins";
@@ -397,6 +419,7 @@
 			files = (
 				302D95F214D2391D003F00A1 /* MainViewController.xib in Resources */,
 				0207DA581B56EA530066E2B4 /* Images.xcassets in Resources */,
+				27CE581A253349B7822F840D /* CDVNotification.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -431,6 +454,9 @@
 				FC2CA6F2740D4500AB477248 /* SpinnerPlugin.m in Sources */,
 				F9891F5C5507451181E27932 /* AppDelegate+notification.m in Sources */,
 				7C6276C1E676409AB414D23D /* PushPlugin.m in Sources */,
+				61C8F959AD2548CA8C773CF9 /* SQLitePlugin.m in Sources */,
+				01F4BE21D22E4C139BCC57DB /* sqlite3.c in Resources */,
+				DE7CA08BC49B4A62AEFD50A8 /* CDVNotification.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

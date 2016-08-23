@@ -24,7 +24,8 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function () {
     new FastClick(document.body);
-    var phpApiMgr = "http://10.30.15.218/CodeApiMobile",
+    var phpApiMgr = "http://10.31.1.84/CodeApiMobile",
+    //var phpApiMgr = "http://10.30.15.218/CodeApiMobile",
         numberPage = 1,
         timerInicial = 30,
         dataQuestion = "",
@@ -34,6 +35,8 @@ var app = (function () {
         initPuntajeQuestion = 0,
         myScroll,
         Handle_Mi_Timer = null,
+        serve_gone_away = "Se ha perdido conexión con el servidor, verifica tu conexión a Internet o intentalo más tarde.",
+        wrong_user = "El código no existe, intenta con un usuario válido.",
         Contador = 30;
 
     String.prototype.ucfirst = function () {
@@ -284,16 +287,20 @@ var app = (function () {
     }
 
     function login() {
-        myApp.showPreloader('Espere, por favor...');
+        myApp.showIndicator();
+
         $.post(phpApiMgr + '/login/', {
             user: $('#txtuser').val(),
             pass: $('#txtpassword').val()
         })
         .done(function (data) {
-            myApp.hidePreloader();
+            myApp.hideIndicator();
             var data = eval(data);
             if (!data) {
-                myApp.alert('Hubo un error, verifique sus datos', 'Error!!!');
+                $('.error_message span').html(wrong_user);
+                document.getElementById('errorDiv').classList.add('error_active');
+
+                $('#txtuser, #txtpassword').val("");
             } else {
 
                 for(session in data[0]) {
@@ -306,6 +313,15 @@ var app = (function () {
 
                 //$('.pages').empty();
                 mainView.router.loadPage('views/mainMenu/menu.html');
+            }
+        })
+        .fail(function(e){
+            if(e.status == 0) {
+                myApp.hideIndicator();
+                $('.error_message span').html(serve_gone_away);
+                document.getElementById('errorDiv').classList.add('error_active');
+
+                $('#txtuser, #txtpassword').val("");
             }
         });
     }
@@ -396,7 +412,7 @@ var app = (function () {
             var rightS = '0';
         } else {
             var visible = 'innactive';
-            var rightS = '-100%';
+            var rightS = '-200%';
         }
 
         if (typeof totalQuestions == "undefined" || totalQuestions < 1) {
@@ -566,7 +582,7 @@ var app = (function () {
         .done(function(data){
             sessionStorage.setItem('nikname', nik);
             $('.header-text p').html(nik + ' <i class="icon ion-compose"></i>');
-            myApp.alert("Tu Nikname ha cambiado");
+            myApp.alert("Tu Nikname ha cambiado", "Preguntados UTP");
         });
     }
 
@@ -579,10 +595,13 @@ var app = (function () {
     }
 
     function logout() {
-        myApp.confirm('Seguro que quiere salir?', 'Preguntados UTP', function(){
-            sessionStorage.clear();
-            document.location.href = "index.html";
-        });
+        navigator.notification.confirm("Salir de la aplicación?", function(indexButton){
+            if(indexButton == 1) {
+                sessionStorage.clear();
+                document.location.href = "index.html";
+            }
+            
+        }, "Desafío UTP");
     }
 
     return {
@@ -680,9 +699,11 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
     $('#list-users').on("touchstart", ".btn-retar", function () {
         var username = $(this).attr('alt');
         sessionStorage.setItem("userRetado", username);
-        myApp.confirm('Se enviará una notificación al usuario seleccionado, Desea continuar?', 'Preguntados UTP', function () {
-            mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
-        });
+        navigator.notification.confirm("Se enviará una notificación al usuario seleccionado, Desea continuar?", function(indexButton){
+            if(indexButton == 1) {
+                mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
+            }
+        }, "Desafío UTP", ['Aceptar', 'Cancelar']);
     });
 });
 
@@ -757,16 +778,19 @@ myApp.onPageBeforeAnimation("detalleRetos", function(page){
 myApp.onPageBeforeAnimation("profile", function(page){
     var apellido = sessionStorage.getItem('lastname').split(" ");
     $('.header-text h3').html(sessionStorage.getItem('firstname') + " " + apellido[0]);
-    $('.header-text p').html(sessionStorage.getItem('nikname') + ' <i class="icon ion-compose" id="compose"></i>');
+    $('.header-text p').html(sessionStorage.getItem('nikname') + ' <i class="icon ion-compose"></i>');
 
     app.getUserProfile();
 
-    $('.header-text').on("touchstart", "#compose", function(){
-        myApp.prompt("Ingrese un Nikname", "Editar", function(value){
-            if($.trim(value) == "")
+    $('.header-text').on("touchstart", ".nikname", function(){
+
+        navigator.notification.prompt("Ingrese su Nikname", function(result){
+            if($.trim(result.input1) == "")
                 return false;
 
-            app.editNickUser($.trim(value));
-        });
+            if(result.buttonIndex == 1) {
+                app.editNickUser($.trim(result.input1));
+            }
+        }, "Desafío UTP");
     });
 });

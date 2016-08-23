@@ -16,6 +16,12 @@
         "phonegap-plugin-push": {
             "SENDER_ID": "721393051486",
             "PACKAGE_NAME": "com.utp.preguntados"
+        },
+        "cordova-sqlite-storage": {
+            "PACKAGE_NAME": "com.utp.preguntados"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "com.utp.preguntados"
         }
     },
     "dependent_plugins": {},
@@ -43,11 +49,37 @@
             "clobbers": [
                 "PushNotification"
             ]
+        },
+        {
+            "file": "plugins/cordova-sqlite-storage/www/SQLitePlugin.js",
+            "id": "cordova-sqlite-storage.SQLitePlugin",
+            "pluginId": "cordova-sqlite-storage",
+            "clobbers": [
+                "SQLitePlugin"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-dialogs/www/notification.js",
+            "id": "cordova-plugin-dialogs.notification",
+            "pluginId": "cordova-plugin-dialogs",
+            "merges": [
+                "navigator.notification"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-dialogs/www/browser/notification.js",
+            "id": "cordova-plugin-dialogs.notification_browser",
+            "pluginId": "cordova-plugin-dialogs",
+            "merges": [
+                "navigator.notification"
+            ]
         }
     ],
     "plugin_metadata": {
         "cordova-plugin-whitelist": "1.2.2",
         "it.mobimentum.phonegapspinnerplugin": "1.2.1",
-        "phonegap-plugin-push": "1.8.1"
+        "phonegap-plugin-push": "1.8.1",
+        "cordova-sqlite-storage": "1.4.7-pre1",
+        "cordova-plugin-dialogs": "1.2.1"
     }
 }
