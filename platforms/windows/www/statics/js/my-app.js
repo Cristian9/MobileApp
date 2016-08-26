@@ -1,5 +1,7 @@
 ﻿// Initialize your app
 var myApp = new Framework7({
+    cache : false,
+    modalTitle : "Desafío UTP",
     animateNavBackIcon: true,
     // Enable templates auto precompilation
     precompileTemplates: true,
@@ -15,7 +17,7 @@ var myApp = new Framework7({
     template7Pages: true
 });
 
-// var $$ = Dom7;
+var $$ = Dom7;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -37,7 +39,8 @@ var app = (function () {
         Handle_Mi_Timer = null,
         serve_gone_away = "Se ha perdido conexión con el servidor, verifica tu conexión a Internet o intentalo más tarde.",
         wrong_user = "El código no existe, intenta con un usuario válido.",
-        Contador = 30;
+        Contador = 30,
+        TmpLastRecord = "";
 
     String.prototype.ucfirst = function () {
         return this.charAt(0).toUpperCase() + this.substr(1);
@@ -200,7 +203,7 @@ var app = (function () {
                                 '<div class="item-title">' + item.nikRetador + "</div>" + 
                             '</div>' + 
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' + 
-                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' + 
+                            '<div class="col-33" style="font-size: 1.3em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' + 
                         '</div>' + 
                     '</div>' + 
                     '<div class="wrapper-resumen">' +
@@ -210,7 +213,7 @@ var app = (function () {
                                 '<div class="item-title">' + item.nikRetado + "</div>" + 
                             '</div>' + 
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' + 
-                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' + 
+                            '<div class="col-33" style="font-size: 1.3em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' + 
                         '</div>' + 
                     '</div>' + 
                     '<div class="wrapper-resumen">' +
@@ -343,7 +346,7 @@ var app = (function () {
                 }
             });
         }
-        nextQuestion(n, 800, pts, idrspta, idprta);
+        nextQuestion(n, 1200, pts, idrspta, idprta);
     }
 
     function nextQuestion(n, delay, pts, idrspta, idprta) {
@@ -387,7 +390,7 @@ var app = (function () {
 
             if (Contador == 0) {
 
-                nextQuestion(initNumberQuestion, 100);
+                nextQuestion(initNumberQuestion, 100, 0, 0, 0);
                 clearInterval(Handle_Mi_Timer);
             }
 
@@ -412,7 +415,7 @@ var app = (function () {
             var rightS = '0';
         } else {
             var visible = 'innactive';
-            var rightS = '-100%';
+            var rightS = '-200%';
         }
 
         if (typeof totalQuestions == "undefined" || totalQuestions < 1) {
@@ -447,6 +450,7 @@ var app = (function () {
                 }
                 Quiz += "</div></div></div></div>";
             } else {
+                Quiz = "<h3>Resumiendo...</h3>";
                 updRetos();
             }
         }
@@ -481,13 +485,15 @@ var app = (function () {
     }
 
     function getResumenReto() {
-        myApp.showPreloader('Espere, por favor...');
+
         $.getJSON(phpApiMgr + "/get_resumen_juego/", {
-            id : sessionStorage.getItem('lastID')
-            //uid : sessionStorage.getItem('username')
+            id : sessionStorage.getItem('lastID') || TmpLastRecord
         })
         .done(function(e){
-            myApp.hidePreloader();
+            if(sessionStorage.getItem('lastID') != "") {
+                TmpLastRecord = sessionStorage.getItem('lastID');
+            }
+            
             sessionStorage.removeItem('lastID');
             var resumen = renderResumenReto(e);
             $('.resumen-questions').html(resumen);
@@ -495,6 +501,7 @@ var app = (function () {
     }
 
     function updRetos(cancelled) {
+        myApp.showPreloader('Espere, por favor...');
         $.post(phpApiMgr + '/update_retos/', {
             countCorrect: initPuntajeQuestion,
             idQuestion: sessionStorage.getItem('lastID'),
@@ -502,6 +509,7 @@ var app = (function () {
             cancelled : cancelled || ""
         })
         .done(function (data) {
+            myApp.hidePreloader();
             if(typeof cancelled == "undefined") {
                 
                 $.post(phpApiMgr + '/sendNotification/', {
@@ -582,12 +590,12 @@ var app = (function () {
         .done(function(data){
             sessionStorage.setItem('nikname', nik);
             $('.header-text p').html(nik + ' <i class="icon ion-compose"></i>');
-            myApp.alert("Tu Nikname ha cambiado");
+            myApp.alert("Tu Nikname ha cambiado", "Preguntados UTP");
         });
     }
 
     function cancelReto() {
-        myApp.confirm("Perderá si sale del juego, Seguro que deseas salir?", "Cuidado!!!", function(){
+        myApp.confirm("Perderá si sale del juego, Seguro que deseas salir?", function(){
             clearInterval(Handle_Mi_Timer);
             updRetos('cancelled');
             mainView.router.loadPage("views/mainMenu/menu.html");
@@ -602,6 +610,10 @@ var app = (function () {
             }
             
         }, "Desafío UTP");
+    }
+
+    function closeApp() {
+        navigator.app.exitApp();
     }
 
     return {
@@ -620,10 +632,38 @@ var app = (function () {
         logout              :   logout,
         getUserProfile      :   getUserProfile,
         editNickUser        :   editNickUser,
-        cancelReto          :   cancelReto
+        cancelReto          :   cancelReto,
+        closeApp            :   closeApp
     }
 
 })();
+
+$$(document).on("pageInit", function(page){
+    
+    var logout = document.getElementsByClassName('logout').item(0);
+
+    logout.addEventListener("touchstart", function(event){
+        event.stopImmediatePropagation();
+        app.logout();
+    }, false);
+
+    if(page.detail.page.name == "menu") {
+        document.addEventListener("deviceready", function(){
+            document.addEventListener("backbutton", app.closeApp, false);
+        }, false);
+    } else {
+        document.removeEventListener("backbutton", app.closeApp);
+    }
+
+    if(page.detail.page.name == "ListaPreguntas") {
+        document.addEventListener("deviceready", function(){
+            document.addEventListener("backbutton", app.cancelReto, false);
+        }, false);
+    } else {
+        document.removeEventListener("backbutton", app.cancelReto);
+    }
+    
+});
 
 myApp.onPageInit("menu", function (page) {
     
@@ -637,19 +677,13 @@ myApp.onPageInit("menu", function (page) {
     }
 
     $('.user_details').html('<p>Usuario conectado, <span>'+sessionStorage.getItem('firstname')+'</span></p>');
-    
-    $('#close').on("touchstart", function(){
-        app.logout();
-    });
 
     $('.main-nav ul li').on("click", function () {
         var href = $(this).attr('id');
         mainView.router.loadPage('views/' + href + "/" + href + ".html");
     });
 
-    if(typeof document.removeEventListener("backbutton", app.cancelReto) !== "undefined") {
-        document.removeEventListener("backbutton", app.cancelReto);
-    }
+    
 });
 
 myApp.onPageAfterAnimation("listadoCursos", function (page) {
@@ -761,15 +795,8 @@ myApp.onPageAfterAnimation("resumenRetos", function(page){
 
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
-
-    document.addEventListener("deviceready", function(){
-        document.addEventListener("backbutton", app.cancelReto, false);
-    }, false);
 });
 
-/*myApp.onPageBack("ListaPreguntas", function (page) {
-    app.cancelReto();
-});*/
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
     app.getRetos('detalle', sessionStorage.getItem('Reto'));
