@@ -86,7 +86,7 @@ var app = (function () {
 
         html = data.map(function (e) {
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner" alt="' + e.id_reto + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
                             '<div class="item-title">' + e.para_ganar + '<div class="item-after-down">Para ganar</div></div>' +
@@ -104,7 +104,7 @@ var app = (function () {
 
         html = data.map(function (e) {
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
                             '<div class="item-title">' + e.para_perder + '<div class="item-after-down">Para perder</div></div>' +
@@ -125,13 +125,13 @@ var app = (function () {
             var color = (e.resultado == "Has perdido") ? "red" : "green";
 
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner">' +
-                            '<div class="item-title">' + e.nikname + 
-                                '<div class="item-after-down" style="color:' + color + '">' + e.resultado + ' (' + e.origen + ')</div>' + 
+                            '<div class="item-title">' + e.nikname +
+                                '<div class="item-after-down" style="color:' + color + '">' + e.resultado + ' (' + e.origen + ')</div>' +
                             '</div>' +
                             '<div class="item-title">'+
-                                '<button class="button button-fill btnHistorial" alt="' + e.id_reto + '">Ver detalle</button>' + 
+                                '<button class="button button-fill btnHistorial" alt="' + e.id_reto + '">Ver detalle</button>' +
                             '</div>' +
                         '</div>' +
                     '</li>');
@@ -146,25 +146,25 @@ var app = (function () {
             return false;
 
         html = data.map(function(e){
-            return ('<li class="item-content">' + 
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+            return ('<li class="item-content">' +
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner">' +
-                            '<div class="item-title">' + e.myNik + 
+                            '<div class="item-title">' + e.myNik +
                             '</div>' +
                             '<div class="item-title" style="text-align: center;">' +
-                                '<div class="item-after-point">' + e.mis_correctas + '</div>' + 
-                                '<div class="item-after-down">'+e.miTiempo+'</div>' + 
+                                '<div class="item-after-point">' + e.mis_correctas + '</div>' +
+                                '<div class="item-after-down">'+e.miTiempo+'</div>' +
                             '</div>' +
                         '</div>' +
-                    '</li>' + 
+                    '</li>' +
                     '<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner">' +
-                            '<div class="item-title">' + e.nikname + 
+                            '<div class="item-title">' + e.nikname +
                             '</div>' +
                             '<div class="item-title" style="text-align: center;">' +
-                                '<div class="item-after-point">' + e.correctas_rival + '</div>' + 
-                                '<div class="item-after-down">'+e.tiempoRival+'</div>' + 
+                                '<div class="item-after-point">' + e.correctas_rival + '</div>' +
+                                '<div class="item-after-down">'+e.tiempoRival+'</div>' +
                             '</div>' +
                         '</div>' +
                     '</li>');
@@ -172,14 +172,14 @@ var app = (function () {
 
         return html;
     }
-    
+
 
     function renderListUsuarios(data) {
         var html = "";
 
         html = data.map(function(item) {
-            return ('<li class="item-content">' + 
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
+            return ('<li class="item-content">' +
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner">' +
                             '<div class="item-title">' + item.uname +
                             '<div class="item-after-down">' + item.usuario + '</div></div>' +
@@ -197,27 +197,27 @@ var app = (function () {
         var html = data.Resumen.map(function(item){
             return('<div class="wrapper-resumen">' +
                         '<h2>' + item.para_ganar + '</h2>' +
-                        '<div class="row">' + 
-                            '<div class="col-33">' + 
-                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                                '<div class="item-title">' + item.nikRetador + "</div>" + 
-                            '</div>' + 
-                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' + 
-                            '<div class="col-33" style="font-size: 1.3em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' + 
-                        '</div>' + 
-                    '</div>' + 
+                        '<div class="row">' +
+                            '<div class="col-33">' +
+                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                                '<div class="item-title">' + item.nikRetador + "</div>" +
+                            '</div>' +
+                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' +
+                            '<div class="col-33" style="font-size: 1.3em; padding-top: 3%;">' + item.tiempo_juego_retador + '</div>' +
+                        '</div>' +
+                    '</div>' +
                     '<div class="wrapper-resumen">' +
-                        '<div class="row">' + 
-                            '<div class="col-33">' + 
-                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' + 
-                                '<div class="item-title">' + item.nikRetado + "</div>" + 
-                            '</div>' + 
-                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' + 
-                            '<div class="col-33" style="font-size: 1.3em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' + 
-                        '</div>' + 
-                    '</div>' + 
+                        '<div class="row">' +
+                            '<div class="col-33">' +
+                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                                '<div class="item-title">' + item.nikRetado + "</div>" +
+                            '</div>' +
+                            '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' +
+                            '<div class="col-33" style="font-size: 1.3em; padding-top: 3%;">' + item.tiempo_juego_retado + '</div>' +
+                        '</div>' +
+                    '</div>' +
                     '<div class="wrapper-resumen">' +
-                        '<a href="views/mainMenu/menu.html" class="button button-big button-round active">Ir al menú principal</a>' + 
+                        '<a href="views/mainMenu/menu.html" class="button button-big button-round active">Ir al menú principal</a>' +
                     '</div>');
         }).join(" ");
 
@@ -426,16 +426,16 @@ var app = (function () {
             if (index < totalQuestions) {
                 idPregunta = dataQuestion[index].id_preguntas;
                 Quiz = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
-                            "<h2 class='row'>" + 
+                            "<h2 class='row'>" +
                                 "<div class='col-33'></div>" +
-                                "<div class='col-33' style='text-align: center;font-weight:normal;'>" + (index + 1) + " / " + totalQuestions + "</div>" + 
-                                "<div class='col-33 timer' style='text-align: right; padding-right:20px;font-weight:normal;'>30</div>" + 
-                            "</h2>" + 
-                            "<div class='wrapper-questions'>" + 
-                                "<div class='scroller'>" + 
-                                    "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>" + 
+                                "<div class='col-33' style='text-align: center;font-weight:normal;'>" + (index + 1) + " / " + totalQuestions + "</div>" +
+                                "<div class='col-33 timer' style='text-align: right; padding-right:20px;font-weight:normal;'>30</div>" +
+                            "</h2>" +
+                            "<div class='wrapper-questions'>" +
+                                "<div class='scroller'>" +
+                                    "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>" +
                                         + (index + 1) + '.- ' + dataQuestion[index].preguntas +
-                                    "</div>" + 
+                                    "</div>" +
                                     "<div class='content-block answer'>";
 
                 for (var j = 0; j < dataQuestion[index].Respuesta.length; j++) {
@@ -444,9 +444,9 @@ var app = (function () {
                     puntaje = dataQuestion[index].Respuesta[j].puntaje;
                     idrspta = dataQuestion[index].Respuesta[j].id_respuesta;
 
-                    Quiz += "<p>" + 
+                    Quiz += "<p>" +
                                 "<a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
-                                    " class='button button-round active' alt='" + correct + "'>" + respuesta + "</a>" + 
+                                    " class='button button-round active' alt='" + correct + "'>" + respuesta + "</a>" +
                             "</p>";
                 }
                 Quiz += "</div></div></div></div>";
@@ -494,7 +494,7 @@ var app = (function () {
             if(sessionStorage.getItem('lastID') != "") {
                 TmpLastRecord = sessionStorage.getItem('lastID');
             }
-            
+
             sessionStorage.removeItem('lastID');
             var resumen = renderResumenReto(e);
             $('.resumen-questions').html(resumen);
@@ -510,7 +510,7 @@ var app = (function () {
             cancelled : cancelled || ""
         })
         .done(function (data) {
-            
+
             if(typeof cancelled == "undefined") {
                 $.post(phpApiMgr + '/sendNotification/', {
                     toUser : sessionStorage.getItem('userRetado'),
@@ -548,7 +548,7 @@ var app = (function () {
             if (typeof data.Detalle == "undefined") {
                 var htmlEnviado     = renderListRetosEnviados(data.Enviado);
                 var htmlRecibido    = renderListRetosRecibidos(data.Recibido);
-                var htmlHistorial   = renderListRetosHistorial(data.Historial); 
+                var htmlHistorial   = renderListRetosHistorial(data.Historial);
 
                 $('#send').html(htmlEnviado);
                 $('#receive').html(htmlRecibido);
@@ -562,7 +562,7 @@ var app = (function () {
     }
 
     function searchUser(keyword) {
-        
+
         $('.page_title').html('<div style="display: inline;">Listado de usuarios</div><span class="preloader" style="float: right;"></span>');
 
         $.getJSON(phpApiMgr + '/list-users/', {
@@ -612,7 +612,7 @@ var app = (function () {
                 sessionStorage.clear();
                 document.location.href = "index.html";
             }
-            
+
         }, "Desafío UTP");
     }
 
@@ -648,7 +648,7 @@ var app = (function () {
 })();
 
 $$(document).on("pageInit", function(page){
-    
+
     var logout = document.getElementsByClassName('logout').item(0);
 
     logout.addEventListener("touchstart", function(event){
@@ -679,11 +679,11 @@ $$(document).on("pageInit", function(page){
     } else {
         document.removeEventListener("backbutton", app.gotoMainmenu);
     }
-    
+
 });
 
 myApp.onPageInit("menu", function (page) {
-    
+
     if(sessionStorage.getItem('error') != null) {
         myApp.showPreloader('Ha ocurrido un error inesperado, inicializando...');
 
@@ -700,7 +700,7 @@ myApp.onPageInit("menu", function (page) {
         mainView.router.loadPage('views/' + href + "/" + href + ".html");
     });
 
-    
+
 });
 
 myApp.onPageAfterAnimation("listadoCursos", function (page) {
@@ -721,7 +721,7 @@ myApp.onPageAfterAnimation("listadoCursos", function (page) {
 
 myApp.onPageAfterAnimation("listadoUnidades", function (page) {
     $('.page_title').text("Temas disponibles en " + sessionStorage.getItem("courseName"));
-    
+
     app.getDataApiJSON({
         href: 'list-unidad',
         func: 'renderDefaultList',
