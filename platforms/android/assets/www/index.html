@@ -89,25 +89,26 @@
                             <div class="view">
                                 <div class="page">
                                     <div class="page-content login-screen-content">
-                                        <div class="logo"><img src="statics/img/logo.png" alt="" title="" /></div>
-                                        <div class="login-screen-title">Inicia Sesi&oacute;n</div>
+                                        <div class="logo"><img src="statics/img/logo_titulo.png" alt="" title="" /></div>
+                                        <!--<div class="login-screen-title">Inicia Sesi&oacute;n</div>-->
                                         <div class="loginform">
+                                            <div class="login-screen-title">Ingreso</div><hr />
                                             <form>
                                                 <div class="list-block">
                                                     <ul>
                                                         <li class="item-content">
                                                             <div class="item-inner">
-                                                                <div class="item-title label">C&oacute;digo</div>
+                                                                <!--<div class="item-title label">C&oacute;digo</div>-->
                                                                 <div class="item-input">
-                                                                    <input type="text" id="txtuser" name="username" placeholder="Tu c&oacute;digo">
+                                                                    <input type="text" class="input-login" id="txtuser" name="username" placeholder="Tu c&oacute;digo">
                                                                 </div>
                                                             </div>
                                                         </li>
-                                                        <li class="item-content">
+                                                        <li class="item-content" style="margin-top: 20px;">
                                                             <div class="item-inner">
-                                                                <div class="item-title label">Password</div>
+                                                                <!--<div class="item-title label">Password</div>-->
                                                                 <div class="item-input">
-                                                                    <input type="password" id="txtpassword" name="password" placeholder="Contrase&ntilde;a">
+                                                                    <input type="password" class="input-login" id="txtpassword" name="password" placeholder="Contrase&ntilde;a">
                                                                 </div>
                                                             </div>
                                                         </li>
@@ -115,10 +116,13 @@
                                                 </div>
                                                 <div class="list-block">
                                                     <ul>
-                                                        <li><input type="button" class="form_submit" id="btn-login" value="SIGN IN" /></li>
+                                                        <li><input  style="background-color: #694e8f;" type="button" class="form_submit" id="btn-login" value="Ingresar" /></li>
                                                     </ul>
                                                 </div>
                                             </form>
+                                        </div>
+                                        <div class="footer_logo">
+                                            <img src="statics/img/logo_utp.png" alt="" title="" />
                                         </div>
                                     </div>
                                 </div>
@@ -139,7 +143,6 @@
         document.addEventListener("deviceready", onDeviceReady, false);
 
         function onDeviceReady() {
-
             app.viewLogin();
             var btnLogin = document.getElementById('btn-login');
             var txtpassword = document.getElementById('txtpassword');

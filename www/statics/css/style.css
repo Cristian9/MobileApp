@@ -56,94 +56,88 @@ Template:	Mobix - Mobile Web APP Template
 }
 
 [class^="icon-"], [class*=" icon-"] {
-    /* use !important to prevent issues with browser extensions that change fonts */
-    font-family: 'icomoon' !important;
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
 
-    /* Better Font Rendering =========== */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-.icon-spades:before {
-    content: "\e917";
+.icon-arrow-back-outline:before {
+  content: "\e906";
 }
-.icon-book:before {
-    content: "\e91f";
+.icon-arrow-back:before {
+  content: "\e907";
 }
-.icon-profile:before {
-    content: "\e923";
+.icon-stars:before {
+  content: "\e905";
 }
-.icon-lifebuoy:before {
-    content: "\e941";
+.icon-award:before {
+  content: "\e900";
 }
-.icon-undo2:before {
-    content: "\e967";
-}
-.icon-user:before {
-    content: "\e971";
-}
-.icon-user-tie:before {
-    content: "\e976";
-}
-.icon-search:before {
-    content: "\e986";
-}
-.icon-cog:before {
-    content: "\e994";
-}
-.icon-cogs:before {
-    content: "\e995";
-}
-.icon-hammer:before {
-    content: "\e996";
-}
-.icon-aid-kit:before {
-    content: "\e998";
-}
-.icon-stats-dots:before {
-    content: "\e99b";
-}
-.icon-stats-bars:before {
-    content: "\e99c";
-}
-.icon-stats-bars2:before {
-    content: "\e99d";
-}
-.icon-bin:before {
-    content: "\e9ac";
-}
-.icon-bin2:before {
-    content: "\e9ad";
-}
-.icon-menu:before {
-    content: "\e9bd";
+.icon-three-bars:before {
+  content: "\e908";
 }
 .icon-question:before {
-    content: "\ea09";
+  content: "\e901";
+}
+.icon-spades:before {
+  content: "\e917";
+}
+.icon-file-text:before {
+  content: "\e922";
+}
+.icon-file-text2:before {
+  content: "\e926";
+}
+.icon-undo2:before {
+  content: "\e967";
+}
+.icon-cog:before {
+  content: "\e994";
+}
+.icon-cogs:before {
+  content: "\e995";
+}
+.icon-aid-kit:before {
+  content: "\e998";
+}
+.icon-stats-dots:before {
+  content: "\e99b";
+}
+.icon-hammer2:before {
+  content: "\e9a8";
+}
+.icon-bin:before {
+  content: "\e9ac";
+}
+.icon-menu:before {
+  content: "\e9bd";
 }
 .icon-cancel-circle:before {
-    content: "\ea0d";
+  content: "\ea0d";
 }
-.icon-scissors:before {
-    content: "\ea5a";
+.icon-play2:before {
+  content: "\ea15";
 }
-.icon-facebook2:before {
-    content: "\ea91";
+.icon-play3:before {
+  content: "\ea1c";
 }
-.icon-twitter:before {
-    content: "\ea96";
+.icon-user:before {
+  content: "\e902";
 }
-.icon-youtube:before {
-    content: "\ea9d";
+.icon-trophy:before {
+  content: "\e903";
 }
-.icon-tumblr2:before {
-    content: "\eaba";
+.icon-flag-checkered:before {
+  content: "\e904";
 }
 
 .mb-1x {
@@ -166,12 +160,20 @@ Template:	Mobix - Mobile Web APP Template
     font-size: 5em;
 }
 
+.mb-6x {
+    font-size: 6em;
+}
+
+.mb-7x {
+    font-size: 7em;
+}
+
 .mb-w {
     color: #FFF;
 }
 
 .mb-b {
-    color: #333;
+    color: #694e8f;
 }
 
 
@@ -202,6 +204,26 @@ body, ul, li {
     padding: 0;
     margin: 0;
     border: 0;
+}
+
+.input-login {
+    background-color: #f7f6f6 !important;
+    text-align: center;
+    transform: scale(1.3);
+    font-size: medium;
+}
+
+.login-screen-content {
+    background: url(../img/Fondo.png) repeat;
+    overflow: hidden;
+}
+
+.list-block .item-inner:after {
+    background-color: #fff !important;
+}
+
+.popup, .page_content_menu {
+    background-color: #fff !important;
 }
 
 .active {
@@ -240,7 +262,12 @@ body, ul, li {
 }
 
 .navbar {
-    background-color: #49182d !important;
+    /*background-color: #49182d !important;*/
+    background: url(../img/logo_header.png) repeat;
+}
+
+.navbar-inner, .toolbar-inner {
+    align-items: flex-start;
 }
 
 .pregunta {
@@ -685,13 +712,15 @@ ul.popular_posts li a{
     display:block;
 }
 .main-nav ul li{
-    width:97%;
+    width:40%;
     list-style:none;
     padding:15px 0;
-    margin:0 0 5% 0;
+    margin:0 5% 0 0;
+    /*margin: 2%;*/
     display:inline-block;
-    /*text-align:center;*/
-    padding: 10px 0 20px 17px;
+    text-align:center;
+    height: 100px;
+    /*padding: 10px 0 20px 17px;*/
 }
 .main-nav ul li img{
     display:inline-block;
@@ -703,6 +732,8 @@ ul.popular_posts li a{
     padding:5px 0 0 0;
     font-size: 30px;
     margin: 0px 0 0 10px;
+    position: relative;
+    bottom: 60px;
 }
 .main-nav ul li a{
     font-size:13px;
@@ -790,6 +821,7 @@ ul.toolbar_icons li.menuicon img{
     width:100%;
     height:20%;
     text-align:center;
+    margin-bottom: 0%;
 }
 .logo img{
     max-width:50%;
@@ -797,6 +829,23 @@ ul.toolbar_icons li.menuicon img{
     margin: auto;
     position: absolute;
     top: 0; left: 0; bottom:80%; right: 0;
+}
+
+
+.footer_logo{
+    width:100%;
+    height:15%;
+    text-align:center;
+    margin-top: 10%;
+}
+
+.footer_logo img {
+    max-width:50%;
+    display:inline-block;
+    margin: auto;
+    position: absolute;
+    left: 0;  right: 0;
+    margin-bottom: 30px;
 }
 
 /* 6-1. HOME PAGE WITH SLIDER */
@@ -1711,8 +1760,15 @@ ul.comments li{
 }
 
 .loginform{
-    width:90%;
-    padding:0 0 15px 5%;
+    width:80%;
+    /*padding:0 0 15px 5%;*/
+    border: solid 1px #ffF;
+    border-radius: 5%;
+    background-color: #fff;
+    margin-left: 9%;
+    position: relative;
+    top: 15px;
+
 }
 .loginform label.error{
     padding:0 0 10px 0; 
@@ -1959,7 +2015,7 @@ a.signup_twitter{
         width:80%;
     }
     #pages_maincontent{
-        top:44px; 
+        top:200px; 
     }
     .navbarpages{
         height:65px;

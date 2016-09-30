@@ -19,6 +19,7 @@
     </feature>
     <allow-intent href="market:*" />
     <icon density="ldpi" src="resources/android/ldpi.png" />
+    <preference name="Orientation" value="portrait" />
     <name>UTP Preguntados</name>
     <description>
         Aprende jugando con Preguntados UTP.
