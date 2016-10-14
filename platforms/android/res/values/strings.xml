@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">UTP Preguntados</string>
+    <string name="app_name">Desafío UTP</string>
     <string name="launcher_name">@string/app_name</string>
     <string name="activity_name">@string/launcher_name</string>
     <string name="google_app_id">721393051486</string>

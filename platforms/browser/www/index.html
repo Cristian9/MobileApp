@@ -103,9 +103,9 @@
                                         <div class="logo"><img src="statics/img/logo_titulo.png" alt="" title="" /></div>
                                         <!--<div class="login-screen-title">Inicia Sesi&oacute;n</div>-->
                                         <div class="loginform">
-                                            <div class="login-screen-title">Ingreso</div><hr />
+                                            <div class="login-screen-title" style="margin: 15px auto;">Ingreso</div><hr />
                                             <form>
-                                                <div class="list-block">
+                                                <div class="list-block" style="margin: 15px auto;">
                                                     <ul>
                                                         <li class="item-content">
                                                             <div class="item-inner">
@@ -155,7 +155,26 @@
         document.addEventListener("deviceready", onDeviceReady, false);
 
         function onDeviceReady() {
+            var db = null;
+
+            db = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
+
+            if(db != null) {
+                db.transaction(function(tx) {
+                    tx.executeSql('CREATE TABLE IF NOT EXISTS DemoTable (name, score)');
+                    tx.executeSql('INSERT INTO DemoTable VALUES (?,?)', ['Alice', 101]);
+                    tx.executeSql('INSERT INTO DemoTable VALUES (?,?)', ['Betty', 202]);
+                }, function(error) {
+                    console.log('Transaction ERROR: ' + error.message);
+                }, function() {
+                    listartabla();
+                });
+            } else {
+                alert('algo salio mal')
+            }
+
             app.viewLogin();
+
             var btnLogin = document.getElementById('btn-login');
             var txtpassword = document.getElementById('txtpassword');
 
@@ -174,6 +193,14 @@
             });
 
             document.addEventListener("backbutton", app.closeApp, false);
+        }
+
+        function listartabla(){
+            db.transaction(function(tx){
+                tx.executeSql("SELECT * FROM DemoTable", [], function(tx, result){
+                    alert(result.rows.lenght);
+                });
+            });
         }
     </script>
 </body>

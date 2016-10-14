@@ -909,7 +909,7 @@ ul.toolbar_icons li.menuicon img{
     margin: auto;
     position: absolute;
     left: 0;  right: 0;
-    margin-bottom: 30px;
+    /*margin-bottom: 30px;*/
 }
 
 /* 6-1. HOME PAGE WITH SLIDER */
@@ -1526,7 +1526,7 @@ span.month{
     background-color: #bfe1ff;
 }
 .list-block .item-inner {
-  padding-bottom: 20px;
+  padding-bottom: 10px;
 }
 
 .list-block .item-title {

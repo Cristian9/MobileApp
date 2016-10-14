@@ -28,11 +28,11 @@
     <allow-intent href="market:*" />
     <icon density="ldpi" src="resources/android/ldpi.png" />
     <preference name="Orientation" value="portrait" />
-    <name>UTP Preguntados</name>
+    <name>Desafío UTP</name>
     <description>
-        Aprende jugando con Preguntados UTP.
+        Pon a prueba tus conocimientos desafiando a tus amigos.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
+    <author email="ctjquery@gmail.com" href="http://cordova.io">
         Cristian Tapia - DTA UTP
     </author>
     <content src="index.html" />
