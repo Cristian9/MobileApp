@@ -33,34 +33,45 @@
 
             <nav class="user-nav">
                 <ul>
-                    <li>
-                        <a href="views/mainMenu/menu.html" class="close-panel">
+                    <a href="views/mainMenu/menu.html" class="close-panel">
+                        <li>
                             <img src="statics/img/icons/white/home.png" alt="" title="" /><span>Inicio</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="views/myProfile/myProfile.html" class="close-panel">
+                        </li>
+                    </a>
+                    <a href="views/myProfile/myProfile.html" class="close-panel">
+                        <li>
                             <img src="statics/img/icons/white/user.png" alt="" title="" /><span>Mi Perfil</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="Help.html" class="close-panel">
+                        </li>
+                    </a>
+                     <a href="Help.html" class="close-panel">
+                        <li>
                             <img src="statics/img/icons/white/briefcase.png" alt="" title="" /><span>Ayuda</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="close-panel logout">
+                        </li>
+                    </a>
+                    <a class="close-panel logout">
+                        <li>
                             <img src="statics/img/icons/white/lock.png" alt="" title="" /><span>Logout</span>
-                        </a>
-                    </li>
+                        </li>
+                    </a>
                 </ul>
             </nav>
         </div>
     </div>
-    <div class="popup popup-about" style="display: block;">
+    <div class="popup popup-about" style="display: block; background-color: #fff;">
         <div class="content-block">
-            <h4>Aceptar Reto</h4>
-            <div class="form_logo"><img src="statics/img/images.png" alt="" title="" /></div>
+            <h4 style="color: #000;">Est&aacute;s por aceptar el reto</h4>
+            <!--<div class="form_logo"><img src="statics/img/images.png" alt="" title="" /></div>-->
+            <div class="row" style="margin: 100px 0;">
+                <div class="col-33" style="text-align: center;">
+                    <i class="icon icon-user mb-5x mb-b"></i>
+                    <p style="color: #694e8f; font-family: calibri; font-size: 1.5em;" id="minik"></p>
+                </div>
+                <div class="col-33 mb-5x" style="text-align: center; font-weight: 900;">VS</div>
+                <div class="col-33" style="text-align: center;">
+                    <i class="icon icon-user mb-5x mb-b"></i>
+                    <p style="color: #694e8f; font-family: calibri; font-size: 1.5em;" id="tunik"></p>
+                </div>
+            </div>
             <div class="row">
                 <div class="col-33">
                     <a href="#" class="button button-big button-red close-popup">Cancelar</a>
@@ -70,7 +81,7 @@
                 </div>
             </div>
             <div class="close_loginpopup_button">
-                <a href="#" class="close-popup"><img src="statics/img/icons/white/menu_close.png" alt="" title="" /></a>
+                <a href="#" class="close-popup"><img src="statics/img/icons/black/menu_close.png" alt="" title="" /></a>
             </div>
         </div>
     </div>
@@ -114,7 +125,7 @@
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <div class="list-block">
+                                                <div class="list-block" style="margin: 15px auto !important;">
                                                     <ul>
                                                         <li><input  style="background-color: #694e8f;" type="button" class="form_submit" id="btn-login" value="Ingresar" /></li>
                                                     </ul>
@@ -135,6 +146,7 @@
     </div>
 
     <script type="text/javascript" src="statics/js/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="statics/js/jquery.ctools.min.js"></script>
     <script type="text/javascript" src="statics/js/framework7.js"></script>
     <script type="text/javascript" src="statics/js/fastclick.js"></script>
     <script type="text/javascript" src="statics/js/my-app.js"></script>
@@ -161,7 +173,7 @@
                 }
             });
 
-            //document.addEventListener("backbutton", app.closeApp, false);
+            document.addEventListener("backbutton", app.closeApp, false);
         }
     </script>
 </body>

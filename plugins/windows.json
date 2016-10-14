@@ -22,7 +22,17 @@
         },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "UTP Preguntados"
+        },
+        "cordova-plugin-media": {
+            "PACKAGE_NAME": "UTP Preguntados"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "UTP Preguntados"
+        },
+        "cordova-plugin-file": {
+            "PACKAGE_NAME": "UTP Preguntados"
+        }
+    }
 }

@@ -18,13 +18,13 @@ a.button_full, a.button_small, .call_button a{
 background-color:#833545; 
 }
 .button {
-/*border: 1px solid #833545;*/
-border: 1px solid #2ec2da;
+border: 1px solid #833545;
+/*border: 1px solid #2ec2da;*/
 color: #833545;
 }
 .button.active {
-/*background: #833545;*/
-background: #078eef;
+background: #833545;
+/*background: #078eef;*/
 }
 #pages_maincontent h3{
 color:#833545;

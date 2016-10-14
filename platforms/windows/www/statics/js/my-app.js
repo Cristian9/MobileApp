@@ -47,10 +47,14 @@ var app = (function () {
     }
 
     function StyleApp() {
-        var heightCuerpo = window.innerHeight - 92;//92/*46*/;
+        var heightCuerpo = window.innerHeight - 246;//92/*46*/;
         var style = document.createElement('style');
         style.type = 'text/css';
-        style.innerHTML = '.auxCSS { position:absolute; z-index:2; left:0; top:50px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
+        style.innerHTML = '.auxCSS { position:absolute; z-index:2; left:0; top:60px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
+
+        $('#pages_maincontent').css({
+            'height' : heightCuerpo
+        });
 
         document.getElementsByTagName('head')[0].appendChild(style);
     }
@@ -105,7 +109,7 @@ var app = (function () {
         html = data.map(function (e) {
             return ('<li class="item-content">' +
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
-                        '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '">' +
+                        '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '|' + e.nikname + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
                             '<div class="item-title">' + e.para_perder + '<div class="item-after-down">Para perder</div></div>' +
                         '</div>' +
@@ -149,10 +153,10 @@ var app = (function () {
             return ('<li class="item-content">' +
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner">' +
-                            '<div class="item-title">' + e.myNik +
+                            '<div class="item-title mb-b">' + e.myNik +
                             '</div>' +
                             '<div class="item-title" style="text-align: center;">' +
-                                '<div class="item-after-point">' + e.mis_correctas + '</div>' +
+                                '<div class="item-after-point mb-b">' + e.mis_correctas + '</div>' +
                                 '<div class="item-after-down">'+e.miTiempo+'</div>' +
                             '</div>' +
                         '</div>' +
@@ -160,10 +164,10 @@ var app = (function () {
                     '<li class="item-content">' +
                         '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
                         '<div class="item-inner">' +
-                            '<div class="item-title">' + e.nikname +
+                            '<div class="item-title mb-b">' + e.nikname +
                             '</div>' +
                             '<div class="item-title" style="text-align: center;">' +
-                                '<div class="item-after-point">' + e.correctas_rival + '</div>' +
+                                '<div class="item-after-point mb-b">' + e.correctas_rival + '</div>' +
                                 '<div class="item-after-down">'+e.tiempoRival+'</div>' +
                             '</div>' +
                         '</div>' +
@@ -186,6 +190,23 @@ var app = (function () {
                             '<div class="item-after">' +
                                 '<button class="button button-fill btn-retar" alt="' + item.username + '">Retar</button>' +
                             '</div>' +
+                        '</div>'+
+                    '</li>');
+        }).join(" ");
+
+        return html;
+    }
+
+    function renderUsuariosRanking(data){
+        var html = "";
+
+        html = data.map(function(item) {
+            return ('<li class="item-content">' +
+                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                        '<div class="item-inner">' +
+                            '<div class="item-title">' + item.nikname +
+                            '<div class="item-after-down">' + item.tiempo_jugado + '</div></div>' +
+                            '<div class="item-after">' + item.puntaje + ' pts</div>' +
                         '</div>'+
                     '</li>');
         }).join(" ");
@@ -217,7 +238,7 @@ var app = (function () {
                         '</div>' +
                     '</div>' +
                     '<div class="wrapper-resumen">' +
-                        '<a href="views/mainMenu/menu.html" class="button button-big button-round active">Ir al menú principal</a>' +
+                        '<a href="views/mainMenu/menu.html" class="button button-round active">Continuar</a>' +
                     '</div>');
         }).join(" ");
 
@@ -395,7 +416,7 @@ var app = (function () {
                 clearInterval(Handle_Mi_Timer);
             }
 
-            $('.timer').html(Contador);
+            $('#timer').html("00:" + Contador);
 
         }, 1000);
     }
@@ -425,15 +446,11 @@ var app = (function () {
         } else {
             if (index < totalQuestions) {
                 idPregunta = dataQuestion[index].id_preguntas;
+                $('#stage').html((index + 1) + " / " + totalQuestions);
                 Quiz = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
-                            "<h2 class='row'>" +
-                                "<div class='col-33'></div>" +
-                                "<div class='col-33' style='text-align: center;font-weight:normal;'>" + (index + 1) + " / " + totalQuestions + "</div>" +
-                                "<div class='col-33 timer' style='text-align: right; padding-right:20px;font-weight:normal;'>30</div>" +
-                            "</h2>" +
                             "<div class='wrapper-questions'>" +
                                 "<div class='scroller'>" +
-                                    "<div class='content-block questions' style='font-size: 20px; background-color: #e4e4e3;'>" +
+                                    "<div class='content-block questions' style='font-size: 20px; /*background-color: #e4e4e3;*/ font-weight:bolder;'>" +
                                         + (index + 1) + '.- ' + dataQuestion[index].preguntas +
                                     "</div>" +
                                     "<div class='content-block answer'>";
@@ -446,9 +463,10 @@ var app = (function () {
 
                     Quiz += "<p>" +
                                 "<a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
-                                    " class='button button-round active' alt='" + correct + "'>" + respuesta + "</a>" +
+                                    " class='button button-round button-fill' alt='" + correct + "'>" + respuesta + "</a>" +
                             "</p>";
                 }
+
                 Quiz += "</div></div></div></div>";
             } else {
                 Quiz = "<h3>Resumiendo...</h3>";
@@ -555,7 +573,21 @@ var app = (function () {
                 $('#history').html(htmlHistorial);
             } else {
                 var htmlDetalle = renderListRetosDetalle(data.Detalle);
-                $('.content-block-title').html(data.Detalle[0].resultado);
+
+                var rsimage = new Image();
+                rsimage.setAttribute('style', 'width:100%');
+
+                if(data.Detalle[0].resultado == 'Has ganado') {
+                    rsimage.src = 'statics/img/has_ganado.png';
+                } else {
+                    rsimage.src = 'statics/img/has_perdido.png'
+                }
+
+                rsimage.onload = function(){
+                    $('.detail-title').html(rsimage);
+                }
+
+                //$('.content-block-title').html(data.Detalle[0].resultado);
                 $('#detalle').html(htmlDetalle);
             }
         });
@@ -563,7 +595,8 @@ var app = (function () {
 
     function searchUser(keyword) {
 
-        $('.page_title').html('<div style="display: inline;">Listado de usuarios</div><span class="preloader" style="float: right;"></span>');
+        $('.page_title').html('<div style="display: inline;"><i class="icon-flag-checkered mb-b">' + 
+                '</i> Retar a un amigo</div><span class="preloader" style="float: right;"></span>');
 
         $.getJSON(phpApiMgr + '/list-users/', {
             username : sessionStorage.getItem("username"),
@@ -582,7 +615,7 @@ var app = (function () {
         .done(function(data){
             $('#ganadas').text(data.Ganados[0].ganado);
             $('#perdidas').text(data.Perdidos[0].perdido);
-            $('#punto').text(data.Puntaje[0].total);
+            $('#punto').text(data.Puntaje[0].total + ' Puntos');
         });
     }
 
@@ -603,6 +636,45 @@ var app = (function () {
             clearInterval(Handle_Mi_Timer);
             updRetos('cancelled');
             gotoMainmenu();
+        });
+    }
+
+    function getYearAndMonth(){
+        $.getJSON(phpApiMgr + '/getYearAndMonth/')
+        .done(function(data){
+            for(var i in data){
+                var combo = "";
+                for(var item in data[i]){
+                    
+                    if(item == "selected")
+                        continue;
+
+                    var selected = "";
+
+                    if(item == data[i]['selected']) {
+
+                        selected = "selected";
+                        $('#div_' + i).html(data[i][item]);
+                    }
+                        
+                    combo += "<option value='" + item + "' " + selected + ">" + data[i][item] + "</option>";
+                }
+
+                $('#' + i).html(combo);
+            }
+        });
+    }
+
+    function getRankingByCourse(year, month){
+        myApp.showPreloader('Espere, por favor...');
+        $.getJSON(phpApiMgr + '/getRankingByCourse/', {
+            courseId : sessionStorage.getItem('courseId'),
+            year : year,
+            month : month
+        })
+        .done(function(data){
+            myApp.hidePreloader();
+            $('#list-ranking').html(renderUsuariosRanking(data));
         });
     }
 
@@ -642,13 +714,14 @@ var app = (function () {
         editNickUser        :   editNickUser,
         cancelReto          :   cancelReto,
         closeApp            :   closeApp,
-        gotoMainmenu        :   gotoMainmenu
+        gotoMainmenu        :   gotoMainmenu,
+        getYearAndMonth     :   getYearAndMonth,
+        getRankingByCourse  :   getRankingByCourse
     }
 
 })();
 
 $$(document).on("pageInit", function(page){
-
     var logout = document.getElementsByClassName('logout').item(0);
 
     logout.addEventListener("touchstart", function(event){
@@ -720,7 +793,7 @@ myApp.onPageAfterAnimation("listadoCursos", function (page) {
 });
 
 myApp.onPageAfterAnimation("listadoUnidades", function (page) {
-    $('.page_title').text("Temas disponibles en " + sessionStorage.getItem("courseName"));
+    //$('.page_title').text("Temas disponibles en " + sessionStorage.getItem("courseName"));
 
     app.getDataApiJSON({
         href: 'list-unidad',
@@ -742,9 +815,20 @@ myApp.onPageAfterAnimation("listadoUnidades", function (page) {
 });
 
 myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
-
-    $('#autocomplete-dropdown').keyup(function(){
+    /*$('#autocomplete-dropdown').keyup(function(){
         app.searchUser($(this).val());
+    });*/
+
+    $('#autocomplete-dropdown').key("backsp", function(){
+        app.searchUser($('#autocomplete-dropdown').val());
+    });
+
+    $('.searchbar-submit').click(function(){
+        app.searchUser($('#autocomplete-dropdown').val());
+    });
+
+    $('#autocomplete-dropdown').key("enter", function(){
+        app.searchUser($('#autocomplete-dropdown').val());
     });
 
     $('#list-users').on("touchstart", ".btn-retar", function () {
@@ -772,14 +856,19 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         var items = $(this).attr('alt');
         var args = items.split("|");
 
-        idReto = args[0];
+        idReto   = args[0];
         idUnidad = args[1];
         idCourse = args[2];
         idTemaGe = args[3];
+        idWho    = args[4];
 
         sessionStorage.setItem("courseId", idCourse);
         sessionStorage.setItem("unidadId", idUnidad);
         sessionStorage.setItem('lastID', idReto);
+
+        $('#minik').html(sessionStorage.getItem('nikname'));
+        $('#tunik').html(idWho);
+
         myApp.popup(".popup-about");
     });
 
@@ -836,5 +925,35 @@ myApp.onPageBeforeAnimation("profile", function(page){
                 app.editNickUser($.trim(result.input1));
             }
         }, "Desafío UTP");
+    });
+});
+
+myApp.onPageAfterAnimation("listadoCursosRanking", function (page) {
+    app.getDataApiJSON({
+        href: 'list-courses',
+        elem: '#list',
+        func: 'renderDefaultList'
+    });
+
+    $('#list').on("click", "a", function () {
+        var courseCode = $(this).attr('alt');
+        var courseName = $(this).text();
+        sessionStorage.setItem("courseId", courseCode);
+        sessionStorage.setItem("courseName", courseName.trim());
+        mainView.router.loadPage("views/ListCourseRanking/Ranking.html");
+    });
+});
+
+myApp.onPageAfterAnimation("listaRanking", function(page){
+    app.getYearAndMonth();
+
+    setTimeout(function(){
+        var year = $('#year').val();
+        var month = $('#mes').val();
+        app.getRankingByCourse(year, month);
+    }, 500);
+
+    $('#year, #mes').change(function(){
+        app.getRankingByCourse($('#year').val(), $('#mes').val());
     });
 });

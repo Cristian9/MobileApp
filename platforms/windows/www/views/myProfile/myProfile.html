@@ -2,17 +2,17 @@
     <div class="page-content" style="background-color: #fff;">
         <div class="navbar color-white theme-white no-border">
             <div class="navbar-inner navbar-on-center" data-page="detailsPage">
-                <div class="left sliding" style="transform: translate3d(0px, 0px, 0px);">
+                <div class="left sliding open-menu" style="transform: translate3d(0px, 0px, 0px);">
+                    <a href="#" class="link icon-only open-panel"><i class="icon ion-navicon mb-2x mb-w"></i></a>
+                </div>
+                <div class="center sliding" style="left: 0; transform: translate3d(0px, 0px, 0px); color:#fff; padding-top: 5%;">
+                    <img src="statics/img/logo_titulo.png" style="width: 100%;">
+                </div>
+                <div class="right sliding" style="transform: translate3d(0px, 0px, 0px);">
                     <a href="#" class="link back">
                         <i class="icon ion-chevron-left mb-1x" style="color:#fff;"></i>
                         <span style="color: #fff;">Back</span>
                     </a>
-                </div>
-                <div class="center sliding" style="left: -159.5px; transform: translate3d(0px, 0px, 0px); color:#fff;">
-                    Preguntados UTP
-                </div>
-                <div class="right sliding open-menu" style="transform: translate3d(0px, 0px, 0px);">
-                    <a href="#" class="link icon-only open-panel"><i class="icon ion-navicon mb-2x mb-w"></i></a>
                 </div>
             </div>
         </div>
@@ -25,15 +25,17 @@
 	        	<p class="nikname"></p>
 	        </div>
         </div>
-        <div class="list-block" style="position: relative; top: 100px;">
-        	<div class="list-group" style="margin-bottom: 20%;">
-        		<ul>
+        <div class="list-block" style="position: relative; top: 40px;">
+        	<div class="list-group" style="margin-bottom: 5%;">
+                <ul>
         			<li class="item-content">
         				<div class="item-media">
         					<i class="icon ion-ribbon-b mb-2x"></i>
         				</div>
         				<div class="item-inner">
-        					<div class="item-title">Partidas Ganadas: <span id="ganadas" style="font-size: 1.8em; "></span></div>
+        					<div class="item-title" style="width: 70%;">
+                                Partidas Ganadas: <span id="ganadas" style="font-size: 1.2em; float: right;"></span>
+                            </div>
         				</div>
         			</li>
         			<li class="item-content">
@@ -41,7 +43,9 @@
         					<i class="icon ion-podium mb-2x"></i>
         				</div>
         				<div class="item-inner">
-        					<div class="item-title">Partidas Perdidas: <span id="perdidas" style="font-size: 1.8em; "></span></div>
+        					<div class="item-title" style="width: 70%;">
+                                Partidas Perdidas: <span id="perdidas" style="font-size: 1.2em; float: right;"></span>
+                            </div>
         				</div>
         			</li>
         			<li class="item-content">
@@ -49,13 +53,15 @@
         					<i class="icon ion-star mb-2x"></i>
         				</div>
         				<div class="item-inner">
-        					<div class="item-title">Puntaje Total: <span id="punto" style="font-size: 1.8em; "></span></div>
+        					<div class="item-title" style="width: 87%;">
+                                Puntaje Total: <span id="punto" style="font-size: 1.2em; float: right;"></span>
+                            </div>
         				</div>
         			</li>
         		</ul>
         	</div>
             <div class="wrapper-resumen">
-                <a href="views/mainMenu/menu.html" class="button button-big button-round active">Ir al menú principal</a>
+                <a href="views/mainMenu/menu.html" class="button button-round active">Ir al men&uacute; principal</a>
             </div>
         </div>
     </div>	
