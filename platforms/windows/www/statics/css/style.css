@@ -489,6 +489,10 @@ blockquote span{
     transition: .4s;
 }
 
+.img_avatar {
+    width: 80%;
+}
+
 .error_active {
     top: 0;
 }
@@ -910,6 +914,25 @@ ul.toolbar_icons li.menuicon img{
     position: absolute;
     left: 0;  right: 0;
     /*margin-bottom: 30px;*/
+}
+
+.disablediv {
+    pointer-events: none;
+}
+
+.bg-red {
+    font-size: 13px !important;
+    display: inline-block !important;
+    padding: 0 6px !important;
+    text-align: center !important;
+    background-color: red;
+    position: absolute !important;
+    top: 65px;
+}
+
+.tutorialicon {
+    font-size: 250px;
+    line-height: 170px;
 }
 
 /* 6-1. HOME PAGE WITH SLIDER */

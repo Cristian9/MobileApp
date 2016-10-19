@@ -20,6 +20,9 @@
         <allow-intent href="market:*" />
         <icon src="resources/android/ldpi.png" density="ldpi" />
         <preference name="Orientation" value="portrait" />
+        <feature name="Media">
+            <param name="android-package" value="org.apache.cordova.media.AudioHandler" />
+        </feature>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />

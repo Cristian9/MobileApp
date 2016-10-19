@@ -10,6 +10,7 @@ var myApp = new Framework7({
     swipeBackPageThreshold: 1,
     swipePanel: "left",
     swipePanelCloseOpposite: true,
+    swipePanelActiveArea : 3,
     pushState: true,
     pushStateRoot: undefined,
     pushStateNoAnimation: false,
@@ -18,6 +19,8 @@ var myApp = new Framework7({
 });
 
 var $$ = Dom7;
+
+var database = null;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -40,7 +43,10 @@ var app = (function () {
         serve_gone_away = "Se ha perdido conexión con el servidor, verifica tu conexión a Internet o intentalo más tarde.",
         wrong_user = "El código no existe, intenta con un usuario válido.",
         Contador = 30,
-        TmpLastRecord = "";
+        TmpLastRecord = "",
+        mediaCorrect,
+        mediaIncorrect,
+        mediaTimer;
 
     String.prototype.ucfirst = function () {
         return this.charAt(0).toUpperCase() + this.substr(1);
@@ -90,7 +96,7 @@ var app = (function () {
 
         html = data.map(function (e) {
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                        '<div class="item-media"><img src="statics/img/avatar/' + e.avatar + '.png" width="40" /></div>' +
                         '<div class="item-inner" alt="' + e.id_reto + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
                             '<div class="item-title">' + e.para_ganar + '<div class="item-after-down">Para ganar</div></div>' +
@@ -108,10 +114,10 @@ var app = (function () {
 
         html = data.map(function (e) {
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
-                        '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '|' + e.nikname + '">' +
+                        '<div class="item-media"><img src="statics/img/avatar/' + e.avatar + '.png" width="40" /></div>' +
+                        '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '|' + e.nikname + '|' + e.avatar + '">' +
                             '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
-                            '<div class="item-title">' + e.para_perder + '<div class="item-after-down">Para perder</div></div>' +
+                            '<div class="item-title">' + e.para_perder + '<div class="item-after-down">Para jugar</div></div>' +
                         '</div>' +
                     '</li>');
         }).join(" ");
@@ -129,7 +135,7 @@ var app = (function () {
             var color = (e.resultado == "Has perdido") ? "red" : "green";
 
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                        '<div class="item-media"><img src="statics/img/avatar/' + e.image_avatar + '.png" width="40" /></div>' +
                         '<div class="item-inner">' +
                             '<div class="item-title">' + e.nikname +
                                 '<div class="item-after-down" style="color:' + color + '">' + e.resultado + ' (' + e.origen + ')</div>' +
@@ -151,7 +157,7 @@ var app = (function () {
 
         html = data.map(function(e){
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                        '<div class="item-media"><img src="statics/img/avatar/' + e.myAvatar + '.png" width="40" /></div>' +
                         '<div class="item-inner">' +
                             '<div class="item-title mb-b">' + e.myNik +
                             '</div>' +
@@ -162,7 +168,7 @@ var app = (function () {
                         '</div>' +
                     '</li>' +
                     '<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                        '<div class="item-media"><img src="statics/img/avatar/' + e.image_avatar + '.png" width="40" /></div>' +
                         '<div class="item-inner">' +
                             '<div class="item-title mb-b">' + e.nikname +
                             '</div>' +
@@ -183,7 +189,7 @@ var app = (function () {
 
         html = data.map(function(item) {
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                        '<div class="item-media"><img src="statics/img/avatar/' + item.image_avatar + '.png" width="40" /></div>' +
                         '<div class="item-inner">' +
                             '<div class="item-title">' + item.uname +
                             '<div class="item-after-down">' + item.usuario + '</div></div>' +
@@ -202,7 +208,7 @@ var app = (function () {
 
         html = data.map(function(item) {
             return ('<li class="item-content">' +
-                        '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                        '<div class="item-media"><img src="statics/img/avatar/' + item.image_avatar + '.png" width="40" /></div>' +
                         '<div class="item-inner">' +
                             '<div class="item-title">' + item.nikname +
                             '<div class="item-after-down">' + item.tiempo_jugado + '</div></div>' +
@@ -220,7 +226,7 @@ var app = (function () {
                         '<h2>' + item.para_ganar + '</h2>' +
                         '<div class="row">' +
                             '<div class="col-33">' +
-                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                                '<div class="item-media"><img src="statics/img/avatar/' + item.myAvatar + '.png" width="40" /></div>' +
                                 '<div class="item-title">' + item.nikRetador + "</div>" +
                             '</div>' +
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retador + '</div>' +
@@ -230,7 +236,7 @@ var app = (function () {
                     '<div class="wrapper-resumen">' +
                         '<div class="row">' +
                             '<div class="col-33">' +
-                                '<div class="item-media"><img src="statics/img/avatar.jpg" width="40" /></div>' +
+                                '<div class="item-media"><img src="statics/img/avatar/' + item.avatarRetado + '.png" width="40" /></div>' +
                                 '<div class="item-title">' + item.nikRetado + "</div>" +
                             '</div>' +
                             '<div class="col-33" style="font-size: 2em; padding-top: 3%;">' + item.correctas_retado + '</div>' +
@@ -241,6 +247,23 @@ var app = (function () {
                         '<a href="views/mainMenu/menu.html" class="button button-round active">Continuar</a>' +
                     '</div>');
         }).join(" ");
+
+        return html;
+    }
+
+    function renderImageAvatar(){
+        var html = "<ul>";
+        for(var i = 1; i <= 16; i++) {
+            html += '<li style="width:50%; float:left; padding:0px;">' + 
+                        '<label class="label-radio item-content">' + 
+                            '<input type="radio" name="my-avatar" value="Avatar' + i + '" class="avatarImage">' + 
+                            '<div class="item-inner">' + 
+                                '<div class="item-title"><img src="statics/img/avatar/Avatar' + i + '.png" class="img_avatar"></div>' + 
+                            '</div>' + 
+                        '<label>' + 
+                    '<li>'
+        }
+        html += '</ul>';
 
         return html;
     }
@@ -310,7 +333,27 @@ var app = (function () {
         });
     }
 
+    function registerUserAndPassword(){
+        var uid = sessionStorage.getItem('usuario_id');
+        var name = sessionStorage.getItem('firstname');
+        var last = sessionStorage.getItem('lastname');
+        var uname = sessionStorage.getItem('username');
+        var passw = sessionStorage.getItem('password');
+        var nik = sessionStorage.getItem('nikname');
+        var email = sessionStorage.getItem('email');
+        var img = sessionStorage.getItem('image_avatar');
+
+        database.transaction(function(tx){
+            tx.executeSql('INSERT INTO userlogued VALUES (?,?,?,?,?,?,?,?)', [uid, name, last, uname, passw, nik, email, img]);
+        }, function(error){
+            console.log(error)
+        }, function(){
+            console.log('ok');
+        });
+    }
+
     function login() {
+
         myApp.showIndicator();
 
         $.post(phpApiMgr + '/login/', {
@@ -332,11 +375,11 @@ var app = (function () {
                 }
 
                 getDeviceIdentifier();
+                
+
+                registerUserAndPassword();
 
                 myApp.closeModal('.login-screen');
-
-                //$('.pages').empty();
-                //mainView.router.loadPage('views/mainMenu/menu.html');
                 gotoMainmenu();
             }
         })
@@ -351,14 +394,33 @@ var app = (function () {
         });
     }
 
+    function getPhoneGapPath() {
+
+        var path = window.location.pathname;
+        path = path.substr( path, path.length - 10 );
+        return 'file://' + path;
+
+    };
+
     function fillButton(obj, n, pts, idrpta, idprta) {
         clearInterval(Handle_Mi_Timer);
 
         var correct = $(obj).attr('alt');
 
+        mediaTimer.stop();
+
+        $('.contenedor_question').addClass('disablediv');
+
         if (correct == '1') {
+
+            mediaCorrect = new Media(getPhoneGapPath() + 'sounds/acertar.mp3');
+            mediaCorrect.play();
+
             $(obj).removeClass('active active-state').addClass('button-fill color-green');
+
         } else {
+            mediaIncorrect = new Media(getPhoneGapPath() + 'sounds/desacierto.mp3');
+            mediaIncorrect.play();
 
             $(obj).removeClass('active active-state').addClass('button-fill color-red');
 
@@ -407,13 +469,19 @@ var app = (function () {
     function reset_timer() {
         Contador = 30;
         $('.timer').html(Contador);
+        mediaTimer = new Media(getPhoneGapPath() + 'sounds/time.mp3');
+
         Handle_Mi_Timer = window.setInterval(function () {
             Contador--;
 
-            if (Contador == 0) {
+            if(Contador == 10) {
+                mediaTimer.play();
+            }
 
+            if (Contador == 0) {
                 nextQuestion(initNumberQuestion, 100, 0, 0, 0);
                 clearInterval(Handle_Mi_Timer);
+                mediaTimer.stop();
             }
 
             $('#timer').html("00:" + Contador);
@@ -427,10 +495,7 @@ var app = (function () {
             puntaje,
             Quiz = "";
 
-        initNumberQuestion += 1;
-
-        clearInterval(Handle_Mi_Timer);
-        reset_timer();
+        initNumberQuestion += 1;      
 
         if (index == '0') {
             var visible = 'active';
@@ -445,6 +510,9 @@ var app = (function () {
             mainView.router.loadPage("views/mainMenu/menu.html");
         } else {
             if (index < totalQuestions) {
+
+                reset_timer();
+
                 idPregunta = dataQuestion[index].id_preguntas;
                 $('#stage').html((index + 1) + " / " + totalQuestions);
                 Quiz = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
@@ -462,13 +530,14 @@ var app = (function () {
                     idrspta = dataQuestion[index].Respuesta[j].id_respuesta;
 
                     Quiz += "<p>" +
-                                "<a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
+                                "<a ontouchstart='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
                                     " class='button button-round button-fill' alt='" + correct + "'>" + respuesta + "</a>" +
                             "</p>";
                 }
 
                 Quiz += "</div></div></div></div>";
             } else {
+                clearInterval(Handle_Mi_Timer);
                 Quiz = "<h3>Resumiendo...</h3>";
                 updRetos();
             }
@@ -613,21 +682,51 @@ var app = (function () {
             username : uid || sessionStorage.getItem('username')
         })
         .done(function(data){
+            sessionStorage.setItem('nikname', data.Profile[0].nikname);
+            sessionStorage.setItem('image_avatar', data.Profile[0].image_avatar);
+
+
+            var apellido = data.Profile[0].lastname.split(" ");
+            $('.header-text h3').html(data.Profile[0].firstname + " " + apellido[0]);
+            $('.header-text p').html(data.Profile[0].nikname);
+            $('#photoAvatar').html('<img src="statics/img/avatar/' + data.Profile[0].image_avatar + '.png" />');
+
             $('#ganadas').text(data.Ganados[0].ganado);
             $('#perdidas').text(data.Perdidos[0].perdido);
             $('#punto').text(data.Puntaje[0].total + ' Puntos');
         });
     }
 
-    function editNickUser(nik) {
+    function editNickUser(nik, img) {
         $.post(phpApiMgr + '/change_nick/', {
             userid : sessionStorage.getItem('usuario_id'),
-            niknam : nik
+            niknam : nik,
+            image  : img
         })
         .done(function(data){
+            
             sessionStorage.setItem('nikname', nik);
-            $('.header-text p').html(nik + ' <i class="icon ion-compose"></i>');
+            sessionStorage.setItem('image_avatar', img);
+
             myApp.alert("Tu Nikname ha cambiado", "Preguntados UTP");
+
+            database.transaction(function(tx){
+                var query = "UPDATE userlogued set image_avatar = ?, nikname = ? WHERE usuario_id = ?";
+
+                tx.executeSql(query, [img, nik, sessionStorage.getItem('usuario_id')], function(tx, res){
+
+                }, function(error){
+                    alert(error);
+                });
+            }, function(error){
+                alert(error);
+            }, function(){
+                console.log('ok');
+            });
+
+            $('.header-text p').html(nik);
+            $('#photoAvatar').html('<img src="statics/img/avatar/'+img+'.png" />');
+            
         });
     }
 
@@ -680,12 +779,36 @@ var app = (function () {
 
     function logout() {
         navigator.notification.confirm("Salir de la aplicación?", function(indexButton){
+
             if(indexButton == 1) {
-                sessionStorage.clear();
-                document.location.href = "index.html";
+
+                database.transaction(function(tx){
+                    var query = "DELETE FROM userlogued WHERE usuario_id = ?";
+                    tx.executeSql(query, [sessionStorage.getItem('usuario_id')], function(tx, res){
+
+                    }, function(error){
+                        alert(error);
+                    });
+                }, function(error){
+                    alert(error);
+                }, function(){
+                    sessionStorage.clear();
+                    document.location.href = "index.html";
+                });
             }
 
         }, "Desafío UTP");
+    }
+
+    function countRetosRecibidos(){
+        $.getJSON(phpApiMgr + '/counter/', {
+            uname : sessionStorage.getItem('username')
+        })
+        .done(function(data){
+            if(data['retos'][0]['retos'] != '0') {
+                $('#misRetos').html('<span class="badge bg-red" id="countRetosRecibidos">'+data['retos'][0]['retos']+'</span><span>Mis Retos</span>');
+            }
+        });
     }
 
     function gotoMainmenu(){
@@ -716,7 +839,9 @@ var app = (function () {
         closeApp            :   closeApp,
         gotoMainmenu        :   gotoMainmenu,
         getYearAndMonth     :   getYearAndMonth,
-        getRankingByCourse  :   getRankingByCourse
+        getRankingByCourse  :   getRankingByCourse,
+        countRetosRecibidos :   countRetosRecibidos,
+        renderImageAvatar   :   renderImageAvatar
     }
 
 })();
@@ -732,6 +857,7 @@ $$(document).on("pageInit", function(page){
     if(page.detail.page.name == "menu") {
         document.addEventListener("deviceready", function(){
             document.addEventListener("backbutton", app.closeApp, false);
+
         }, false);
     } else {
         document.removeEventListener("backbutton", app.closeApp);
@@ -755,6 +881,10 @@ $$(document).on("pageInit", function(page){
 
 });
 
+myApp.onPageBeforeAnimation("menu", function(page){
+    app.countRetosRecibidos();
+});
+
 myApp.onPageInit("menu", function (page) {
 
     if(sessionStorage.getItem('error') != null) {
@@ -770,10 +900,10 @@ myApp.onPageInit("menu", function (page) {
 
     $('.main-nav ul li').on("click", function () {
         var href = $(this).attr('id');
-        mainView.router.loadPage('views/' + href + "/" + href + ".html");
-    });
-
-
+        if(href != 'Help') {
+            mainView.router.loadPage('views/' + href + "/" + href + ".html");
+        }
+    }); 
 });
 
 myApp.onPageAfterAnimation("listadoCursos", function (page) {
@@ -815,9 +945,12 @@ myApp.onPageAfterAnimation("listadoUnidades", function (page) {
 });
 
 myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
-    /*$('#autocomplete-dropdown').keyup(function(){
+    
+    app.searchUser(null);
+
+    $('#autocomplete-dropdown').keyup(function(){
         app.searchUser($(this).val());
-    });*/
+    });
 
     $('#autocomplete-dropdown').key("backsp", function(){
         app.searchUser($('#autocomplete-dropdown').val());
@@ -861,6 +994,7 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         idCourse = args[2];
         idTemaGe = args[3];
         idWho    = args[4];
+        avatar   = args[5];
 
         sessionStorage.setItem("courseId", idCourse);
         sessionStorage.setItem("unidadId", idUnidad);
@@ -868,6 +1002,9 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
 
         $('#minik').html(sessionStorage.getItem('nikname'));
         $('#tunik').html(idWho);
+
+        $('#miavatar').attr("src", "statics/img/avatar/" + sessionStorage.getItem('image_avatar') + ".png");
+        $('#tuavatar').attr("src", "statics/img/avatar/" + avatar + ".png");
 
         myApp.popup(".popup-about");
     });
@@ -909,22 +1046,25 @@ myApp.onPageBeforeAnimation("detalleRetos", function(page){
 });
 
 myApp.onPageBeforeAnimation("profile", function(page){
-    var apellido = sessionStorage.getItem('lastname').split(" ");
-    $('.header-text h3').html(sessionStorage.getItem('firstname') + " " + apellido[0]);
-    $('.header-text p').html(sessionStorage.getItem('nikname') + ' <i class="icon ion-compose"></i>');
-
     app.getUserProfile();
 
-    $('.header-text').on("touchstart", ".nikname", function(){
+    $(document).on("touchstart", "#editar", function(){
+        myApp.popup('.popup-profile');
+        $('#images_avatar').html(app.renderImageAvatar());
+        $('#txtNikName').val(sessionStorage.getItem('nikname'));
+    });
 
-        navigator.notification.prompt("Ingrese su Nikname", function(result){
-            if($.trim(result.input1) == "")
-                return false;
-
-            if(result.buttonIndex == 1) {
-                app.editNickUser($.trim(result.input1));
+    $(document).on("touchstart", "#saveAvatarProfile", function(){
+        var image;
+        $('.avatarImage').each(function(){
+            if($(this).is(':checked')) {
+                image = $(this).val();
             }
-        }, "Desafío UTP");
+        });
+        var nikname = $.trim($('#txtNikName').val());
+
+        app.editNickUser(nikname, image);
+
     });
 });
 
