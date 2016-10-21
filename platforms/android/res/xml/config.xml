@@ -27,6 +27,9 @@
     </feature>
     <allow-intent href="market:*" />
     <icon density="ldpi" src="resources/android/ldpi.png" />
+    <icon density="mdpi" src="resources/android/mdpi.png" />
+    <icon density="hdpi" src="resources/android/hdpi.png" />
+    <icon density="xhdpi" src="resources/android/xhdpi.png" />
     <preference name="Orientation" value="portrait" />
     <name>Desafío UTP</name>
     <description>

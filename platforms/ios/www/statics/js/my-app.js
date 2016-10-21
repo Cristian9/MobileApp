@@ -44,8 +44,7 @@ var app = (function () {
         wrong_user = "El código no existe, intenta con un usuario válido.",
         Contador = 30,
         TmpLastRecord = "",
-        mediaCorrect,
-        mediaIncorrect,
+        mediaAnswer,
         mediaTimer;
 
     String.prototype.ucfirst = function () {
@@ -402,10 +401,9 @@ var app = (function () {
 
     };
 
-    function fillButton(obj, n, pts, idrpta, idprta) {
-        clearInterval(Handle_Mi_Timer);
+    function fillButton(obj, n, pts, idrpta, idprta, correct) {
 
-        var correct = $(obj).attr('alt');
+        clearInterval(Handle_Mi_Timer);
 
         mediaTimer.stop();
 
@@ -413,24 +411,27 @@ var app = (function () {
 
         if (correct == '1') {
 
-            mediaCorrect = new Media(getPhoneGapPath() + 'sounds/acertar.mp3');
-            mediaCorrect.play();
+            mediaAnswer = new Media(getPhoneGapPath() + 'sounds/acertar.mp3');
 
             $(obj).removeClass('active active-state').addClass('button-fill color-green');
 
         } else {
-            mediaIncorrect = new Media(getPhoneGapPath() + 'sounds/desacierto.mp3');
-            mediaIncorrect.play();
+            mediaAnswer = new Media(getPhoneGapPath() + 'sounds/desacierto.mp3');
 
             $(obj).removeClass('active active-state').addClass('button-fill color-red');
 
             $('.button').each(function () {
-                if ($(this).attr('alt') == 1) {
+                var isCorrect = $(this).attr('alt').split("|");
+                alert(isCorrect[4]);
+                if (isCorrect[4] == '1') {
                     $(this).removeClass('active active-state').addClass('button-fill color-green');
                 }
             });
         }
-        nextQuestion(n, 1200, pts, idrspta, idprta);
+
+        mediaAnswer.play();
+
+        nextQuestion(parseInt(n), 1200, parseInt(pts), idrspta, idprta);
     }
 
     function nextQuestion(n, delay, pts, idrspta, idprta) {
@@ -490,6 +491,8 @@ var app = (function () {
     }
 
     function listQuestions(index) {
+        sessionStorage.setItem('handled', null);
+
         var correct,
             respuesta,
             puntaje,
@@ -518,7 +521,7 @@ var app = (function () {
                 Quiz = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
                             "<div class='wrapper-questions'>" +
                                 "<div class='scroller'>" +
-                                    "<div class='content-block questions' style='font-size: 20px; /*background-color: #e4e4e3;*/ font-weight:bolder;'>" +
+                                    "<div class='content-block questions' style='font-size: 20px; font-weight:bolder;'>" +
                                         + (index + 1) + '.- ' + dataQuestion[index].preguntas +
                                     "</div>" +
                                     "<div class='content-block answer'>";
@@ -530,8 +533,8 @@ var app = (function () {
                     idrspta = dataQuestion[index].Respuesta[j].id_respuesta;
 
                     Quiz += "<p>" +
-                                "<a ontouchstart='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
-                                    " class='button button-round button-fill' alt='" + correct + "'>" + respuesta + "</a>" +
+                                "<a alt='"+initNumberQuestion+"|"+puntaje+"|"+idrspta+"|"+idPregunta+"|"+correct+"'" +
+                                    " class='button button-round button-fill respuesta'>" + respuesta + "</a>" +
                             "</p>";
                 }
 
@@ -597,6 +600,8 @@ var app = (function () {
             cancelled : cancelled || ""
         })
         .done(function (data) {
+
+            sessionStorage.setItem('handled', null);
 
             if(typeof cancelled == "undefined") {
                 $.post(phpApiMgr + '/sendNotification/', {
@@ -682,38 +687,47 @@ var app = (function () {
             username : uid || sessionStorage.getItem('username')
         })
         .done(function(data){
-            sessionStorage.setItem('nikname', data.Profile[0].nikname);
-            sessionStorage.setItem('image_avatar', data.Profile[0].image_avatar);
-
-
-            var apellido = data.Profile[0].lastname.split(" ");
-            $('.header-text h3').html(data.Profile[0].firstname + " " + apellido[0]);
-            $('.header-text p').html(data.Profile[0].nikname);
-            $('#photoAvatar').html('<img src="statics/img/avatar/' + data.Profile[0].image_avatar + '.png" />');
-
             $('#ganadas').text(data.Ganados[0].ganado);
             $('#perdidas').text(data.Perdidos[0].perdido);
             $('#punto').text(data.Puntaje[0].total + ' Puntos');
         });
+
+        database.transaction(function(tx){
+            tx.executeSql("SELECT * FROM userlogued", [], function(tx, res){
+                if(res.rows.length > 0) {
+                    var apellido = res.rows.item(0).lastname.split(" ");
+                    $('.header-text h3').html(res.rows.item(0).firstname + " " + apellido[0]);
+                    $('.header-text p').html(res.rows.item(0).nikname);
+                    $('#photoAvatar').html('<img src="statics/img/avatar/' + res.rows.item(0).image_avatar + '.png" />');
+                }
+            });
+        }, function(error){
+            alert(error);
+        }, function(){
+            console.log('ok');
+        });
     }
 
     function editNickUser(nik, img) {
+
+        var newimage = (img == "") ? 'default' : img;
+
         $.post(phpApiMgr + '/change_nick/', {
             userid : sessionStorage.getItem('usuario_id'),
             niknam : nik,
-            image  : img
+            image  : newimage
         })
         .done(function(data){
             
             sessionStorage.setItem('nikname', nik);
-            sessionStorage.setItem('image_avatar', img);
+            sessionStorage.setItem('image_avatar', newimage);
 
-            myApp.alert("Tu Nikname ha cambiado", "Preguntados UTP");
+            myApp.alert("Se ha actualizado correctamente tus datos", "Preguntados UTP");
 
             database.transaction(function(tx){
                 var query = "UPDATE userlogued set image_avatar = ?, nikname = ? WHERE usuario_id = ?";
 
-                tx.executeSql(query, [img, nik, sessionStorage.getItem('usuario_id')], function(tx, res){
+                tx.executeSql(query, [newimage, nik, sessionStorage.getItem('usuario_id')], function(tx, res){
 
                 }, function(error){
                     alert(error);
@@ -725,7 +739,7 @@ var app = (function () {
             });
 
             $('.header-text p').html(nik);
-            $('#photoAvatar').html('<img src="statics/img/avatar/'+img+'.png" />');
+            $('#photoAvatar').html('<img src="statics/img/avatar/'+newimage+'.png" />');
             
         });
     }
@@ -733,6 +747,7 @@ var app = (function () {
     function cancelReto() {
         myApp.confirm("Perderá si sale del juego, Seguro que deseas salir?", function(){
             clearInterval(Handle_Mi_Timer);
+            mediaTimer.stop();
             updRetos('cancelled');
             gotoMainmenu();
         });
@@ -857,7 +872,6 @@ $$(document).on("pageInit", function(page){
     if(page.detail.page.name == "menu") {
         document.addEventListener("deviceready", function(){
             document.addEventListener("backbutton", app.closeApp, false);
-
         }, false);
     } else {
         document.removeEventListener("backbutton", app.closeApp);
@@ -878,7 +892,6 @@ $$(document).on("pageInit", function(page){
     } else {
         document.removeEventListener("backbutton", app.gotoMainmenu);
     }
-
 });
 
 myApp.onPageBeforeAnimation("menu", function(page){
@@ -1030,6 +1043,14 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
 myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
     app.saveRetos();
     app.PreloadQuestions();
+
+    $(document).on("click", '.respuesta', function(e){
+        if(sessionStorage.getItem('handled') != 'triggered') {
+            var params = $(this).attr('alt').split("|");
+            app.fillButton($(this), params[0], params[1], params[2], params[3], params[4]);
+            sessionStorage.setItem('handled', 'triggered');
+        }
+    });
 });
 
 myApp.onPageAfterAnimation("resumenRetos", function(page){
@@ -1039,7 +1060,6 @@ myApp.onPageAfterAnimation("resumenRetos", function(page){
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
 });
-
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
     app.getRetos('detalle', sessionStorage.getItem('Reto'));
@@ -1055,7 +1075,7 @@ myApp.onPageBeforeAnimation("profile", function(page){
     });
 
     $(document).on("touchstart", "#saveAvatarProfile", function(){
-        var image;
+        var image = "";
         $('.avatarImage').each(function(){
             if($(this).is(':checked')) {
                 image = $(this).val();

@@ -44,8 +44,7 @@ var app = (function () {
         wrong_user = "El código no existe, intenta con un usuario válido.",
         Contador = 30,
         TmpLastRecord = "",
-        mediaCorrect,
-        mediaIncorrect,
+        mediaAnswer,
         mediaTimer;
 
     String.prototype.ucfirst = function () {
@@ -403,34 +402,41 @@ var app = (function () {
     };
 
     function fillButton(obj, n, pts, idrpta, idprta) {
-        clearInterval(Handle_Mi_Timer);
+        if(sessionStorage.getItem('handled') != 'triggered') {
+            clearInterval(Handle_Mi_Timer);
 
-        var correct = $(obj).attr('alt');
+            var correct = $(obj).attr('alt');
 
-        mediaTimer.stop();
+            mediaTimer.stop();
 
-        $('.contenedor_question').addClass('disablediv');
+            $('.contenedor_question').addClass('disablediv');
 
-        if (correct == '1') {
+            if (correct == '1') {
 
-            mediaCorrect = new Media(getPhoneGapPath() + 'sounds/acertar.mp3');
-            mediaCorrect.play();
+                mediaAnswer = new Media(getPhoneGapPath() + 'sounds/acertar.mp3');
 
-            $(obj).removeClass('active active-state').addClass('button-fill color-green');
+                $(obj).removeClass('active active-state').addClass('button-fill color-green');
 
-        } else {
-            mediaIncorrect = new Media(getPhoneGapPath() + 'sounds/desacierto.mp3');
-            mediaIncorrect.play();
+            } else {
+                mediaAnswer = new Media(getPhoneGapPath() + 'sounds/desacierto.mp3');
+                
 
-            $(obj).removeClass('active active-state').addClass('button-fill color-red');
+                $(obj).removeClass('active active-state').addClass('button-fill color-red');
 
-            $('.button').each(function () {
-                if ($(this).attr('alt') == 1) {
-                    $(this).removeClass('active active-state').addClass('button-fill color-green');
-                }
-            });
+                $('.button').each(function () {
+                    if ($(this).attr('alt') == 1) {
+                        $(this).removeClass('active active-state').addClass('button-fill color-green');
+                    }
+                });
+            }
+
+            sessionStorage.setItem('handled', 'triggered');
+
+            mediaAnswer.play();
+
+            nextQuestion(n, 1200, pts, idrspta, idprta);
         }
-        nextQuestion(n, 1200, pts, idrspta, idprta);
+        
     }
 
     function nextQuestion(n, delay, pts, idrspta, idprta) {
@@ -490,6 +496,9 @@ var app = (function () {
     }
 
     function listQuestions(index) {
+
+        sessionStorage.setItem('handled', null);
+        
         var correct,
             respuesta,
             puntaje,
@@ -518,7 +527,7 @@ var app = (function () {
                 Quiz = "<div class='siguiente_" + index + " contenedor_question " + visible + "' style='right:" + rightS + "'>" +
                             "<div class='wrapper-questions'>" +
                                 "<div class='scroller'>" +
-                                    "<div class='content-block questions' style='font-size: 20px; /*background-color: #e4e4e3;*/ font-weight:bolder;'>" +
+                                    "<div class='content-block questions' style='font-size: 20px; font-weight:bolder;'>" +
                                         + (index + 1) + '.- ' + dataQuestion[index].preguntas +
                                     "</div>" +
                                     "<div class='content-block answer'>";
@@ -530,7 +539,7 @@ var app = (function () {
                     idrspta = dataQuestion[index].Respuesta[j].id_respuesta;
 
                     Quiz += "<p>" +
-                                "<a ontouchstart='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
+                                "<a onclick='app.fillButton(this, " + initNumberQuestion + ", " + puntaje + ", " + idrspta + ", " + idPregunta + ")'" +
                                     " class='button button-round button-fill' alt='" + correct + "'>" + respuesta + "</a>" +
                             "</p>";
                 }
@@ -597,6 +606,8 @@ var app = (function () {
             cancelled : cancelled || ""
         })
         .done(function (data) {
+
+            sessionStorage.setItem('handled', null);
 
             if(typeof cancelled == "undefined") {
                 $.post(phpApiMgr + '/sendNotification/', {
@@ -742,6 +753,7 @@ var app = (function () {
     function cancelReto() {
         myApp.confirm("Perderá si sale del juego, Seguro que deseas salir?", function(){
             clearInterval(Handle_Mi_Timer);
+            mediaTimer.stop();
             updRetos('cancelled');
             gotoMainmenu();
         });
@@ -866,7 +878,6 @@ $$(document).on("pageInit", function(page){
     if(page.detail.page.name == "menu") {
         document.addEventListener("deviceready", function(){
             document.addEventListener("backbutton", app.closeApp, false);
-
         }, false);
     } else {
         document.removeEventListener("backbutton", app.closeApp);
@@ -887,7 +898,6 @@ $$(document).on("pageInit", function(page){
     } else {
         document.removeEventListener("backbutton", app.gotoMainmenu);
     }
-
 });
 
 myApp.onPageBeforeAnimation("menu", function(page){
@@ -1048,7 +1058,6 @@ myApp.onPageAfterAnimation("resumenRetos", function(page){
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     $('.questions-content').append(app.listQuestions(0));
 });
-
 
 myApp.onPageBeforeAnimation("detalleRetos", function(page){
     app.getRetos('detalle', sessionStorage.getItem('Reto'));

@@ -178,71 +178,9 @@
     <script type="text/javascript" src="statics/js/framework7.js"></script>
     <script type="text/javascript" src="statics/js/fastclick.js"></script>
     <script type="text/javascript" src="statics/js/welcomescreen.js"></script>
-    
     <script type="text/javascript" src="statics/js/my-app.js"></script>
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="statics/js/help-screen.js"></script>
-    <script type="text/javascript">
-        //var db = null;
-
-        document.addEventListener("deviceready", onDeviceReady, false);
-        
-        function onDeviceReady() {
-
-            var media = new Media('statics/media/time.mp3');
-            media.play();
-
-            database = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
-
-            if(database != null) {
-                database.transaction(function(tx) {
-                    tx.executeSql('CREATE TABLE IF NOT EXISTS userlogued (usuario_id, firstname, lastname, username, password, nikname, email, image_avatar)');
-                }, function(error) {
-                    alert('Transaction ERROR: ' + error.message);
-                }, function() {
-                    checkExistsUser();
-                });
-            } else {
-                navigator.notification.alert('Hubo un problema con el usuario', null, 'DesafíoUTP');
-            }
-            //app.viewLogin();
-
-            $('#txtuser').focus(function() {
-                document.getElementById('errorDiv').classList.remove('error_active');
-            });
-
-            document.getElementById('btn-login').addEventListener("touchstart", function() {
-                app.login();
-            });
-
-            $('#txtpassword').key("enter", function(){
-                app.login();
-            })
-
-            document.addEventListener("backbutton", app.closeApp, false);
-        }
-
-        function checkExistsUser(){
-            var exists = false;
-            database.transaction(function(tx){
-                tx.executeSql("SELECT * FROM userlogued", [], function(tx, result){
-                    if(result.rows.length > 0) {
-                        for(session in result.rows.item(0)) {
-                            sessionStorage.setItem(session, result.rows.item(0)[session]);
-                        }
-                        exists = true;
-                    }
-                });
-            }, function(error){
-                console.log(error);
-            }, function(){
-                if(exists)
-                    app.gotoMainmenu();
-                else
-                    app.viewLogin();
-            });
-        }
-    </script>
+    <script type="text/javascript" src="statics/js/index.js"></script>
 </body>
-
 </html>
