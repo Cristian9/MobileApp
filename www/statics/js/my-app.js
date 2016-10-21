@@ -30,22 +30,22 @@ var mainView = myApp.addView('.view-main', {
 var app = (function () {
     new FastClick(document.body);
     var phpApiMgr = "http://10.31.1.84/CodeApiMobile",
-            //var phpApiMgr = "http://10.30.15.218/CodeApiMobile",
-            numberPage = 1,
-            timerInicial = 30,
-            dataQuestion = "",
-            pageDinamic,
-            totalQuestions,
-            initNumberQuestion = 0,
-            initPuntajeQuestion = 0,
-            myScroll,
-            Handle_Mi_Timer = null,
-            serve_gone_away = "Se ha perdido conexión con el servidor, verifica tu conexión a Internet o intentalo más tarde.",
-            wrong_user = "El código no existe, intenta con un usuario válido.",
-            Contador = 30,
-            TmpLastRecord = "",
-            mediaAnswer,
-            mediaTimer;
+        //var phpApiMgr = "http://10.30.15.218/CodeApiMobile",
+        numberPage = 1,
+        timerInicial = 30,
+        dataQuestion = "",
+        pageDinamic,
+        totalQuestions,
+        initNumberQuestion = 0,
+        initPuntajeQuestion = 0,
+        myScroll,
+        Handle_Mi_Timer = null,
+        serve_gone_away = "Se ha perdido conexión con el servidor, verifica tu conexión a Internet o intentalo más tarde.",
+        wrong_user = "El código no existe, intenta con un usuario válido.",
+        Contador = 30,
+        TmpLastRecord = "",
+        mediaAnswer,
+        mediaTimer;
 
     String.prototype.ucfirst = function () {
         return this.charAt(0).toUpperCase() + this.substr(1);
@@ -270,9 +270,9 @@ var app = (function () {
     function getDataApiJSON(option) {
 
         var href = option.href,
-                func = option.func,
-                elem = option.elem,
-                args = option.args || "";
+            func = option.func,
+            elem = option.elem,
+            args = option.args || "";
 
 
         StyleApp();
@@ -467,10 +467,10 @@ var app = (function () {
             course: sessionStorage.getItem("courseId"),
             unidad: sessionStorage.getItem("unidadId")
         })
-                .done(function (data) {
-                    dataQuestion = data;
-                    totalQuestions = dataQuestion.length;
-                });
+        .done(function (data) {
+            dataQuestion = data;
+            totalQuestions = dataQuestion.length;
+        });
     }
 
     function reset_timer() {
@@ -501,9 +501,9 @@ var app = (function () {
         sessionStorage.setItem('handled', null);
 
         var correct,
-                respuesta,
-                puntaje,
-                Quiz = "";
+            respuesta,
+            puntaje,
+            Quiz = "";
 
         initNumberQuestion += 1;
 
@@ -565,11 +565,11 @@ var app = (function () {
             user_retado: sessionStorage.getItem('userRetado') || "",
             id_temageneral: sessionStorage.getItem('themeGeneral') || ""
         })
-                .done(function (data) {
-                    if (data != "") {
-                        sessionStorage.setItem('lastID', data);
-                    }
-                });
+        .done(function (data) {
+            if (data != "") {
+                sessionStorage.setItem('lastID', data);
+            }
+        });
     }
 
     function dateRetoAceptado(id) {
@@ -577,9 +577,9 @@ var app = (function () {
             idReto: id,
             username: sessionStorage.getItem('username')
         })
-                .done(function (data) {
-                    console.log(data);
-                })
+        .done(function (data) {
+            console.log(data);
+        });
     }
 
     function getResumenReto() {
@@ -587,15 +587,15 @@ var app = (function () {
         $.getJSON(phpApiMgr + "/get_resumen_juego/", {
             id: sessionStorage.getItem('lastID') || TmpLastRecord
         })
-                .done(function (e) {
-                    if (sessionStorage.getItem('lastID') != "") {
-                        TmpLastRecord = sessionStorage.getItem('lastID');
-                    }
+        .done(function (e) {
+            if (sessionStorage.getItem('lastID') != "") {
+                TmpLastRecord = sessionStorage.getItem('lastID');
+            }
 
-                    sessionStorage.removeItem('lastID');
-                    var resumen = renderResumenReto(e);
-                    $('.resumen-questions').html(resumen);
-                });
+            sessionStorage.removeItem('lastID');
+            var resumen = renderResumenReto(e);
+            $('.resumen-questions').html(resumen);
+        });
     }
 
     function updRetos(cancelled) {
@@ -606,32 +606,32 @@ var app = (function () {
             username: sessionStorage.getItem('username'),
             cancelled: cancelled || ""
         })
-                .done(function (data) {
+        .done(function (data) {
 
-                    sessionStorage.setItem('handled', null);
+            sessionStorage.setItem('handled', null);
 
-                    if (typeof cancelled == "undefined") {
-                        $.post(phpApiMgr + '/sendNotification/', {
-                            toUser: sessionStorage.getItem('userRetado'),
-                            fromUser: sessionStorage.getItem('nikname')
-                        })
-                                .done(function () {
-                                    myApp.hidePreloader();
-                                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
-                                })
-                                .fail(function () {
-                                    myApp.hidePreloader();
-                                    myApp.alert("Notificación no enviada");
-                                })
-                                .always(function () {
-                                    myApp.hidePreloader();
-                                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
-                                });
-                    } else {
-                        myApp.hidePreloader();
-                        sessionStorage.removeItem('lastID');
-                    }
+            if (typeof cancelled == "undefined") {
+                $.post(phpApiMgr + '/sendNotification/', {
+                    toUser: sessionStorage.getItem('userRetado'),
+                    fromUser: sessionStorage.getItem('nikname')
+                })
+                .done(function () {
+                    myApp.hidePreloader();
+                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+                })
+                .fail(function () {
+                    myApp.hidePreloader();
+                    myApp.alert("Notificación no enviada");
+                })
+                .always(function () {
+                    myApp.hidePreloader();
+                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
                 });
+            } else {
+                myApp.hidePreloader();
+                sessionStorage.removeItem('lastID');
+            }
+        });
     }
 
     function getRetos(get, id) {
@@ -641,37 +641,37 @@ var app = (function () {
             get: get,
             id: id || ""
         })
-                .done(function (data) {
-                    myApp.hidePreloader();
+        .done(function (data) {
+            myApp.hidePreloader();
 
-                    if (typeof data.Detalle == "undefined") {
-                        var htmlEnviado = renderListRetosEnviados(data.Enviado);
-                        var htmlRecibido = renderListRetosRecibidos(data.Recibido);
-                        var htmlHistorial = renderListRetosHistorial(data.Historial);
+            if (typeof data.Detalle == "undefined") {
+                var htmlEnviado = renderListRetosEnviados(data.Enviado);
+                var htmlRecibido = renderListRetosRecibidos(data.Recibido);
+                var htmlHistorial = renderListRetosHistorial(data.Historial);
 
-                        $('#send').html(htmlEnviado);
-                        $('#receive').html(htmlRecibido);
-                        $('#history').html(htmlHistorial);
-                    } else {
-                        var htmlDetalle = renderListRetosDetalle(data.Detalle);
+                $('#send').html(htmlEnviado);
+                $('#receive').html(htmlRecibido);
+                $('#history').html(htmlHistorial);
+            } else {
+                var htmlDetalle = renderListRetosDetalle(data.Detalle);
 
-                        var rsimage = new Image();
-                        rsimage.setAttribute('style', 'width:100%');
+                var rsimage = new Image();
+                rsimage.setAttribute('style', 'width:100%');
 
-                        if (data.Detalle[0].resultado == 'Has ganado') {
-                            rsimage.src = 'statics/img/has_ganado.png';
-                        } else {
-                            rsimage.src = 'statics/img/has_perdido.png'
-                        }
+                if (data.Detalle[0].resultado == 'Has ganado') {
+                    rsimage.src = 'statics/img/has_ganado.png';
+                } else {
+                    rsimage.src = 'statics/img/has_perdido.png'
+                }
 
-                        rsimage.onload = function () {
-                            $('.detail-title').html(rsimage);
-                        }
+                rsimage.onload = function () {
+                    $('.detail-title').html(rsimage);
+                }
 
-                        //$('.content-block-title').html(data.Detalle[0].resultado);
-                        $('#detalle').html(htmlDetalle);
-                    }
-                });
+                //$('.content-block-title').html(data.Detalle[0].resultado);
+                $('#detalle').html(htmlDetalle);
+            }
+        });
     }
 
     function searchUser(keyword) {
@@ -683,21 +683,21 @@ var app = (function () {
             username: sessionStorage.getItem("username"),
             keywords: $.trim(keyword)
         })
-                .done(function (data) {
-                    $('.page_title').find('span').remove();
-                    $('#list-users').html(renderListUsuarios(data));
-                });
+        .done(function (data) {
+            $('.page_title').find('span').remove();
+            $('#list-users').html(renderListUsuarios(data));
+        });
     }
 
     function getUserProfile(uid) {
         $.getJSON(phpApiMgr + '/get_profile/', {
             username: uid || sessionStorage.getItem('username')
         })
-                .done(function (data) {
-                    $('#ganadas').text(data.Ganados[0].ganado);
-                    $('#perdidas').text(data.Perdidos[0].perdido);
-                    $('#punto').text(data.Puntaje[0].total + ' Puntos');
-                });
+        .done(function (data) {
+            $('#ganadas').text(data.Ganados[0].ganado);
+            $('#perdidas').text(data.Perdidos[0].perdido);
+            $('#punto').text(data.Puntaje[0].total + ' Puntos');
+        });
 
         database.transaction(function (tx) {
             tx.executeSql("SELECT * FROM userlogued", [], function (tx, res) {
@@ -724,31 +724,31 @@ var app = (function () {
             niknam: nik,
             image: newimage
         })
-                .done(function (data) {
+        .done(function (data) {
 
-                    sessionStorage.setItem('nikname', nik);
-                    sessionStorage.setItem('image_avatar', newimage);
+            sessionStorage.setItem('nikname', nik);
+            sessionStorage.setItem('image_avatar', newimage);
 
-                    myApp.alert("Se ha actualizado correctamente tus datos", "Preguntados UTP");
+            myApp.alert("Se ha actualizado correctamente tus datos", "Preguntados UTP");
 
-                    database.transaction(function (tx) {
-                        var query = "UPDATE userlogued set image_avatar = ?, nikname = ? WHERE usuario_id = ?";
+            database.transaction(function (tx) {
+                var query = "UPDATE userlogued set image_avatar = ?, nikname = ? WHERE usuario_id = ?";
 
-                        tx.executeSql(query, [newimage, nik, sessionStorage.getItem('usuario_id')], function (tx, res) {
+                tx.executeSql(query, [newimage, nik, sessionStorage.getItem('usuario_id')], function (tx, res) {
 
-                        }, function (error) {
-                            alert(error);
-                        });
-                    }, function (error) {
-                        alert(error);
-                    }, function () {
-                        console.log('ok');
-                    });
-
-                    $('.header-text p').html(nik);
-                    $('#photoAvatar').html('<img src="statics/img/avatar/' + newimage + '.png" />');
-
+                }, function (error) {
+                    alert(error);
                 });
+            }, function (error) {
+                alert(error);
+            }, function () {
+                console.log('ok');
+            });
+
+            $('.header-text p').html(nik);
+            $('#photoAvatar').html('<img src="statics/img/avatar/' + newimage + '.png" />');
+
+        });
     }
 
     function cancelReto() {
@@ -762,28 +762,28 @@ var app = (function () {
 
     function getYearAndMonth() {
         $.getJSON(phpApiMgr + '/getYearAndMonth/')
-                .done(function (data) {
-                    for (var i in data) {
-                        var combo = "";
-                        for (var item in data[i]) {
+        .done(function (data) {
+            for (var i in data) {
+                var combo = "";
+                for (var item in data[i]) {
 
-                            if (item == "selected")
-                                continue;
+                    if (item == "selected")
+                        continue;
 
-                            var selected = "";
+                    var selected = "";
 
-                            if (item == data[i]['selected']) {
+                    if (item == data[i]['selected']) {
 
-                                selected = "selected";
-                                $('#div_' + i).html(data[i][item]);
-                            }
-
-                            combo += "<option value='" + item + "' " + selected + ">" + data[i][item] + "</option>";
-                        }
-
-                        $('#' + i).html(combo);
+                        selected = "selected";
+                        $('#div_' + i).html(data[i][item]);
                     }
-                });
+
+                    combo += "<option value='" + item + "' " + selected + ">" + data[i][item] + "</option>";
+                }
+
+                $('#' + i).html(combo);
+            }
+        });
     }
 
     function getRankingByCourse(year, month) {
@@ -793,10 +793,10 @@ var app = (function () {
             year: year,
             month: month
         })
-                .done(function (data) {
-                    myApp.hidePreloader();
-                    $('#list-ranking').html(renderUsuariosRanking(data));
-                });
+        .done(function (data) {
+            myApp.hidePreloader();
+            $('#list-ranking').html(renderUsuariosRanking(data));
+        });
     }
 
     function logout() {
@@ -826,11 +826,11 @@ var app = (function () {
         $.getJSON(phpApiMgr + '/counter/', {
             uname: sessionStorage.getItem('username')
         })
-                .done(function (data) {
-                    if (data['retos'][0]['retos'] != '0') {
-                        $('#misRetos').html('<span class="badge bg-red" id="countRetosRecibidos">' + data['retos'][0]['retos'] + '</span><span>Mis Retos</span>');
-                    }
-                });
+        .done(function (data) {
+            if (data['retos'][0]['retos'] != '0') {
+                $('#misRetos').html('<span class="badge bg-red" id="countRetosRecibidos">' + data['retos'][0]['retos'] + '</span><span>Mis Retos</span>');
+            }
+        });
     }
 
     function gotoMainmenu() {
@@ -842,28 +842,28 @@ var app = (function () {
     }
 
     return {
-        viewLogin: viewLogin,
-        login: login,
-        InitmenuSlide: InitmenuSlide,
-        getDataApiJSON: getDataApiJSON,
-        PreloadQuestions: PreloadQuestions,
-        listQuestions: listQuestions,
-        fillButton: fillButton,
-        saveRetos: saveRetos,
-        getRetos: getRetos,
-        dateRetoAceptado: dateRetoAceptado,
-        searchUser: searchUser,
-        getResumenReto: getResumenReto,
-        logout: logout,
-        getUserProfile: getUserProfile,
-        editNickUser: editNickUser,
-        cancelReto: cancelReto,
-        closeApp: closeApp,
-        gotoMainmenu: gotoMainmenu,
-        getYearAndMonth: getYearAndMonth,
-        getRankingByCourse: getRankingByCourse,
-        countRetosRecibidos: countRetosRecibidos,
-        renderImageAvatar: renderImageAvatar
+        viewLogin           :   viewLogin,
+        login               :   login,
+        InitmenuSlide       :   InitmenuSlide,
+        getDataApiJSON      :   getDataApiJSON,
+        PreloadQuestions    :   PreloadQuestions,
+        listQuestions       :   listQuestions,
+        fillButton          :   fillButton,
+        saveRetos           :   saveRetos,
+        getRetos            :   getRetos,
+        dateRetoAceptado    :   dateRetoAceptado,
+        searchUser          :   searchUser,
+        getResumenReto      :   getResumenReto,
+        logout              :   logout,
+        getUserProfile      :   getUserProfile,
+        editNickUser        :   editNickUser,
+        cancelReto          :   cancelReto,
+        closeApp            :   closeApp,
+        gotoMainmenu        :   gotoMainmenu,
+        getYearAndMonth     :   getYearAndMonth,
+        getRankingByCourse  :   getRankingByCourse,
+        countRetosRecibidos :   countRetosRecibidos,
+        renderImageAvatar   :   renderImageAvatar
     }
 
 })();
@@ -999,9 +999,9 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
     app.getRetos('all');
 
     var idReto,
-            idUnidad,
-            idCourse,
-            idTemaGe;
+        idUnidad,
+        idCourse,
+        idTemaGe;
 
     $('#receive').off("click");
 
@@ -1009,12 +1009,12 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         var items = $(this).attr('alt');
         var args = items.split("|");
 
-        idReto = args[0];
-        idUnidad = args[1];
-        idCourse = args[2];
-        idTemaGe = args[3];
-        idWho = args[4];
-        avatar = args[5];
+        idReto      = args[0];
+        idUnidad    = args[1];
+        idCourse    = args[2];
+        idTemaGe    = args[3];
+        idWho       = args[4];
+        avatar      = args[5];
 
         sessionStorage.setItem("courseId", idCourse);
         sessionStorage.setItem("unidadId", idUnidad);
