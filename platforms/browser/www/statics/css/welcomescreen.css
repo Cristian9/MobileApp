@@ -16,8 +16,9 @@
 	position: absolute;
 	text-align: right;
 	z-index: 9998;
-	font-size: 14px;
+	font-size: 25px;
 	padding: 15px;
+	font-weight: bolder;
 }
 
 .welcomescreen-swiper {

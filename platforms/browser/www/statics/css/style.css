@@ -933,8 +933,21 @@ ul.toolbar_icons li.menuicon img{
 .tutorialicon {
     font-size: 250px;
     line-height: 170px;
+    height: 100%;
 }
 
+.panel {
+    background: url('../img/left.jpg') no-repeat center top !important;
+    -o-background-size: 100% 100%, auto !important;
+    -moz-background-size: 100% 100%, auto !important;
+    -webkit-background-size: 100% 100%, auto !important;
+    background-size: 100% 100%, auto !important;
+    /*background-attachment: fixed !important;*/
+}
+
+.user-nav ul li {
+    border-bottom: solid 1px #fff !important;
+}
 /* 6-1. HOME PAGE WITH SLIDER */
 
 .swiper-container {
