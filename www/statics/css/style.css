@@ -264,6 +264,16 @@ body, ul, li {
     /*overflow: hidden;*/
 }
 
+.infinite-scroll-preloader {
+  /*margin-top:-20px;*/
+  margin-bottom: 10px;
+  text-align: center;
+}
+.infinite-scroll-preloader .preloader {
+  width:34px;
+  height:34px;
+}  
+
 .list-block .item-inner:after {
     background-color: #fff !important;
 }

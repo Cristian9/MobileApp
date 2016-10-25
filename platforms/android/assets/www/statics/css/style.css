@@ -56,88 +56,88 @@ Template:	Mobix - Mobile Web APP Template
 }
 
 [class^="icon-"], [class*=" icon-"] {
-  /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'icomoon' !important;
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
+    /* use !important to prevent issues with browser extensions that change fonts */
+    font-family: 'icomoon' !important;
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
 
-  /* Better Font Rendering =========== */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    /* Better Font Rendering =========== */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .icon-arrow-back-outline:before {
-  content: "\e906";
+    content: "\e906";
 }
 .icon-arrow-back:before {
-  content: "\e907";
+    content: "\e907";
 }
 .icon-stars:before {
-  content: "\e905";
+    content: "\e905";
 }
 .icon-award:before {
-  content: "\e900";
+    content: "\e900";
 }
 .icon-three-bars:before {
-  content: "\e908";
+    content: "\e908";
 }
 .icon-question:before {
-  content: "\e901";
+    content: "\e901";
 }
 .icon-spades:before {
-  content: "\e917";
+    content: "\e917";
 }
 .icon-file-text:before {
-  content: "\e922";
+    content: "\e922";
 }
 .icon-file-text2:before {
-  content: "\e926";
+    content: "\e926";
 }
 .icon-undo2:before {
-  content: "\e967";
+    content: "\e967";
 }
 .icon-cog:before {
-  content: "\e994";
+    content: "\e994";
 }
 .icon-cogs:before {
-  content: "\e995";
+    content: "\e995";
 }
 .icon-aid-kit:before {
-  content: "\e998";
+    content: "\e998";
 }
 .icon-stats-dots:before {
-  content: "\e99b";
+    content: "\e99b";
 }
 .icon-hammer2:before {
-  content: "\e9a8";
+    content: "\e9a8";
 }
 .icon-bin:before {
-  content: "\e9ac";
+    content: "\e9ac";
 }
 .icon-menu:before {
-  content: "\e9bd";
+    content: "\e9bd";
 }
 .icon-cancel-circle:before {
-  content: "\ea0d";
+    content: "\ea0d";
 }
 .icon-play2:before {
-  content: "\ea15";
+    content: "\ea15";
 }
 .icon-play3:before {
-  content: "\ea1c";
+    content: "\ea1c";
 }
 .icon-user:before {
-  content: "\e902";
+    content: "\e902";
 }
 .icon-trophy:before {
-  content: "\e903";
+    content: "\e903";
 }
 .icon-flag-checkered:before {
-  content: "\e904";
+    content: "\e904";
 }
 
 .mb-1x {
@@ -263,6 +263,16 @@ body, ul, li {
     background-attachment: fixed;
     /*overflow: hidden;*/
 }
+
+.infinite-scroll-preloader {
+  /*margin-top:-20px;*/
+  margin-bottom: 10px;
+  text-align: center;
+}
+.infinite-scroll-preloader .preloader {
+  width:34px;
+  height:34px;
+}  
 
 .list-block .item-inner:after {
     background-color: #fff !important;
@@ -582,7 +592,7 @@ a.button_small{
     padding: 26px 23px 10px 23px
 }
 .button:active {
-  opacity: .8 !important;
+    opacity: .8 !important;
 }
 .content-block-login{
     margin:20px 0;
@@ -1561,12 +1571,12 @@ span.month{
     background-color: #bfe1ff;
 }
 .list-block .item-inner {
-  padding-bottom: 10px;
+    padding-bottom: 10px;
 }
 
 .list-block .item-title {
-  font-size: .8em;/*17px;*/
-  font-weight: bold;
+    font-size: .8em;/*17px;*/
+    font-weight: bold;
 }
 
 .button-red {

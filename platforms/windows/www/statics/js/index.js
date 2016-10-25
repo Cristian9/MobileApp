@@ -1,5 +1,5 @@
 ﻿document.addEventListener("deviceready", onDeviceReady, false);
-        
+
 function onDeviceReady() {
 
     var media = new Media('statics/media/time.mp3');
@@ -7,12 +7,12 @@ function onDeviceReady() {
 
     database = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
 
-    if(database != null) {
-        database.transaction(function(tx) {
+    if (database != null) {
+        database.transaction(function (tx) {
             tx.executeSql('CREATE TABLE IF NOT EXISTS userlogued (usuario_id, firstname, lastname, username, password, nikname, email, image_avatar)');
-        }, function(error) {
+        }, function (error) {
             alert('Transaction ERROR: ' + error.message);
-        }, function() {
+        }, function () {
             checkExistsUser();
         });
     } else {
@@ -20,35 +20,35 @@ function onDeviceReady() {
     }
     //app.viewLogin();
 
-    $('#txtuser').focus(function() {
+    $('#txtuser').focus(function () {
         document.getElementById('errorDiv').classList.remove('error_active');
     });
 
-    document.getElementById('btn-login').addEventListener("touchstart", function() {
+    document.getElementById('btn-login').addEventListener("touchstart", function () {
         app.login();
     });
 
-    $('#txtpassword').key("enter", function(){
+    $('#txtpassword').key("enter", function () {
         app.login();
     })
 
     document.addEventListener("backbutton", app.closeApp, false);
 }
 
-function checkExistsUser(){
+function checkExistsUser() {
     var exists = false;
-    database.transaction(function(tx){
-        tx.executeSql("SELECT * FROM userlogued", [], function(tx, result){
-            if(result.rows.length > 0) {
-                for(session in result.rows.item(0)) {
+    database.transaction(function (tx) {
+        tx.executeSql("SELECT * FROM userlogued", [], function (tx, result) {
+            if (result.rows.length > 0) {
+                for (session in result.rows.item(0)) {
                     sessionStorage.setItem(session, result.rows.item(0)[session]);
                 }
                 exists = true;
             }
         });
-    }, function(error){
+    }, function (error) {
         console.log(error);
-    }, function(){
+    }, function () {
         (exists) ? app.gotoMainmenu() : app.viewLogin();
     });
 }

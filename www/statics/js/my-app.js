@@ -21,6 +21,7 @@ var myApp = new Framework7({
 var $$ = Dom7;
 
 var database = null;
+var loading = false;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -45,6 +46,7 @@ var app = (function () {
         Contador = 30,
         TmpLastRecord = "",
         mediaAnswer,
+        myScroll,
         mediaTimer;
 
     String.prototype.ucfirst = function () {
@@ -65,11 +67,11 @@ var app = (function () {
     }
 
     function InitmenuSlide() {
-        StyleApp(0);
-        $('#wrapper').addClass('auxCSS');
+        StyleApp();
+        $('#history-wrapper').addClass('auxCSS');
 
         // Creamos los 2 scroll mediante el plugin iscroll, uno para el menœ principal y otro para el cuerpo
-        myScroll = new iScroll('wrapper', {hideScrollbar: true});
+        myScroll = new iScroll('history-wrapper', {hideScrollbar: true});
     }
 
     function viewLogin() {
@@ -359,38 +361,38 @@ var app = (function () {
             user: $('#txtuser').val(),
             pass: $('#txtpassword').val()
         })
-                .done(function (data) {
-                    myApp.hideIndicator();
-                    var data = eval(data);
-                    if (!data) {
-                        $('.error_message span').html(wrong_user);
-                        document.getElementById('errorDiv').classList.add('error_active');
+        .done(function (data) {
+            myApp.hideIndicator();
+            var data = eval(data);
+            if (!data) {
+                $('.error_message span').html(wrong_user);
+                document.getElementById('errorDiv').classList.add('error_active');
 
-                        $('#txtuser, #txtpassword').val("");
-                    } else {
+                $('#txtuser, #txtpassword').val("");
+            } else {
 
-                        for (session in data[0]) {
-                            sessionStorage.setItem(session, data[0][session]);
-                        }
+                for (session in data[0]) {
+                    sessionStorage.setItem(session, data[0][session]);
+                }
 
-                        getDeviceIdentifier();
+                getDeviceIdentifier();
 
 
-                        registerUserAndPassword();
+                registerUserAndPassword();
 
-                        myApp.closeModal('.login-screen');
-                        gotoMainmenu();
-                    }
-                })
-                .fail(function (e) {
-                    if (e.status == 0) {
-                        myApp.hideIndicator();
-                        $('.error_message span').html(serve_gone_away);
-                        document.getElementById('errorDiv').classList.add('error_active');
+                myApp.closeModal('.login-screen');
+                gotoMainmenu();
+            }
+        })
+        .fail(function (e) {
+            if (e.status == 0) {
+                myApp.hideIndicator();
+                $('.error_message span').html(serve_gone_away);
+                document.getElementById('errorDiv').classList.add('error_active');
 
-                        $('#txtuser, #txtpassword').val("");
-                    }
-                });
+                $('#txtuser, #txtpassword').val("");
+            }
+        });
     }
 
     function getPhoneGapPath() {
@@ -634,24 +636,51 @@ var app = (function () {
         });
     }
 
-    function getRetos(get, id) {
-        myApp.showPreloader('Espere, por favor...');
+    function getRetos(get, id, page) {
+
+        if(get != 'history')
+            myApp.showPreloader('Espere, por favor...');
+
         $.getJSON(phpApiMgr + '/list-retos/', {
             args: sessionStorage.getItem("username"),
             get: get,
-            id: id || ""
+            id: id || "",
+            page : page || 0
         })
         .done(function (data) {
             myApp.hidePreloader();
 
-            if (typeof data.Detalle == "undefined") {
-                var htmlEnviado = renderListRetosEnviados(data.Enviado);
-                var htmlRecibido = renderListRetosRecibidos(data.Recibido);
-                var htmlHistorial = renderListRetosHistorial(data.Historial);
+            loading = false;
 
-                $('#send').html(htmlEnviado);
-                $('#receive').html(htmlRecibido);
-                $('#history').html(htmlHistorial);
+            if (typeof data.Detalle == "undefined") {
+
+                if(typeof data.Enviado == "undefined" && typeof data.Recibido == "undefined") {
+
+                    if(data.Historial[0] == null) {
+
+                        $('.error_message span').html('No hay más registros');
+                        document.getElementById('errorDiv').classList.add('error_active');
+
+                        setTimeout(function(){
+                            document.getElementById('errorDiv').classList.remove('error_active');
+                        }, 3000);
+
+                        $('.infinite-scroll-preloader').remove();
+                        
+                        loading = true;
+                    }
+
+                    var htmlHistorial = renderListRetosHistorial(data.Historial);
+                    $('#history').append(htmlHistorial);
+                } else {
+                    var htmlEnviado = renderListRetosEnviados(data.Enviado);
+                    var htmlRecibido = renderListRetosRecibidos(data.Recibido);
+                    var htmlHistorial = renderListRetosHistorial(data.Historial);
+
+                    $('#send').html(htmlEnviado);
+                    $('#receive').html(htmlRecibido);
+                    $('#history').html(htmlHistorial);
+                }
             } else {
                 var htmlDetalle = renderListRetosDetalle(data.Detalle);
 
@@ -997,6 +1026,7 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
 
 myApp.onPageAfterAnimation("listadoRetos", function (page) {
     app.getRetos('all');
+    var page = 0;
 
     var idReto,
         idUnidad,
@@ -1027,6 +1057,15 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         $('#tuavatar').attr("src", "statics/img/avatar/" + avatar + ".png");
 
         myApp.popup(".popup-about");
+    });
+
+    $('.infinite-scroll').on('infinite', function(){
+
+        if(loading) return;
+
+        loading = true;
+
+        app.getRetos('history', "", ++page);
     });
 
     $('#btnAceptarReto').click(function () {
