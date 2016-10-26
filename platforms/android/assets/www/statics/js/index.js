@@ -9,7 +9,7 @@ function onDeviceReady() {
 
     if (database != null) {
         database.transaction(function (tx) {
-            tx.executeSql('CREATE TABLE IF NOT EXISTS userlogued (usuario_id, firstname, lastname, username, password, nikname, email, image_avatar)');
+            tx.executeSql('CREATE TABLE IF NOT EXISTS userlogued (usuario_id, firstname, lastname, username, nikname, email, image_avatar)');
         }, function (error) {
             alert('Transaction ERROR: ' + error.message);
         }, function () {
@@ -18,7 +18,7 @@ function onDeviceReady() {
     } else {
         navigator.notification.alert('Hubo un problema con el usuario', null, 'DesafíoUTP');
     }
-    //app.viewLogin();
+    app.viewLogin();
 
     $('#txtuser').focus(function () {
         document.getElementById('errorDiv').classList.remove('error_active');

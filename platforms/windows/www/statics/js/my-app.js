@@ -284,21 +284,21 @@ var app = (function () {
         myApp.showPreloader('Espere, por favor...');
 
         $.getJSON(phpApiMgr + "/" + href + "/", args)
-                .done(function (data) {
+        .done(function (data) {
 
-                    myApp.hidePreloader();
+            myApp.hidePreloader();
 
-                    if (data[0] == null) {
-                        $(elem).html($("<center style='padding:11%; color:#B33831; font-size:15px; font-weight:bold;'></center>")
-                                .append('No hay registros para mostrar'));
+            if (data[0] == null) {
+                $(elem).html($("<center style='padding:11%; color:#B33831; font-size:15px; font-weight:bold;'></center>")
+                        .append('No hay registros para mostrar'));
 
-                        return false;
-                    }
+                return false;
+            }
 
-                    var list = eval(func + "(data)");
+            var list = eval(func + "(data)");
 
-                    $(elem).html(list);
-                });
+            $(elem).html(list);
+        });
 
         new FastClick(document.body);
     }
@@ -339,13 +339,12 @@ var app = (function () {
         var name = sessionStorage.getItem('firstname');
         var last = sessionStorage.getItem('lastname');
         var uname = sessionStorage.getItem('username');
-        var passw = sessionStorage.getItem('password');
         var nik = sessionStorage.getItem('nikname');
         var email = sessionStorage.getItem('email');
         var img = sessionStorage.getItem('image_avatar');
 
         database.transaction(function (tx) {
-            tx.executeSql('INSERT INTO userlogued VALUES (?,?,?,?,?,?,?,?)', [uid, name, last, uname, passw, nik, email, img]);
+            tx.executeSql('INSERT INTO userlogued VALUES (?,?,?,?,?,?,?)', [uid, name, last, uname, nik, email, img]);
         }, function (error) {
             console.log(error)
         }, function () {
@@ -664,7 +663,9 @@ var app = (function () {
                         setTimeout(function(){
                             document.getElementById('errorDiv').classList.remove('error_active');
                         }, 3000);
+
                         $('.infinite-scroll-preloader').remove();
+                        
                         loading = true;
                     }
 
@@ -822,7 +823,7 @@ var app = (function () {
         })
         .done(function (data) {
             myApp.hidePreloader();
-            $('#list-ranking').html(renderUsuariosRanking(data));
+            $('#list-ranking').empty().html(renderUsuariosRanking(data));
         });
     }
 
