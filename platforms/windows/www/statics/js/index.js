@@ -18,7 +18,7 @@ function onDeviceReady() {
     } else {
         navigator.notification.alert('Hubo un problema con el usuario', null, 'DesafíoUTP');
     }
-    app.viewLogin();
+    //app.viewLogin();
 
     $('#txtuser').focus(function () {
         document.getElementById('errorDiv').classList.remove('error_active');

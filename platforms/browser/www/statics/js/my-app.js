@@ -30,8 +30,8 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function () {
     new FastClick(document.body);
-    var phpApiMgr = "http://10.31.1.84/CodeApiMobile",
-        //var phpApiMgr = "http://10.30.15.218/CodeApiMobile",
+    //var phpApiMgr = "http://10.31.1.84",
+    var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public",
         numberPage = 1,
         timerInicial = 30,
         dataQuestion = "",
@@ -518,7 +518,15 @@ var app = (function () {
 
         if (typeof totalQuestions == "undefined" || totalQuestions < 1) {
             sessionStorage.setItem('error', 1);
-            mainView.router.loadPage("views/mainMenu/menu.html");
+
+            $.post(phpApiMgr + '/delete_reto/', {
+                lastID : sessionStorage.getItem('lastID'),
+                uname : sessionStorage.getItem('username')
+            })
+            .done(function(res){
+                console.log(res);
+                mainView.router.loadPage("views/mainMenu/menu.html");
+            });
         } else {
             if (index < totalQuestions) {
 
@@ -650,6 +658,8 @@ var app = (function () {
             myApp.hidePreloader();
 
             loading = false;
+
+            $('.infinite-scroll-preloader').addClass('innactive');
 
             if (typeof data.Detalle == "undefined") {
 
@@ -855,8 +865,9 @@ var app = (function () {
             uname: sessionStorage.getItem('username')
         })
         .done(function (data) {
-            if (data['retos'][0]['retos'] != '0') {
-                $('#misRetos').html('<span class="badge bg-red" id="countRetosRecibidos">' + data['retos'][0]['retos'] + '</span><span>Mis Retos</span>');
+            //console.log(data[0]['retos']);
+            if (data[0]['retos'] != '0') {
+                $('#misRetos').html('<span class="badge bg-red" id="countRetosRecibidos">' + data[0]['retos'] + '</span><span>Mis Retos</span>');
             }
         });
     }
@@ -1063,6 +1074,8 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
         if(loading) return;
 
         loading = true;
+
+        $('.infinite-scroll-preloader').removeClass('innactive');
 
         app.getRetos('history', "", ++page);
     });
