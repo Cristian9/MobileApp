@@ -30,7 +30,7 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function () {
     new FastClick(document.body);
-    //var phpApiMgr = "http://10.31.1.84",
+    //var phpApiMgr = "http://desafioutp.dsakiya.com",
     var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public",
         numberPage = 1,
         timerInicial = 30,
@@ -47,7 +47,8 @@ var app = (function () {
         TmpLastRecord = "",
         mediaAnswer,
         myScroll,
-        mediaTimer;
+        mediaTimer,
+        handlerReto = false;
 
     String.prototype.ucfirst = function () {
         return this.charAt(0).toUpperCase() + this.substr(1);
@@ -57,9 +58,9 @@ var app = (function () {
         var heightCuerpo = window.innerHeight - 246;//92/*46*/;
         var style = document.createElement('style');
         style.type = 'text/css';
-        style.innerHTML = '.auxCSS { position:absolute; z-index:2; left:0; top:60px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
+        style.innerHTML = '.auxCSS { position:absolute; border-top: solid 1px #9c9c9d; z-index:2; left:0; top:60px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
 
-        $('#pages_maincontent').css({
+        $('.pages_maincontent').css({
             'height': heightCuerpo
         });
 
@@ -75,7 +76,7 @@ var app = (function () {
     }
 
     function viewLogin() {
-        myApp.loginScreen()
+        myApp.loginScreen();
     }
 
     function renderDefaultList(data) {
@@ -279,11 +280,20 @@ var app = (function () {
 
         StyleApp();
 
-        $('#wrapper').addClass('auxCSS');
+        $('#wrapper, #wrapper-unidad').addClass('auxCSS');
 
         myApp.showPreloader('Espere, por favor...');
 
-        $.getJSON(phpApiMgr + "/" + href + "/", args)
+        $.ajax({
+            url : phpApiMgr + "/" + href + "/",
+            type : 'GET',
+            dataType : 'json',
+            data : args,
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
+        })
+        //$.getJSON(phpApiMgr + "/" + href + "/", args)
         .done(function (data) {
 
             myApp.hidePreloader();
@@ -320,13 +330,24 @@ var app = (function () {
 
         push.on("registration", function (data) {
             sessionStorage.setItem('identifier', data.registrationId);
-            $.post(phpApiMgr + "/registerDevice/", {
+            $.ajax({
+                url : phpApiMgr + "/registerDevice/",
+                type : 'POST',
+                data : {
+                    identifier : data.registrationId,
+                    userid : sessionStorage.getItem('usuario_id')
+                },
+                beforeSend : function(xhr){
+                    xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+                }
+            })
+            /*$.post(phpApiMgr + "/registerDevice/", {
                 identifier: data.registrationId,
                 userid: sessionStorage.getItem("usuario_id")
-            })
-                    .done(function (data) {
-                        console.log(data);
-                    });
+            })*/
+            .done(function (data) {
+                console.log(data);
+            });
         });
 
         push.on("error", function (e) {
@@ -357,8 +378,8 @@ var app = (function () {
         myApp.showIndicator();
 
         $.post(phpApiMgr + '/login/', {
-            user: $('#txtuser').val(),
-            pass: $('#txtpassword').val()
+            user: $.trim($('#txtuser').val()),
+            pass: $.trim($('#txtpassword').val())
         })
         .done(function (data) {
             myApp.hideIndicator();
@@ -384,6 +405,7 @@ var app = (function () {
             }
         })
         .fail(function (e) {
+            console.log(e);
             if (e.status == 0) {
                 myApp.hideIndicator();
                 $('.error_message span').html(serve_gone_away);
@@ -436,7 +458,7 @@ var app = (function () {
 
             mediaAnswer.play();
 
-            nextQuestion(n, 1200, pts, idrspta, idprta);
+            nextQuestion(n, 1200, pts, idrpta, idprta);
         }
 
     }
@@ -463,11 +485,24 @@ var app = (function () {
     function PreloadQuestions() {
         initNumberQuestion = 0;
         initPuntajeQuestion = 0;
+        dataQuestion = "";
 
-        $.getJSON(phpApiMgr + '/getQuestions/', {
+        $.ajax({
+            url : phpApiMgr + '/getQuestions/',
+            type : 'GET',
+            dataType : 'json',
+            data : {
+                course: sessionStorage.getItem("courseId"),
+                unidad: sessionStorage.getItem("unidadId")
+            },
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
+        })
+        /*$.getJSON(phpApiMgr + '/getQuestions/', {
             course: sessionStorage.getItem("courseId"),
             unidad: sessionStorage.getItem("unidadId")
-        })
+        })*/
         .done(function (data) {
             dataQuestion = data;
             totalQuestions = dataQuestion.length;
@@ -519,16 +554,23 @@ var app = (function () {
         if (typeof totalQuestions == "undefined" || totalQuestions < 1) {
             sessionStorage.setItem('error', 1);
 
-            $.post(phpApiMgr + '/delete_reto/', {
+            mainView.router.loadPage("views/mainMenu/menu.html");
+
+            /*$.post(phpApiMgr + '/delete_reto/', {
                 lastID : sessionStorage.getItem('lastID'),
                 uname : sessionStorage.getItem('username')
             })
             .done(function(res){
-                console.log(res);
                 mainView.router.loadPage("views/mainMenu/menu.html");
-            });
+            });*/
         } else {
             if (index < totalQuestions) {
+
+                if(!handlerReto) {
+                    saveRetos();
+
+                    handlerReto = true;
+                }
 
                 reset_timer();
 
@@ -557,7 +599,7 @@ var app = (function () {
                 Quiz += "</div></div></div></div>";
             } else {
                 clearInterval(Handle_Mi_Timer);
-                Quiz = "<h3>Resumiendo...</h3>";
+                Quiz = "<h2 style='color:#74569d; text-align:center;'>Evaluando puntaje...</h2>";
                 updRetos();
             }
         }
@@ -566,14 +608,29 @@ var app = (function () {
     }
 
     function saveRetos() {
-        $.post(phpApiMgr + '/save_retos/', {
+        $.ajax({
+            url : phpApiMgr + '/save_retos/',
+            type : 'POST',
+            data : {
+                id_reto: sessionStorage.getItem('lastID') || null,
+                user_retador: sessionStorage.getItem('username'),
+                unidad_id: sessionStorage.getItem('unidadId') || "",
+                courseId: sessionStorage.getItem('courseId') || "",
+                user_retado: sessionStorage.getItem('userRetado') || "",
+                id_temageneral: sessionStorage.getItem('themeGeneral') || ""
+            },
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
+        })
+        /*$.post(phpApiMgr + '/save_retos/', {
             id_reto: sessionStorage.getItem('lastID') || null,
             user_retador: sessionStorage.getItem('username'),
             unidad_id: sessionStorage.getItem('unidadId') || "",
             courseId: sessionStorage.getItem('courseId') || "",
             user_retado: sessionStorage.getItem('userRetado') || "",
             id_temageneral: sessionStorage.getItem('themeGeneral') || ""
-        })
+        })*/
         .done(function (data) {
             if (data != "") {
                 sessionStorage.setItem('lastID', data);
@@ -582,9 +639,20 @@ var app = (function () {
     }
 
     function dateRetoAceptado(id) {
-        $.post(phpApiMgr + '/updateDateReto/', {
+        /*$.post(phpApiMgr + '/updateDateReto/', {
             idReto: id,
             username: sessionStorage.getItem('username')
+        })*/
+        $.ajax({
+            url : phpApiMgr + '/updateDateReto/',
+            type : 'POST',
+            data : {
+                idReto: id,
+                username: sessionStorage.getItem('username')
+            },
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
             console.log(data);
@@ -593,8 +661,19 @@ var app = (function () {
 
     function getResumenReto() {
 
-        $.getJSON(phpApiMgr + "/get_resumen_juego/", {
+        /*$.getJSON(phpApiMgr + "/get_resumen_juego/", {
             id: sessionStorage.getItem('lastID') || TmpLastRecord
+        })*/
+        $.ajax({
+            url : phpApiMgr + "/get_resumen_juego/",
+            type : 'GET',
+            dataType : 'json',
+            data : {
+                id: sessionStorage.getItem('lastID') || TmpLastRecord
+            },
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (e) {
             if (sessionStorage.getItem('lastID') != "") {
@@ -609,11 +688,25 @@ var app = (function () {
 
     function updRetos(cancelled) {
         myApp.showPreloader('Espere, por favor...');
-        $.post(phpApiMgr + '/update_retos/', {
+        /*$.post(phpApiMgr + '/update_retos/', {
             countCorrect: initPuntajeQuestion,
             idQuestion: sessionStorage.getItem('lastID'),
             username: sessionStorage.getItem('username'),
             cancelled: cancelled || ""
+        })*/
+
+        $.ajax({
+            url : phpApiMgr + '/update_retos/',
+            type : 'POST',
+            data : {
+                countCorrect: initPuntajeQuestion,
+                idQuestion: sessionStorage.getItem('lastID'),
+                username: sessionStorage.getItem('username'),
+                cancelled: cancelled || ""
+            },
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
 
@@ -648,11 +741,25 @@ var app = (function () {
         if(get != 'history')
             myApp.showPreloader('Espere, por favor...');
 
-        $.getJSON(phpApiMgr + '/list-retos/', {
+        /*$.getJSON(phpApiMgr + '/list-retos/', {
             args: sessionStorage.getItem("username"),
             get: get,
             id: id || "",
             page : page || 0
+        })*/
+        $.ajax({
+            url : phpApiMgr + '/list-retos/',
+            data : {
+                args: sessionStorage.getItem("username"),
+                get: get,
+                id: id || "",
+                page : page || 0
+            },
+            type : 'GET',
+            dataType : 'json',
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
             myApp.hidePreloader();
@@ -717,9 +824,21 @@ var app = (function () {
         $('.page_title').html('<div style="display: inline;"><i class="icon-flag-checkered mb-b">' +
                 '</i> Retar a un amigo</div><span class="preloader" style="float: right;"></span>');
 
-        $.getJSON(phpApiMgr + '/list-users/', {
+        /*$.getJSON(phpApiMgr + '/list-users/', {
             username: sessionStorage.getItem("username"),
             keywords: $.trim(keyword)
+        })*/
+        $.ajax({
+            url : phpApiMgr + '/list-users/',
+            data : {
+                username: sessionStorage.getItem("username"),
+                keywords: $.trim(keyword)
+            },
+            type : 'GET',
+            dataType : 'json',
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
             $('.page_title').find('span').remove();
@@ -728,8 +847,19 @@ var app = (function () {
     }
 
     function getUserProfile(uid) {
-        $.getJSON(phpApiMgr + '/get_profile/', {
+        /*$.getJSON(phpApiMgr + '/get_profile/', {
             username: uid || sessionStorage.getItem('username')
+        })*/
+        $.ajax({
+            url : phpApiMgr + '/get_profile/',
+            data : {
+                username: uid || sessionStorage.getItem('username')
+            },
+            type : 'GET',
+            dataType : 'json',
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
             $('#ganadas').text(data.Ganados[0].ganado);
@@ -757,10 +887,22 @@ var app = (function () {
 
         var newimage = (img == "") ? 'default' : img;
 
-        $.post(phpApiMgr + '/change_nick/', {
+        /*$.post(phpApiMgr + '/change_nick/', {
             userid: sessionStorage.getItem('usuario_id'),
             niknam: nik,
             image: newimage
+        })*/
+        $.ajax({
+            url : phpApiMgr + '/change_nick/',
+            data : {
+                userid: sessionStorage.getItem('usuario_id'),
+                niknam: nik,
+                image: newimage
+            },
+            type : 'POST',
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
 
@@ -799,8 +941,15 @@ var app = (function () {
     }
 
     function getYearAndMonth() {
-        $.getJSON(phpApiMgr + '/getYearAndMonth/')
-        .done(function (data) {
+        $.ajax({
+            dataType : 'json',
+            url : phpApiMgr + '/getYearAndMonth/',
+            type : 'GET',
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
+        })
+        .done(function(data){
             for (var i in data) {
                 var combo = "";
                 for (var item in data[i]) {
@@ -822,14 +971,51 @@ var app = (function () {
                 $('#' + i).html(combo);
             }
         });
+       /* $.getJSON(phpApiMgr + '/getYearAndMonth/')
+        .done(function (data) {
+            for (var i in data) {
+                var combo = "";
+                for (var item in data[i]) {
+
+                    if (item == "selected")
+                        continue;
+
+                    var selected = "";
+
+                    if (item == data[i]['selected']) {
+
+                        selected = "selected";
+                        $('#div_' + i).html(data[i][item]);
+                    }
+
+                    combo += "<option value='" + item + "' " + selected + ">" + data[i][item] + "</option>";
+                }
+
+                $('#' + i).html(combo);
+            }
+        });*/
     }
 
     function getRankingByCourse(year, month) {
         myApp.showPreloader('Espere, por favor...');
-        $.getJSON(phpApiMgr + '/getRankingByCourse/', {
+
+        /*$.getJSON(phpApiMgr + '/getRankingByCourse/', {
             courseId: sessionStorage.getItem('courseId'),
             year: year,
             month: month
+        })*/
+        $.ajax({
+            url : phpApiMgr + '/getRankingByCourse/',
+            data : {
+                courseId: sessionStorage.getItem('courseId'),
+                year: year,
+                month: month
+            },
+            type : 'GET',
+            dataType : 'json',
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
             myApp.hidePreloader();
@@ -861,8 +1047,19 @@ var app = (function () {
     }
 
     function countRetosRecibidos() {
-        $.getJSON(phpApiMgr + '/counter/', {
+        /*$.getJSON(phpApiMgr + '/counter/', {
             uname: sessionStorage.getItem('username')
+        })*/
+        $.ajax({
+            url : phpApiMgr + '/counter/',
+            data : {
+                uname: sessionStorage.getItem('username')
+            },
+            type : 'GET',
+            dataType : 'json',
+            beforeSend : function(xhr){
+                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
+            }
         })
         .done(function (data) {
             //console.log(data[0]['retos']);
@@ -880,6 +1077,14 @@ var app = (function () {
         navigator.app.exitApp();
     }
 
+    /*function getToken() {
+        $.getJSON(phpApiMgr + '/token/')
+        .done(function(data){
+            sessionStorage.setItem('token_name', data['name']);
+            sessionStorage.setItem('token_value', data['value']);
+        });
+    }*/
+
     return {
         viewLogin           :   viewLogin,
         login               :   login,
@@ -888,7 +1093,7 @@ var app = (function () {
         PreloadQuestions    :   PreloadQuestions,
         listQuestions       :   listQuestions,
         fillButton          :   fillButton,
-        saveRetos           :   saveRetos,
+        //saveRetos           :   saveRetos,
         getRetos            :   getRetos,
         dateRetoAceptado    :   dateRetoAceptado,
         searchUser          :   searchUser,
@@ -903,6 +1108,7 @@ var app = (function () {
         getRankingByCourse  :   getRankingByCourse,
         countRetosRecibidos :   countRetosRecibidos,
         renderImageAvatar   :   renderImageAvatar
+        //getToken            :   getToken
     }
 
 })();
@@ -947,7 +1153,7 @@ myApp.onPageBeforeAnimation("menu", function (page) {
 myApp.onPageInit("menu", function (page) {
 
     if (sessionStorage.getItem('error') != null) {
-        myApp.showPreloader('Ha ocurrido un error inesperado, inicializando...');
+        myApp.showPreloader('Ha ocurrido un error inesperado, reiniciando...');
 
         setTimeout(function () {
             myApp.hidePreloader();
@@ -1099,7 +1305,7 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
 });
 
 myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
-    app.saveRetos();
+    //app.saveRetos();
     app.PreloadQuestions();
 });
 
