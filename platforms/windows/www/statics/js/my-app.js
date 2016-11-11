@@ -30,7 +30,7 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function () {
     new FastClick(document.body);
-    //var phpApiMgr = "http://desafio.utp.edu.pe",
+    //var phpApiMgr = "http://desafioutp.dsakiya.com",
     var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public",
         numberPage = 1,
         timerInicial = 30,
@@ -58,7 +58,11 @@ var app = (function () {
         var heightCuerpo = window.innerHeight - 246;//92/*46*/;
         var style = document.createElement('style');
         style.type = 'text/css';
-        style.innerHTML = '.auxCSS { position:absolute; border-top: solid 1px #9c9c9d; z-index:2; left:0; top:60px; width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
+        style.innerHTML = '.auxCSS {' +
+                'position:absolute; ' +
+                'border-top: solid 1px #9c9c9d;' +
+                ' z-index:2; left:0; top:60px; ' +
+                'width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
 
         $('.pages_maincontent').css({
             'height': heightCuerpo
@@ -115,9 +119,10 @@ var app = (function () {
             return false;
 
         html = data.map(function (e) {
+            var params_alt = e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '|' + e.nikname + '|' + e.avatar;
             return ('<li class="item-content">' +
                     '<div class="item-media"><img src="statics/img/avatar/' + e.avatar + '.png" width="40" /></div>' +
-                    '<div class="item-inner"  alt="' + e.id_reto + '|' + e.unidad_id + '|' + e.curso_id + '|' + e.id_temageneral + '|' + e.nikname + '|' + e.avatar + '">' +
+                    '<div class="item-inner"  alt="' + params_alt + '">' +
                     '<div class="item-title">' + e.nikname + '<div class="item-after-down">Pendiente</div></div>' +
                     '<div class="item-title">' + e.para_perder + '<div class="item-after-down">Para jugar</div></div>' +
                     '</div>' +
@@ -293,7 +298,6 @@ var app = (function () {
                 xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
         })
-        //$.getJSON(phpApiMgr + "/" + href + "/", args)
         .done(function (data) {
 
             myApp.hidePreloader();
@@ -326,8 +330,6 @@ var app = (function () {
             "windows": {}
         });
 
-        //console.log(push);
-
         push.on("registration", function (data) {
             sessionStorage.setItem('identifier', data.registrationId);
             $.ajax({
@@ -341,10 +343,6 @@ var app = (function () {
                     xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
                 }
             })
-            /*$.post(phpApiMgr + "/registerDevice/", {
-                identifier: data.registrationId,
-                userid: sessionStorage.getItem("usuario_id")
-            })*/
             .done(function (data) {
                 console.log(data);
             });
@@ -423,7 +421,6 @@ var app = (function () {
         return 'file://' + path;
 
     }
-    ;
 
     function fillButton(obj, n, pts, idrpta, idprta) {
         if (sessionStorage.getItem('handled') != 'triggered') {
@@ -485,7 +482,6 @@ var app = (function () {
     function PreloadQuestions() {
         initNumberQuestion = 0;
         initPuntajeQuestion = 0;
-        dataQuestion = "";
 
         $.ajax({
             url : phpApiMgr + '/getQuestions/',
@@ -499,10 +495,6 @@ var app = (function () {
                 xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
         })
-        /*$.getJSON(phpApiMgr + '/getQuestions/', {
-            course: sessionStorage.getItem("courseId"),
-            unidad: sessionStorage.getItem("unidadId")
-        })*/
         .done(function (data) {
             dataQuestion = data;
             totalQuestions = dataQuestion.length;
@@ -555,14 +547,6 @@ var app = (function () {
             sessionStorage.setItem('error', 1);
 
             mainView.router.loadPage("views/mainMenu/menu.html");
-
-            /*$.post(phpApiMgr + '/delete_reto/', {
-                lastID : sessionStorage.getItem('lastID'),
-                uname : sessionStorage.getItem('username')
-            })
-            .done(function(res){
-                mainView.router.loadPage("views/mainMenu/menu.html");
-            });*/
         } else {
             if (index < totalQuestions) {
 
@@ -623,14 +607,6 @@ var app = (function () {
                 xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
         })
-        /*$.post(phpApiMgr + '/save_retos/', {
-            id_reto: sessionStorage.getItem('lastID') || null,
-            user_retador: sessionStorage.getItem('username'),
-            unidad_id: sessionStorage.getItem('unidadId') || "",
-            courseId: sessionStorage.getItem('courseId') || "",
-            user_retado: sessionStorage.getItem('userRetado') || "",
-            id_temageneral: sessionStorage.getItem('themeGeneral') || ""
-        })*/
         .done(function (data) {
             if (data != "") {
                 sessionStorage.setItem('lastID', data);
@@ -639,10 +615,6 @@ var app = (function () {
     }
 
     function dateRetoAceptado(id) {
-        /*$.post(phpApiMgr + '/updateDateReto/', {
-            idReto: id,
-            username: sessionStorage.getItem('username')
-        })*/
         $.ajax({
             url : phpApiMgr + '/updateDateReto/',
             type : 'POST',
@@ -660,10 +632,6 @@ var app = (function () {
     }
 
     function getResumenReto() {
-
-        /*$.getJSON(phpApiMgr + "/get_resumen_juego/", {
-            id: sessionStorage.getItem('lastID') || TmpLastRecord
-        })*/
         $.ajax({
             url : phpApiMgr + "/get_resumen_juego/",
             type : 'GET',
@@ -688,12 +656,6 @@ var app = (function () {
 
     function updRetos(cancelled) {
         myApp.showPreloader('Espere, por favor...');
-        /*$.post(phpApiMgr + '/update_retos/', {
-            countCorrect: initPuntajeQuestion,
-            idQuestion: sessionStorage.getItem('lastID'),
-            username: sessionStorage.getItem('username'),
-            cancelled: cancelled || ""
-        })*/
 
         $.ajax({
             url : phpApiMgr + '/update_retos/',
@@ -741,12 +703,6 @@ var app = (function () {
         if(get != 'history')
             myApp.showPreloader('Espere, por favor...');
 
-        /*$.getJSON(phpApiMgr + '/list-retos/', {
-            args: sessionStorage.getItem("username"),
-            get: get,
-            id: id || "",
-            page : page || 0
-        })*/
         $.ajax({
             url : phpApiMgr + '/list-retos/',
             data : {
@@ -782,7 +738,7 @@ var app = (function () {
                         }, 3000);
 
                         $('.infinite-scroll-preloader').remove();
-                        
+
                         loading = true;
                     }
 
@@ -824,10 +780,6 @@ var app = (function () {
         $('.page_title').html('<div style="display: inline;"><i class="icon-flag-checkered mb-b">' +
                 '</i> Retar a un amigo</div><span class="preloader" style="float: right;"></span>');
 
-        /*$.getJSON(phpApiMgr + '/list-users/', {
-            username: sessionStorage.getItem("username"),
-            keywords: $.trim(keyword)
-        })*/
         $.ajax({
             url : phpApiMgr + '/list-users/',
             data : {
@@ -847,9 +799,6 @@ var app = (function () {
     }
 
     function getUserProfile(uid) {
-        /*$.getJSON(phpApiMgr + '/get_profile/', {
-            username: uid || sessionStorage.getItem('username')
-        })*/
         $.ajax({
             url : phpApiMgr + '/get_profile/',
             data : {
@@ -887,11 +836,6 @@ var app = (function () {
 
         var newimage = (img == "") ? 'default' : img;
 
-        /*$.post(phpApiMgr + '/change_nick/', {
-            userid: sessionStorage.getItem('usuario_id'),
-            niknam: nik,
-            image: newimage
-        })*/
         $.ajax({
             url : phpApiMgr + '/change_nick/',
             data : {
@@ -971,39 +915,11 @@ var app = (function () {
                 $('#' + i).html(combo);
             }
         });
-       /* $.getJSON(phpApiMgr + '/getYearAndMonth/')
-        .done(function (data) {
-            for (var i in data) {
-                var combo = "";
-                for (var item in data[i]) {
-
-                    if (item == "selected")
-                        continue;
-
-                    var selected = "";
-
-                    if (item == data[i]['selected']) {
-
-                        selected = "selected";
-                        $('#div_' + i).html(data[i][item]);
-                    }
-
-                    combo += "<option value='" + item + "' " + selected + ">" + data[i][item] + "</option>";
-                }
-
-                $('#' + i).html(combo);
-            }
-        });*/
     }
 
     function getRankingByCourse(year, month) {
         myApp.showPreloader('Espere, por favor...');
 
-        /*$.getJSON(phpApiMgr + '/getRankingByCourse/', {
-            courseId: sessionStorage.getItem('courseId'),
-            year: year,
-            month: month
-        })*/
         $.ajax({
             url : phpApiMgr + '/getRankingByCourse/',
             data : {
@@ -1047,9 +963,6 @@ var app = (function () {
     }
 
     function countRetosRecibidos() {
-        /*$.getJSON(phpApiMgr + '/counter/', {
-            uname: sessionStorage.getItem('username')
-        })*/
         $.ajax({
             url : phpApiMgr + '/counter/',
             data : {
@@ -1077,14 +990,6 @@ var app = (function () {
         navigator.app.exitApp();
     }
 
-    /*function getToken() {
-        $.getJSON(phpApiMgr + '/token/')
-        .done(function(data){
-            sessionStorage.setItem('token_name', data['name']);
-            sessionStorage.setItem('token_value', data['value']);
-        });
-    }*/
-
     return {
         viewLogin           :   viewLogin,
         login               :   login,
@@ -1108,7 +1013,6 @@ var app = (function () {
         getRankingByCourse  :   getRankingByCourse,
         countRetosRecibidos :   countRetosRecibidos,
         renderImageAvatar   :   renderImageAvatar
-        //getToken            :   getToken
     }
 
 })();

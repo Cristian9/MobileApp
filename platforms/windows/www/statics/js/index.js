@@ -1,9 +1,6 @@
 ﻿document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-
-    //getToken();
-
     database = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
 
     if (database != null) {
@@ -17,7 +14,7 @@ function onDeviceReady() {
     } else {
         navigator.notification.alert('Hubo un problema con el usuario', null, 'DesafíoUTP');
     }
-    
+
     app.viewLogin();
 
     $('#txtuser').focus(function () {
