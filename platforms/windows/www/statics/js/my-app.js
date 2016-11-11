@@ -30,7 +30,7 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function () {
     new FastClick(document.body);
-    //var phpApiMgr = "http://desafioutp.dsakiya.com",
+    //var phpApiMgr = "http://desafio.utp.edu.pe",
     var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public",
         numberPage = 1,
         timerInicial = 30,
