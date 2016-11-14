@@ -22,6 +22,8 @@ var $$ = Dom7;
 
 var database = null;
 var loading = false;
+//var phpApiMgr = "http://desafioutp.dsakiya.com",
+var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -30,9 +32,8 @@ var mainView = myApp.addView('.view-main', {
 
 var app = (function () {
     new FastClick(document.body);
-    //var phpApiMgr = "http://desafioutp.dsakiya.com",
-    var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public",
-        numberPage = 1,
+
+    var numberPage = 1,
         timerInicial = 30,
         dataQuestion = "",
         pageDinamic,
@@ -293,10 +294,7 @@ var app = (function () {
             url : phpApiMgr + "/" + href + "/",
             type : 'GET',
             dataType : 'json',
-            data : args,
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            data : args
         })
         .done(function (data) {
 
@@ -338,9 +336,6 @@ var app = (function () {
                 data : {
                     identifier : data.registrationId,
                     userid : sessionStorage.getItem('usuario_id')
-                },
-                beforeSend : function(xhr){
-                    xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
                 }
             })
             .done(function (data) {
@@ -377,9 +372,12 @@ var app = (function () {
 
         $.post(phpApiMgr + '/login/', {
             user: $.trim($('#txtuser').val()),
-            pass: $.trim($('#txtpassword').val())
+            pass: $.trim($('#txtpassword').val()),
+            'csrf_name' : sessionStorage.getItem('csrf_name'),
+            'csrf_value' : sessionStorage.getItem('csrf_value')
         })
         .done(function (data) {
+
             myApp.hideIndicator();
             var data = eval(data);
             if (!data) {
@@ -490,9 +488,6 @@ var app = (function () {
             data : {
                 course: sessionStorage.getItem("courseId"),
                 unidad: sessionStorage.getItem("unidadId")
-            },
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
         })
         .done(function (data) {
@@ -602,10 +597,8 @@ var app = (function () {
                 courseId: sessionStorage.getItem('courseId') || "",
                 user_retado: sessionStorage.getItem('userRetado') || "",
                 id_temageneral: sessionStorage.getItem('themeGeneral') || ""
-            },
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
+            
         })
         .done(function (data) {
             if (data != "") {
@@ -621,10 +614,8 @@ var app = (function () {
             data : {
                 idReto: id,
                 username: sessionStorage.getItem('username')
-            },
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
+            
         })
         .done(function (data) {
             console.log(data);
@@ -638,10 +629,8 @@ var app = (function () {
             dataType : 'json',
             data : {
                 id: sessionStorage.getItem('lastID') || TmpLastRecord
-            },
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
+            
         })
         .done(function (e) {
             if (sessionStorage.getItem('lastID') != "") {
@@ -665,10 +654,8 @@ var app = (function () {
                 idQuestion: sessionStorage.getItem('lastID'),
                 username: sessionStorage.getItem('username'),
                 cancelled: cancelled || ""
-            },
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
             }
+            
         })
         .done(function (data) {
 
@@ -712,10 +699,8 @@ var app = (function () {
                 page : page || 0
             },
             type : 'GET',
-            dataType : 'json',
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            dataType : 'json'
+            
         })
         .done(function (data) {
             myApp.hidePreloader();
@@ -786,11 +771,9 @@ var app = (function () {
                 username: sessionStorage.getItem("username"),
                 keywords: $.trim(keyword)
             },
-            type : 'GET',
-            dataType : 'json',
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            type : 'POST',
+            dataType : 'json'
+            
         })
         .done(function (data) {
             $('.page_title').find('span').remove();
@@ -805,10 +788,8 @@ var app = (function () {
                 username: uid || sessionStorage.getItem('username')
             },
             type : 'GET',
-            dataType : 'json',
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            dataType : 'json'
+            
         })
         .done(function (data) {
             $('#ganadas').text(data.Ganados[0].ganado);
@@ -843,10 +824,8 @@ var app = (function () {
                 niknam: nik,
                 image: newimage
             },
-            type : 'POST',
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            type : 'POST'
+            
         })
         .done(function (data) {
 
@@ -888,10 +867,8 @@ var app = (function () {
         $.ajax({
             dataType : 'json',
             url : phpApiMgr + '/getYearAndMonth/',
-            type : 'GET',
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            type : 'GET'
+            
         })
         .done(function(data){
             for (var i in data) {
@@ -928,10 +905,8 @@ var app = (function () {
                 month: month
             },
             type : 'GET',
-            dataType : 'json',
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            dataType : 'json'
+            
         })
         .done(function (data) {
             myApp.hidePreloader();
@@ -969,10 +944,8 @@ var app = (function () {
                 uname: sessionStorage.getItem('username')
             },
             type : 'GET',
-            dataType : 'json',
-            beforeSend : function(xhr){
-                xhr.setRequestHeader('keygame', sessionStorage.getItem('username'));
-            }
+            dataType : 'json'
+            
         })
         .done(function (data) {
             //console.log(data[0]['retos']);
@@ -1136,7 +1109,8 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
     $('#list-users').on("touchstart", ".btn-retar", function () {
         var username = $(this).attr('alt');
         sessionStorage.setItem("userRetado", username);
-        navigator.notification.confirm("Se enviará una notificación al usuario seleccionado, Desea continuar?", function (indexButton) {
+        var message = "Se enviará una notificación al usuario seleccionado. ¿Estás listo para empezar a jugar?";
+        navigator.notification.confirm(message, function (indexButton) {
             if (indexButton == 1) {
                 mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
             }

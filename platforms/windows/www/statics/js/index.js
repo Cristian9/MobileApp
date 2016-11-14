@@ -1,6 +1,9 @@
 ﻿document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
+   
+    getTokenCsrf();
+
     database = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
 
     if (database != null) {
@@ -30,6 +33,17 @@ function onDeviceReady() {
     })
 
     document.addEventListener("backbutton", app.closeApp, false);
+}
+
+function getTokenCsrf() {
+    $.getJSON(phpApiMgr + '/getToken/')
+    .done(function(data){
+        sessionStorage.setItem('csrf_name', data['csrf_name']);
+        sessionStorage.setItem('csrf_value', data['csrf_value']);
+    })
+    .fail(function(error){
+        alert(error['responseText']);
+    });
 }
 
 function checkExistsUser() {
