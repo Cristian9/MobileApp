@@ -22,7 +22,7 @@ var $$ = Dom7;
 
 var database = null;
 var loading = false;
-//var phpApiMgr = "http://desafioutp.dsakiya.com",
+//var phpApiMgr = "http://desafioutp.dsakiya.com";
 var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 
 var mainView = myApp.addView('.view-main', {
@@ -335,7 +335,9 @@ var app = (function () {
                 type : 'POST',
                 data : {
                     identifier : data.registrationId,
-                    userid : sessionStorage.getItem('usuario_id')
+                    userid : sessionStorage.getItem('usuario_id'),
+                    'csrf_name' : sessionStorage.getItem('csrf_name'),
+                    'csrf_value' : sessionStorage.getItem('csrf_value')
                 }
             })
             .done(function (data) {
@@ -462,15 +464,28 @@ var app = (function () {
         $('.siguiente_' + (n - 1)).delay(delay).animate({'left': '-100%'}, function () {
 
             initPuntajeQuestion += pts;
-            $.post(phpApiMgr + "/save_selected_rpta/", {
-                reto_id: sessionStorage.getItem('lastID'),
-                username: sessionStorage.getItem('username'),
-                courseid: sessionStorage.getItem('courseId') || "",
-                unidadid: sessionStorage.getItem('unidadId') || "",
-                generalt: sessionStorage.getItem('idtemageneral') || "",
-                pregunta: idprta,
-                respuest: idrspta
-            });
+
+            $.ajax({
+                url : phpApiMgr + "/save_selected_rpta/",
+                type : 'POST',
+                data : {
+                    reto_id: sessionStorage.getItem('lastID'),
+                    username: sessionStorage.getItem('username'),
+                    courseid: sessionStorage.getItem('courseId') || "",
+                    unidadid: sessionStorage.getItem('unidadId') || "",
+                    generalt: sessionStorage.getItem('idtemageneral') || "",
+                    pregunta: idprta,
+                    respuest: idrspta,
+                    'csrf_name' : sessionStorage.getItem('csrf_name'),
+                    'csrf_value' : sessionStorage.getItem('csrf_value')
+                }
+            })
+            .done(function(data){
+                console.log(data);
+            })
+            .fail(function(error){
+                alert(error['responseText']);
+            })
 
             $('.questions-content').empty().append(app.listQuestions(n));
             $('.siguiente_' + n).removeClass('innactive').animate({'right': '0'});
@@ -480,6 +495,8 @@ var app = (function () {
     function PreloadQuestions() {
         initNumberQuestion = 0;
         initPuntajeQuestion = 0;
+
+        myApp.showPreloader('Cargando preguntas, un momento...');
 
         $.ajax({
             url : phpApiMgr + '/getQuestions/',
@@ -491,8 +508,13 @@ var app = (function () {
             }
         })
         .done(function (data) {
+            
             dataQuestion = data;
             totalQuestions = dataQuestion.length;
+
+            myApp.hidePreloader();
+
+            $('.questions-content').append(listQuestions(0));
         });
     }
 
@@ -543,6 +565,9 @@ var app = (function () {
 
             mainView.router.loadPage("views/mainMenu/menu.html");
         } else {
+
+            getTokenCsrf();
+
             if (index < totalQuestions) {
 
                 if(!handlerReto) {
@@ -596,7 +621,9 @@ var app = (function () {
                 unidad_id: sessionStorage.getItem('unidadId') || "",
                 courseId: sessionStorage.getItem('courseId') || "",
                 user_retado: sessionStorage.getItem('userRetado') || "",
-                id_temageneral: sessionStorage.getItem('themeGeneral') || ""
+                id_temageneral: sessionStorage.getItem('themeGeneral') || "",
+                'csrf_name' : sessionStorage.getItem('csrf_name'),
+                'csrf_value' : sessionStorage.getItem('csrf_value')
             }
             
         })
@@ -613,7 +640,9 @@ var app = (function () {
             type : 'POST',
             data : {
                 idReto: id,
-                username: sessionStorage.getItem('username')
+                username: sessionStorage.getItem('username'),
+                'csrf_name' : sessionStorage.getItem('csrf_name'),
+                'csrf_value' : sessionStorage.getItem('csrf_value')
             }
             
         })
@@ -644,6 +673,7 @@ var app = (function () {
     }
 
     function updRetos(cancelled) {
+
         myApp.showPreloader('Espere, por favor...');
 
         $.ajax({
@@ -653,18 +683,21 @@ var app = (function () {
                 countCorrect: initPuntajeQuestion,
                 idQuestion: sessionStorage.getItem('lastID'),
                 username: sessionStorage.getItem('username'),
-                cancelled: cancelled || ""
+                cancelled: cancelled || "",
+                'csrf_name' : sessionStorage.getItem('csrf_name'),
+                'csrf_value' : sessionStorage.getItem('csrf_value')
             }
             
         })
         .done(function (data) {
-
             sessionStorage.setItem('handled', null);
 
             if (typeof cancelled == "undefined") {
                 $.post(phpApiMgr + '/sendNotification/', {
                     toUser: sessionStorage.getItem('userRetado'),
-                    fromUser: sessionStorage.getItem('nikname')
+                    fromUser: sessionStorage.getItem('nikname'),
+                    'csrf_name' : sessionStorage.getItem('csrf_name'),
+                    'csrf_value' : sessionStorage.getItem('csrf_value')
                 })
                 .done(function () {
                     myApp.hidePreloader();
@@ -771,7 +804,7 @@ var app = (function () {
                 username: sessionStorage.getItem("username"),
                 keywords: $.trim(keyword)
             },
-            type : 'POST',
+            type : 'GET',
             dataType : 'json'
             
         })
@@ -814,7 +847,6 @@ var app = (function () {
     }
 
     function editNickUser(nik, img) {
-
         var newimage = (img == "") ? 'default' : img;
 
         $.ajax({
@@ -822,7 +854,9 @@ var app = (function () {
             data : {
                 userid: sessionStorage.getItem('usuario_id'),
                 niknam: nik,
-                image: newimage
+                image: newimage,
+                'csrf_name' : sessionStorage.getItem('csrf_name'),
+                'csrf_value' : sessionStorage.getItem('csrf_value')
             },
             type : 'POST'
             
@@ -955,6 +989,15 @@ var app = (function () {
         });
     }
 
+    function getTokenCsrf() {
+        $.getJSON(phpApiMgr + '/getToken/', function(data){
+            sessionStorage.setItem('csrf_name', data['csrf_name']);
+            sessionStorage.setItem('csrf_value', data['csrf_value']);
+
+            return 'ok';
+        });
+    }
+
     function gotoMainmenu() {
         mainView.router.loadPage("views/mainMenu/menu.html");
     }
@@ -985,7 +1028,8 @@ var app = (function () {
         getYearAndMonth     :   getYearAndMonth,
         getRankingByCourse  :   getRankingByCourse,
         countRetosRecibidos :   countRetosRecibidos,
-        renderImageAvatar   :   renderImageAvatar
+        renderImageAvatar   :   renderImageAvatar,
+        getTokenCsrf        :   getTokenCsrf
     }
 
 })();
@@ -1024,10 +1068,15 @@ $$(document).on("pageInit", function (page) {
 });
 
 myApp.onPageBeforeAnimation("menu", function (page) {
+
+    if(sessionStorage.getItem('csrf_value') == null) {
+        app.getTokenCsrf();
+    }
+    
     app.countRetosRecibidos();
 });
 
-myApp.onPageInit("menu", function (page) {
+myApp.onPageAfterAnimation("menu", function (page) {
 
     if (sessionStorage.getItem('error') != null) {
         myApp.showPreloader('Ha ocurrido un error inesperado, reiniciando...');
@@ -1182,17 +1231,19 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
     });
 });
 
-myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
+/*myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
     //app.saveRetos();
-    app.PreloadQuestions();
-});
+    //app.PreloadQuestions();
+});*/
 
 myApp.onPageAfterAnimation("resumenRetos", function (page) {
     app.getResumenReto();
 });
 
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
-    $('.questions-content').append(app.listQuestions(0));
+    app.PreloadQuestions();
+
+    //$('.questions-content').append(app.listQuestions(0));
 });
 
 myApp.onPageBeforeAnimation("detalleRetos", function (page) {
