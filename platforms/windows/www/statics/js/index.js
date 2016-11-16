@@ -2,7 +2,7 @@
 
 function onDeviceReady() {
    
-    alert(app.getTokenCsrf());
+    //app.getTokenCsrf();
 
     database = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
 

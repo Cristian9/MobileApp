@@ -22,7 +22,7 @@ var $$ = Dom7;
 
 var database = null;
 var loading = false;
-var phpApiMgr = "http://desafioutp.dsakiya.com";
+var phpApiMgr = "http://desafio.utp.edu.pe";
 //var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 
 var mainView = myApp.addView('.view-main', {
@@ -379,7 +379,6 @@ var app = (function () {
             'csrf_value' : sessionStorage.getItem('csrf_value')
         })
         .done(function (data) {
-
             myApp.hideIndicator();
             var data = eval(data);
             if (!data) {
@@ -403,7 +402,9 @@ var app = (function () {
             }
         })
         .fail(function (e) {
-            console.log(e);
+
+            console.log(e['status'] + ' -> ' + e['statusText']);
+
             if (e.status == 0) {
                 myApp.hideIndicator();
                 $('.error_message span').html(serve_gone_away);
@@ -479,7 +480,7 @@ var app = (function () {
                 console.log(data);
             })
             .fail(function(error){
-                alert(error['responseText']);
+                console.log(error['responseText']);
             })
 
             $('.questions-content').empty().append(app.listQuestions(n));
@@ -684,7 +685,7 @@ var app = (function () {
         .done(function (data) {
 
             handlerReto = false;
-            
+
             sessionStorage.setItem('handled', null);
 
             if (typeof cancelled == "undefined") {
@@ -762,9 +763,9 @@ var app = (function () {
                     var htmlRecibido = renderListRetosRecibidos(data.Recibido);
                     var htmlHistorial = renderListRetosHistorial(data.Historial);
 
-                    $('#send').html(htmlEnviado);
-                    $('#receive').html(htmlRecibido);
-                    $('#history').html(htmlHistorial);
+                    $('#send').empty().html(htmlEnviado);
+                    $('#receive').empty().html(htmlRecibido);
+                    $('#history').empty().html(htmlHistorial);
                 }
             } else {
                 var htmlDetalle = renderListRetosDetalle(data.Detalle);
@@ -835,7 +836,7 @@ var app = (function () {
                 }
             });
         }, function (error) {
-            alert(error);
+            console.log(error);
         }, function () {
             console.log('ok');
         });
@@ -870,10 +871,10 @@ var app = (function () {
                 tx.executeSql(query, [newimage, nik, sessionStorage.getItem('usuario_id')], function (tx, res) {
 
                 }, function (error) {
-                    alert(error);
+                    console.log(error);
                 });
             }, function (error) {
-                alert(error);
+                console.log(error);
             }, function () {
                 console.log('ok');
             });
@@ -893,10 +894,10 @@ var app = (function () {
         });
     }
 
-    function getYearAndMonth() {
+    function getDateRanking() {
         $.ajax({
             dataType : 'json',
-            url : phpApiMgr + '/getYearAndMonth/',
+            url : phpApiMgr + '/getDateRanking/',
             type : 'GET'
             
         })
@@ -954,10 +955,10 @@ var app = (function () {
                     tx.executeSql(query, [sessionStorage.getItem('usuario_id')], function (tx, res) {
 
                     }, function (error) {
-                        alert(error);
+                        console.log(error);
                     });
                 }, function (error) {
-                    alert(error);
+                    console.log(error);
                 }, function () {
                     sessionStorage.clear();
                     document.location.href = "index.html";
@@ -992,7 +993,7 @@ var app = (function () {
             sessionStorage.setItem('csrf_value', data['csrf_value']);
         })
         .fail(function(error){
-            alert(error['responseText']);
+            console.log(error['responseText']);
         });
     }
 
@@ -1023,7 +1024,7 @@ var app = (function () {
         cancelReto          :   cancelReto,
         closeApp            :   closeApp,
         gotoMainmenu        :   gotoMainmenu,
-        getYearAndMonth     :   getYearAndMonth,
+        getDateRanking     :   getDateRanking,
         getRankingByCourse  :   getRankingByCourse,
         countRetosRecibidos :   countRetosRecibidos,
         renderImageAvatar   :   renderImageAvatar,
@@ -1065,16 +1066,13 @@ $$(document).on("pageInit", function (page) {
     }
 });
 
-myApp.onPageBeforeAnimation("menu", function (page) {
+myApp.onPageAfterAnimation("menu", function (page) {
 
     if(sessionStorage.getItem('csrf_value') == null) {
         app.getTokenCsrf();
     }
-    
-    app.countRetosRecibidos();
-});
 
-myApp.onPageAfterAnimation("menu", function (page) {
+    app.countRetosRecibidos();
 
     if (sessionStorage.getItem('error') != null) {
         myApp.showPreloader('Ha ocurrido un error inesperado, reiniciando...');
@@ -1288,7 +1286,7 @@ myApp.onPageAfterAnimation("listadoCursosRanking", function (page) {
 });
 
 myApp.onPageAfterAnimation("listaRanking", function (page) {
-    app.getYearAndMonth();
+    app.getDateRanking();
 
     setTimeout(function () {
         var year = $('#year').val();

@@ -22,7 +22,7 @@ var $$ = Dom7;
 
 var database = null;
 var loading = false;
-//var phpApiMgr = "http://desafioutp.dsakiya.com";
+//var phpApiMgr = "http://desafio.utp.edu.pe";
 var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 
 var mainView = myApp.addView('.view-main', {
@@ -379,7 +379,6 @@ var app = (function () {
             'csrf_value' : sessionStorage.getItem('csrf_value')
         })
         .done(function (data) {
-
             myApp.hideIndicator();
             var data = eval(data);
             if (!data) {
@@ -403,7 +402,9 @@ var app = (function () {
             }
         })
         .fail(function (e) {
-            console.log(e);
+
+            console.log(e['status'] + ' -> ' + e['statusText']);
+
             if (e.status == 0) {
                 myApp.hideIndicator();
                 $('.error_message span').html(serve_gone_away);
@@ -464,27 +465,22 @@ var app = (function () {
         $('.siguiente_' + (n - 1)).delay(delay).animate({'left': '-100%'}, function () {
 
             initPuntajeQuestion += pts;
-
-            $.ajax({
-                url : phpApiMgr + "/save_selected_rpta/",
-                type : 'POST',
-                data : {
-                    reto_id: sessionStorage.getItem('lastID'),
-                    username: sessionStorage.getItem('username'),
-                    courseid: sessionStorage.getItem('courseId') || "",
-                    unidadid: sessionStorage.getItem('unidadId') || "",
-                    generalt: sessionStorage.getItem('idtemageneral') || "",
-                    pregunta: idprta,
-                    respuest: idrspta,
-                    'csrf_name' : sessionStorage.getItem('csrf_name'),
-                    'csrf_value' : sessionStorage.getItem('csrf_value')
-                }
+            $.post(phpApiMgr + "/save_selected_rpta/", {
+                reto_id: sessionStorage.getItem('lastID'),
+                username: sessionStorage.getItem('username'),
+                courseid: sessionStorage.getItem('courseId') || "",
+                unidadid: sessionStorage.getItem('unidadId') || "",
+                generalt: sessionStorage.getItem('idtemageneral') || "",
+                pregunta: idprta,
+                respuest: idrspta,
+                'csrf_name' : sessionStorage.getItem('csrf_name'),
+                'csrf_value' : sessionStorage.getItem('csrf_value')
             })
             .done(function(data){
                 console.log(data);
             })
             .fail(function(error){
-                alert(error['responseText']);
+                console.log(error['responseText']);
             })
 
             $('.questions-content').empty().append(app.listQuestions(n));
@@ -565,12 +561,10 @@ var app = (function () {
 
             mainView.router.loadPage("views/mainMenu/menu.html");
         } else {
-
-            getTokenCsrf();
-
             if (index < totalQuestions) {
 
                 if(!handlerReto) {
+
                     saveRetos();
 
                     handlerReto = true;
@@ -673,7 +667,6 @@ var app = (function () {
     }
 
     function updRetos(cancelled) {
-
         myApp.showPreloader('Espere, por favor...');
 
         $.ajax({
@@ -690,6 +683,9 @@ var app = (function () {
             
         })
         .done(function (data) {
+
+            handlerReto = false;
+
             sessionStorage.setItem('handled', null);
 
             if (typeof cancelled == "undefined") {
@@ -840,13 +836,14 @@ var app = (function () {
                 }
             });
         }, function (error) {
-            alert(error);
+            console.log(error);
         }, function () {
             console.log('ok');
         });
     }
 
     function editNickUser(nik, img) {
+
         var newimage = (img == "") ? 'default' : img;
 
         $.ajax({
@@ -874,10 +871,10 @@ var app = (function () {
                 tx.executeSql(query, [newimage, nik, sessionStorage.getItem('usuario_id')], function (tx, res) {
 
                 }, function (error) {
-                    alert(error);
+                    console.log(error);
                 });
             }, function (error) {
-                alert(error);
+                console.log(error);
             }, function () {
                 console.log('ok');
             });
@@ -897,10 +894,10 @@ var app = (function () {
         });
     }
 
-    function getYearAndMonth() {
+    function getDateRanking() {
         $.ajax({
             dataType : 'json',
-            url : phpApiMgr + '/getYearAndMonth/',
+            url : phpApiMgr + '/getDateRanking/',
             type : 'GET'
             
         })
@@ -958,10 +955,10 @@ var app = (function () {
                     tx.executeSql(query, [sessionStorage.getItem('usuario_id')], function (tx, res) {
 
                     }, function (error) {
-                        alert(error);
+                        console.log(error);
                     });
                 }, function (error) {
-                    alert(error);
+                    console.log(error);
                 }, function () {
                     sessionStorage.clear();
                     document.location.href = "index.html";
@@ -990,11 +987,13 @@ var app = (function () {
     }
 
     function getTokenCsrf() {
-        $.getJSON(phpApiMgr + '/getToken/', function(data){
+        $.getJSON(phpApiMgr + '/getToken/')
+        .done(function(data){
             sessionStorage.setItem('csrf_name', data['csrf_name']);
             sessionStorage.setItem('csrf_value', data['csrf_value']);
-
-            return 'ok';
+        })
+        .fail(function(error){
+            console.log(error['responseText']);
         });
     }
 
@@ -1025,7 +1024,7 @@ var app = (function () {
         cancelReto          :   cancelReto,
         closeApp            :   closeApp,
         gotoMainmenu        :   gotoMainmenu,
-        getYearAndMonth     :   getYearAndMonth,
+        getDateRanking     :   getDateRanking,
         getRankingByCourse  :   getRankingByCourse,
         countRetosRecibidos :   countRetosRecibidos,
         renderImageAvatar   :   renderImageAvatar,
@@ -1067,16 +1066,13 @@ $$(document).on("pageInit", function (page) {
     }
 });
 
-myApp.onPageBeforeAnimation("menu", function (page) {
+myApp.onPageAfterAnimation("menu", function (page) {
 
     if(sessionStorage.getItem('csrf_value') == null) {
         app.getTokenCsrf();
     }
-    
-    app.countRetosRecibidos();
-});
 
-myApp.onPageAfterAnimation("menu", function (page) {
+    app.countRetosRecibidos();
 
     if (sessionStorage.getItem('error') != null) {
         myApp.showPreloader('Ha ocurrido un error inesperado, reiniciando...');
@@ -1290,7 +1286,7 @@ myApp.onPageAfterAnimation("listadoCursosRanking", function (page) {
 });
 
 myApp.onPageAfterAnimation("listaRanking", function (page) {
-    app.getYearAndMonth();
+    app.getDateRanking();
 
     setTimeout(function () {
         var year = $('#year').val();
