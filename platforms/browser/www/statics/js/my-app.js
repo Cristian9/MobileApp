@@ -22,8 +22,9 @@ var $$ = Dom7;
 
 var database = null;
 var loading = false;
-//var phpApiMgr = "http://desafio.utp.edu.pe";
-var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
+var phpApiMgr = "http://desafio.utp.edu.pe";
+var handle_edit_profile = false;
+//var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -49,6 +50,7 @@ var app = (function () {
         mediaAnswer,
         myScroll,
         mediaTimer,
+        handle_error_red = false,
         handlerReto = false;
 
     String.prototype.ucfirst = function () {
@@ -61,8 +63,8 @@ var app = (function () {
         style.type = 'text/css';
         style.innerHTML = '.auxCSS {' +
                 'position:absolute; ' +
-                'border-top: solid 1px #9c9c9d;' +
-                ' z-index:2; left:0; top:60px; ' +
+                'border-top: solid 1px #9c9c9d; ' +
+                'z-index:2; left:0; top:60px; ' +
                 'width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
 
         $('.pages_maincontent').css({
@@ -763,9 +765,9 @@ var app = (function () {
                     var htmlRecibido = renderListRetosRecibidos(data.Recibido);
                     var htmlHistorial = renderListRetosHistorial(data.Historial);
 
-                    $('#send').html(htmlEnviado);
-                    $('#receive').html(htmlRecibido);
-                    $('#history').html(htmlHistorial);
+                    $('#send').empty().html(htmlEnviado);
+                    $('#receive').empty().html(htmlRecibido);
+                    $('#history').empty().html(htmlHistorial);
                 }
             } else {
                 var htmlDetalle = renderListRetosDetalle(data.Detalle);
@@ -844,45 +846,49 @@ var app = (function () {
 
     function editNickUser(nik, img) {
 
-        var newimage = (img == "") ? 'default' : img;
+        if(!handle_edit_profile) {
+            var newimage = (img == "") ? 'default' : img;
 
-        $.ajax({
-            url : phpApiMgr + '/change_nick/',
-            data : {
-                userid: sessionStorage.getItem('usuario_id'),
-                niknam: nik,
-                image: newimage,
-                'csrf_name' : sessionStorage.getItem('csrf_name'),
-                'csrf_value' : sessionStorage.getItem('csrf_value')
-            },
-            type : 'POST'
-            
-        })
-        .done(function (data) {
+            $.ajax({
+                url : phpApiMgr + '/change_nick/',
+                data : {
+                    userid: sessionStorage.getItem('usuario_id'),
+                    niknam: nik,
+                    image: newimage,
+                    'csrf_name' : sessionStorage.getItem('csrf_name'),
+                    'csrf_value' : sessionStorage.getItem('csrf_value')
+                },
+                type : 'POST'
+                
+            })
+            .done(function (data) {
 
-            sessionStorage.setItem('nikname', nik);
-            sessionStorage.setItem('image_avatar', newimage);
+                sessionStorage.setItem('nikname', nik);
+                sessionStorage.setItem('image_avatar', newimage);
 
-            myApp.alert("Se ha actualizado correctamente tus datos", "Preguntados UTP");
+                myApp.alert("Se ha actualizado correctamente tus datos", "Preguntados UTP");
 
-            database.transaction(function (tx) {
-                var query = "UPDATE userlogued set image_avatar = ?, nikname = ? WHERE usuario_id = ?";
+                database.transaction(function (tx) {
+                    var query = "UPDATE userlogued set image_avatar = ?, nikname = ? WHERE usuario_id = ?";
 
-                tx.executeSql(query, [newimage, nik, sessionStorage.getItem('usuario_id')], function (tx, res) {
+                    tx.executeSql(query, [newimage, nik, sessionStorage.getItem('usuario_id')], function (tx, res) {
 
+                    }, function (error) {
+                        console.log(error);
+                    });
                 }, function (error) {
                     console.log(error);
+                }, function () {
+                    console.log('ok');
                 });
-            }, function (error) {
-                console.log(error);
-            }, function () {
-                console.log('ok');
+
+                $('.header-text p').html(nik);
+                $('#photoAvatar').html('<img src="statics/img/avatar/' + newimage + '.png" />');
+
+                handle_edit_profile = true;
             });
-
-            $('.header-text p').html(nik);
-            $('#photoAvatar').html('<img src="statics/img/avatar/' + newimage + '.png" />');
-
-        });
+        }
+        
     }
 
     function cancelReto() {
@@ -947,9 +953,7 @@ var app = (function () {
 
     function logout() {
         navigator.notification.confirm("Salir de la aplicación?", function (indexButton) {
-
             if (indexButton == 1) {
-
                 database.transaction(function (tx) {
                     var query = "DELETE FROM userlogued WHERE usuario_id = ?";
                     tx.executeSql(query, [sessionStorage.getItem('usuario_id')], function (tx, res) {
@@ -987,14 +991,24 @@ var app = (function () {
     }
 
     function getTokenCsrf() {
-        $.getJSON(phpApiMgr + '/getToken/')
-        .done(function(data){
-            sessionStorage.setItem('csrf_name', data['csrf_name']);
-            sessionStorage.setItem('csrf_value', data['csrf_value']);
-        })
-        .fail(function(error){
-            console.log(error['responseText']);
-        });
+        if(!handle_error_red) {
+            myApp.showPreloader('Estableciendo conexión segura, un momento por favor...');
+
+            $.getJSON(phpApiMgr + '/getToken/')
+            .done(function(data){
+                myApp.hidePreloader();
+                sessionStorage.setItem('csrf_name', data['csrf_name']);
+                sessionStorage.setItem('csrf_value', data['csrf_value']);
+            })
+            .fail(function(error){
+                handle_error_red = true;
+                myApp.hidePreloader();
+                myApp.alert('Verifica tu conexión a Internet.', function(){
+                    closeApp();
+                });
+            });
+        }
+        
     }
 
     function gotoMainmenu() {
@@ -1110,7 +1124,6 @@ myApp.onPageAfterAnimation("listadoCursos", function (page) {
 });
 
 myApp.onPageAfterAnimation("listadoUnidades", function (page) {
-    //$('.page_title').text("Temas disponibles en " + sessionStorage.getItem("courseName"));
 
     app.getDataApiJSON({
         href: 'list-unidad',
@@ -1165,7 +1178,7 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
 
 myApp.onPageAfterAnimation("listadoRetos", function (page) {
     app.getRetos('all');
-    var page = 0;
+    var page = 1;
 
     var idReto,
         idUnidad,
@@ -1223,14 +1236,9 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
     $('#send').on('click', '.item-inner', function () {
         var id_reto = $(this).attr('alt');
         sessionStorage.setItem('lastID', id_reto),
-                mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+        mainView.router.loadPage("views/misRetos/misRetosResumen.html");
     });
 });
-
-/*myApp.onPageBeforeAnimation("ListaPreguntas", function (page) {
-    //app.saveRetos();
-    //app.PreloadQuestions();
-});*/
 
 myApp.onPageAfterAnimation("resumenRetos", function (page) {
     app.getResumenReto();
@@ -1238,8 +1246,6 @@ myApp.onPageAfterAnimation("resumenRetos", function (page) {
 
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {
     app.PreloadQuestions();
-
-    //$('.questions-content').append(app.listQuestions(0));
 });
 
 myApp.onPageBeforeAnimation("detalleRetos", function (page) {
@@ -1256,6 +1262,9 @@ myApp.onPageBeforeAnimation("profile", function (page) {
     });
 
     $(document).on("touchstart", "#saveAvatarProfile", function () {
+
+        handle_edit_profile = false;
+
         var image = "";
         $('.avatarImage').each(function () {
             if ($(this).is(':checked')) {

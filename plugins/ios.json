@@ -25,6 +25,9 @@
         },
         "cordova-plugin-media": {
             "PACKAGE_NAME": "com.utp.preguntados"
+        },
+        "cordova-plugin-google-analytics": {
+            "PACKAGE_NAME": "com.utp.preguntados"
         }
     },
     "dependent_plugins": {

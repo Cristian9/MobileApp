@@ -1,9 +1,9 @@
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-   
+    
     app.getTokenCsrf();
-
+    
     database = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
 
     if (database != null) {

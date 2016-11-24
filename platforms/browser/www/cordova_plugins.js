@@ -1,38 +1,6 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
-        "file": "plugins/it.mobimentum.phonegapspinnerplugin/www/spinnerplugin.js",
-        "id": "it.mobimentum.phonegapspinnerplugin.SpinnerPlugin",
-        "pluginId": "it.mobimentum.phonegapspinnerplugin",
-        "clobbers": [
-            "window.spinnerplugin"
-        ]
-    },
-    {
-        "file": "plugins/phonegap-plugin-push/www/push.js",
-        "id": "phonegap-plugin-push.PushNotification",
-        "pluginId": "phonegap-plugin-push",
-        "clobbers": [
-            "PushNotification"
-        ]
-    },
-    {
-        "file": "plugins/phonegap-plugin-push/www/browser/push.js",
-        "id": "phonegap-plugin-push.BrowserPush",
-        "pluginId": "phonegap-plugin-push",
-        "clobbers": [
-            "PushNotification"
-        ]
-    },
-    {
-        "file": "plugins/cordova-sqlite-storage/www/SQLitePlugin.js",
-        "id": "cordova-sqlite-storage.SQLitePlugin",
-        "pluginId": "cordova-sqlite-storage",
-        "clobbers": [
-            "SQLitePlugin"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-dialogs/www/notification.js",
         "id": "cordova-plugin-dialogs.notification",
         "pluginId": "cordova-plugin-dialogs",
@@ -228,6 +196,21 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-google-analytics/www/analytics.js",
+        "id": "cordova-plugin-google-analytics.UniversalAnalytics",
+        "pluginId": "cordova-plugin-google-analytics",
+        "clobbers": [
+            "analytics",
+            "ga"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-google-analytics/browser/UniversalAnalyticsProxy.js",
+        "id": "cordova-plugin-google-analytics.UniversalAnalyticsProxy",
+        "pluginId": "cordova-plugin-google-analytics",
+        "runs": true
+    },
+    {
         "file": "plugins/cordova-plugin-media/www/MediaError.js",
         "id": "cordova-plugin-media.MediaError",
         "pluginId": "cordova-plugin-media",
@@ -250,19 +233,52 @@ module.exports = [
         "clobbers": [
             "window.Media"
         ]
+    },
+    {
+        "file": "plugins/cordova-sqlite-storage/www/SQLitePlugin.js",
+        "id": "cordova-sqlite-storage.SQLitePlugin",
+        "pluginId": "cordova-sqlite-storage",
+        "clobbers": [
+            "SQLitePlugin"
+        ]
+    },
+    {
+        "file": "plugins/it.mobimentum.phonegapspinnerplugin/www/spinnerplugin.js",
+        "id": "it.mobimentum.phonegapspinnerplugin.SpinnerPlugin",
+        "pluginId": "it.mobimentum.phonegapspinnerplugin",
+        "clobbers": [
+            "window.spinnerplugin"
+        ]
+    },
+    {
+        "file": "plugins/phonegap-plugin-push/www/push.js",
+        "id": "phonegap-plugin-push.PushNotification",
+        "pluginId": "phonegap-plugin-push",
+        "clobbers": [
+            "PushNotification"
+        ]
+    },
+    {
+        "file": "plugins/phonegap-plugin-push/www/browser/push.js",
+        "id": "phonegap-plugin-push.BrowserPush",
+        "pluginId": "phonegap-plugin-push",
+        "clobbers": [
+            "PushNotification"
+        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
 {
-    "cordova-plugin-whitelist": "1.2.2",
-    "it.mobimentum.phonegapspinnerplugin": "1.2.1",
-    "phonegap-plugin-push": "1.8.1",
-    "cordova-sqlite-storage": "1.4.7-pre1",
-    "cordova-plugin-dialogs": "1.2.1",
     "cordova-plugin-compat": "1.0.0",
+    "cordova-plugin-dialogs": "1.2.1",
     "cordova-plugin-file": "4.3.0",
-    "cordova-plugin-media": "2.4.0"
+    "cordova-plugin-google-analytics": "1.7.1",
+    "cordova-plugin-media": "2.4.0",
+    "cordova-plugin-whitelist": "1.2.2",
+    "cordova-sqlite-storage": "1.4.7-pre1",
+    "it.mobimentum.phonegapspinnerplugin": "1.2.1",
+    "phonegap-plugin-push": "1.8.1"
 }
 // BOTTOM OF METADATA
 });

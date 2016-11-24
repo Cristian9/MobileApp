@@ -25,6 +25,9 @@
         },
         "cordova-plugin-media": {
             "PACKAGE_NAME": "UTP Preguntados"
+        },
+        "cordova-plugin-google-analytics": {
+            "PACKAGE_NAME": "Desafío UTP"
         }
     },
     "dependent_plugins": {

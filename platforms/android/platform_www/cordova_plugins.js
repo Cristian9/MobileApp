@@ -199,6 +199,14 @@ module.exports = [
         "clobbers": [
             "window.Media"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-google-analytics/www/analytics.js",
+        "id": "cordova-plugin-google-analytics.UniversalAnalytics",
+        "clobbers": [
+            "analytics",
+            "ga"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -211,7 +219,8 @@ module.exports.metadata =
     "cordova-plugin-dialogs": "1.2.1",
     "cordova-plugin-compat": "1.0.0",
     "cordova-plugin-file": "4.3.0",
-    "cordova-plugin-media": "2.4.0"
+    "cordova-plugin-media": "2.4.0",
+    "cordova-plugin-google-analytics": "1.7.1"
 };
 // BOTTOM OF METADATA
 });

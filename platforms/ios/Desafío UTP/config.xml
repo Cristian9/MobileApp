@@ -34,6 +34,9 @@
     <feature name="Media">
         <param name="ios-package" value="CDVSound" />
     </feature>
+    <feature name="UniversalAnalytics">
+        <param name="ios-package" value="UniversalAnalyticsPlugin" />
+    </feature>
     <name>Desafío UTP</name>
     <description>
         Pon a prueba tus conocimientos desafiando a tus amigos.
