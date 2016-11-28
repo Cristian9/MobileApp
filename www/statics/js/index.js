@@ -1,6 +1,9 @@
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
+
+    window.ga.startTrackerWithId('UA-88008644-1', 10);
+    window.ga.trackView('menu');
     
     app.getTokenCsrf();
     
