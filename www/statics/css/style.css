@@ -321,7 +321,7 @@ body, ul, li {
 .navbar {
     /*background-color: #49182d !important;*/
     background: url(../img/logo_header.png) repeat;
-    height: 210px;
+    height: 37%;
 }
 
 .navbar-inner, .toolbar-inner {
@@ -1017,10 +1017,10 @@ a.swiper_read_more{
     left: 0; 
     right: 0; 
     /*bottom: 0px;*/
-    overflow: auto; 
-    -webkit-overflow-scrolling: touch;
+    /*overflow: auto;
+    -webkit-overflow-scrolling: touch;*/
 }
-.page_content{
+.page_content {
     width:90%;
     padding:0 5%;
     margin:10px 0 20px 0;
@@ -2066,14 +2066,25 @@ a.signup_twitter{
 .custom-accordion .accordion-item-content{
     padding:0px 15px;
 }
+
+.main-nav ul li {
+    font-size: 4em;
+}
 /*===============================================*/
 /* 14. MEDIA QUERIES */
 /*===============================================*/
 @media screen and (min-width: 760px) {
     .navbar {
-        height:370px;
+        height:37%;
     }
 }
+
+@media screen and (min-width: 760px) {
+    .main-nav ul li {
+        font-size:9em;
+    }
+}
+
 @media screen and (max-width: 680px) {
     .swiper-slide span{
         margin:0 0 10px 0;

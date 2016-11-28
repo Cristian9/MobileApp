@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest" xmlns:m3="http://schemas.microsoft.com/appx/2014/manifest" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest">
-    <Identity Name="com.utp.preguntados" Publisher="CN=$username$" Version="0.0.1.0" />
+    <Identity Name="com.utp.preguntados" Publisher="CN=$username$" Version="0.0.2.0" />
     <mp:PhoneIdentity PhoneProductId="702b4f40-5fd8-11e6-9c3d-9789fa8887f3" PhonePublisherId="db093ed5-53b1-45f7-af72-751e8f36ab80" />
     <Properties>
         <DisplayName>Desafío UTP</DisplayName>

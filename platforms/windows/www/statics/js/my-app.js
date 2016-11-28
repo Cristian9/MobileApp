@@ -22,9 +22,10 @@ var $$ = Dom7;
 
 var database = null;
 var loading = false;
-var phpApiMgr = "http://desafio.utp.edu.pe";
+//var phpApiMgr = "http://desafio.utp.edu.pe";
 var handle_edit_profile = false;
-//var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
+var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
+var myScroll;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -48,7 +49,6 @@ var app = (function () {
         Contador = 30,
         TmpLastRecord = "",
         mediaAnswer,
-        myScroll,
         mediaTimer,
         handle_error_red = false,
         handlerReto = false;
@@ -57,14 +57,17 @@ var app = (function () {
         return this.charAt(0).toUpperCase() + this.substr(1);
     }
 
-    function StyleApp() {
-        var heightCuerpo = window.innerHeight - 246;//92/*46*/;
+    function StyleApp(height, top) {
+        var alto = height || 332;
+        var top = top || 60;
+
+        var heightCuerpo = window.innerHeight - alto;//92/*46*/;
         var style = document.createElement('style');
         style.type = 'text/css';
         style.innerHTML = '.auxCSS {' +
                 'position:absolute; ' +
                 'border-top: solid 1px #9c9c9d; ' +
-                'z-index:2; left:0; top:60px; ' +
+                'z-index:2; left:0; top:'+top+'px; ' +
                 'width:100%; height: ' + heightCuerpo + 'px; overflow:auto;}';
 
         $('.pages_maincontent').css({
@@ -75,8 +78,8 @@ var app = (function () {
     }
 
     function InitmenuSlide() {
-        StyleApp();
-        $('#history-wrapper').addClass('auxCSS');
+        /*StyleApp();
+        $('#history-wrapper').addClass('auxCSS');*/
 
         // Creamos los 2 scroll mediante el plugin iscroll, uno para el menœ principal y otro para el cuerpo
         myScroll = new iScroll('history-wrapper', {hideScrollbar: true});
@@ -89,11 +92,11 @@ var app = (function () {
     function renderDefaultList(data) {
         var lista = '';
 
-        for (var i = 0; i < data.length; i++) {
-            lista += '<li><a href="#" class="item item-icon-left icon-book" alt="' + data[i].id + '">&nbsp;&nbsp;';
-            lista += data[i].description.toLowerCase().ucfirst();
-            lista += '</a></li>';
-        }
+        lista = data.map(function(e){
+            return ('<li><a href="#" class="item item-icon-left icon-book" alt="' + e.id + '">&nbsp;&nbsp;' + 
+                    e.description.toLowerCase().ucfirst() + 
+                    '</a></li>');
+        }).join(" ");
 
         return lista;
     }
@@ -288,6 +291,11 @@ var app = (function () {
 
         StyleApp();
 
+        if(typeof myScroll != "undefined" && myScroll != null) {
+            myScroll.destroy();
+            myScroll = null;
+        }
+
         $('#wrapper, #wrapper-unidad').addClass('auxCSS');
 
         myApp.showPreloader('Espere, por favor...');
@@ -299,7 +307,6 @@ var app = (function () {
             data : args
         })
         .done(function (data) {
-
             myApp.hidePreloader();
 
             if (data[0] == null) {
@@ -312,6 +319,10 @@ var app = (function () {
             var list = eval(func + "(data)");
 
             $(elem).html(list);
+
+            myScroll = new iScroll('wrapper', {hideScrollbar: true});
+            myScroll = new iScroll('wrapper-unidad', {hideScrollbar: true});
+            myScroll.refresh();
         });
 
         new FastClick(document.body);
@@ -506,7 +517,7 @@ var app = (function () {
             }
         })
         .done(function (data) {
-            
+
             dataQuestion = data;
             totalQuestions = dataQuestion.length;
 
@@ -621,7 +632,7 @@ var app = (function () {
                 'csrf_name' : sessionStorage.getItem('csrf_name'),
                 'csrf_value' : sessionStorage.getItem('csrf_value')
             }
-            
+
         })
         .done(function (data) {
             if (data != "") {
@@ -640,7 +651,7 @@ var app = (function () {
                 'csrf_name' : sessionStorage.getItem('csrf_name'),
                 'csrf_value' : sessionStorage.getItem('csrf_value')
             }
-            
+
         })
         .done(function (data) {
             console.log(data);
@@ -655,7 +666,7 @@ var app = (function () {
             data : {
                 id: sessionStorage.getItem('lastID') || TmpLastRecord
             }
-            
+
         })
         .done(function (e) {
             if (sessionStorage.getItem('lastID') != "") {
@@ -682,7 +693,7 @@ var app = (function () {
                 'csrf_name' : sessionStorage.getItem('csrf_name'),
                 'csrf_value' : sessionStorage.getItem('csrf_value')
             }
-            
+
         })
         .done(function (data) {
 
@@ -731,7 +742,7 @@ var app = (function () {
             },
             type : 'GET',
             dataType : 'json'
-            
+
         })
         .done(function (data) {
             myApp.hidePreloader();
@@ -796,6 +807,9 @@ var app = (function () {
         $('.page_title').html('<div style="display: inline;"><i class="icon-flag-checkered mb-b">' +
                 '</i> Retar a un amigo</div><span class="preloader" style="float: right;"></span>');
 
+        app.StyleApp(45, 97);
+
+        $('#wrapper-usuarios').addClass('auxCSS');
         $.ajax({
             url : phpApiMgr + '/list-users/',
             data : {
@@ -804,7 +818,7 @@ var app = (function () {
             },
             type : 'GET',
             dataType : 'json'
-            
+
         })
         .done(function (data) {
             $('.page_title').find('span').remove();
@@ -820,7 +834,7 @@ var app = (function () {
             },
             type : 'GET',
             dataType : 'json'
-            
+
         })
         .done(function (data) {
             $('#ganadas').text(data.Ganados[0].ganado);
@@ -859,7 +873,7 @@ var app = (function () {
                     'csrf_value' : sessionStorage.getItem('csrf_value')
                 },
                 type : 'POST'
-                
+
             })
             .done(function (data) {
 
@@ -888,7 +902,7 @@ var app = (function () {
                 handle_edit_profile = true;
             });
         }
-        
+
     }
 
     function cancelReto() {
@@ -905,7 +919,7 @@ var app = (function () {
             dataType : 'json',
             url : phpApiMgr + '/getDateRanking/',
             type : 'GET'
-            
+
         })
         .done(function(data){
             for (var i in data) {
@@ -934,6 +948,10 @@ var app = (function () {
     function getRankingByCourse(year, month) {
         myApp.showPreloader('Espere, por favor...');
 
+        StyleApp(367 ,97);
+
+        $('#list-ranking').addClass('auxCSS');
+
         $.ajax({
             url : phpApiMgr + '/getRankingByCourse/',
             data : {
@@ -943,11 +961,11 @@ var app = (function () {
             },
             type : 'GET',
             dataType : 'json'
-            
+
         })
         .done(function (data) {
             myApp.hidePreloader();
-            $('#list-ranking').empty().html(renderUsuariosRanking(data));
+            $('#list-ranking-item').empty().html(renderUsuariosRanking(data));
         });
     }
 
@@ -980,7 +998,7 @@ var app = (function () {
             },
             type : 'GET',
             dataType : 'json'
-            
+
         })
         .done(function (data) {
             //console.log(data[0]['retos']);
@@ -1008,7 +1026,7 @@ var app = (function () {
                 });
             });
         }
-        
+
     }
 
     function gotoMainmenu() {
@@ -1038,11 +1056,12 @@ var app = (function () {
         cancelReto          :   cancelReto,
         closeApp            :   closeApp,
         gotoMainmenu        :   gotoMainmenu,
-        getDateRanking     :   getDateRanking,
+        getDateRanking     :    getDateRanking,
         getRankingByCourse  :   getRankingByCourse,
         countRetosRecibidos :   countRetosRecibidos,
         renderImageAvatar   :   renderImageAvatar,
-        getTokenCsrf        :   getTokenCsrf
+        getTokenCsrf        :   getTokenCsrf,
+        StyleApp            :   StyleApp
     }
 
 })();
@@ -1083,7 +1102,7 @@ $$(document).on("pageInit", function (page) {
 myApp.onPageAfterAnimation("menu", function (page) {
 
     if(sessionStorage.getItem('csrf_value') == null) {
-        app.getTokenCsrf();
+        //app.getTokenCsrf();
     }
 
     app.countRetosRecibidos();
