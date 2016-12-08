@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-    <Identity Name="com.utp.preguntados" Publisher="CN=$username$" Version="0.0.2.0" />
+    <Identity Name="com.utp.preguntados" Publisher="CN=$username$" Version="0.1.2.0" />
     <Properties>
         <DisplayName>Desafío UTP</DisplayName>
         <PublisherDisplayName>Cristian Tapia - DTA UTP</PublisherDisplayName>

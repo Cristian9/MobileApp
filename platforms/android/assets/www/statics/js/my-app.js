@@ -26,6 +26,7 @@ var loading = false;
 var handle_edit_profile = false;
 var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 var myScroll;
+var isConnected;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -58,7 +59,19 @@ var app = (function () {
     }
 
     function StyleApp(height, top) {
-        var alto = height || 332;
+
+        var alturaInicial = window.innerHeight;
+
+        var alto = height || 260;
+
+        if(alturaInicial >= 950 && alturaInicial < 1024) {
+            alto = height || 400;
+        }
+
+        if(alturaInicial >= 1024) {
+            alto = height || 460;
+        }
+
         var top = top || 60;
 
         var heightCuerpo = window.innerHeight - alto;//92/*46*/;
@@ -75,14 +88,6 @@ var app = (function () {
         });
 
         document.getElementsByTagName('head')[0].appendChild(style);
-    }
-
-    function InitmenuSlide() {
-        /*StyleApp();
-        $('#history-wrapper').addClass('auxCSS');*/
-
-        // Creamos los 2 scroll mediante el plugin iscroll, uno para el menœ principal y otro para el cuerpo
-        myScroll = new iScroll('history-wrapper', {hideScrollbar: true});
     }
 
     function viewLogin() {
@@ -318,10 +323,14 @@ var app = (function () {
 
             var list = eval(func + "(data)");
 
-            $(elem).html(list);
+            $(elem).empty().html(list);
+
+            if($('#wrapper-unidad').length > 0) {
+                myScroll = new iScroll('wrapper-unidad', {hideScrollbar: true});
+            }
 
             myScroll = new iScroll('wrapper', {hideScrollbar: true});
-            myScroll = new iScroll('wrapper-unidad', {hideScrollbar: true});
+            
             myScroll.refresh();
         });
 
@@ -611,7 +620,10 @@ var app = (function () {
             } else {
                 clearInterval(Handle_Mi_Timer);
                 Quiz = "<h2 style='color:#74569d; text-align:center;'>Evaluando puntaje...</h2>";
-                updRetos();
+                alert(isConnected);
+                //if(isConnected) {
+                    updRetos();
+                //}
             }
         }
 
@@ -666,7 +678,6 @@ var app = (function () {
             data : {
                 id: sessionStorage.getItem('lastID') || TmpLastRecord
             }
-
         })
         .done(function (e) {
             if (sessionStorage.getItem('lastID') != "") {
@@ -685,6 +696,7 @@ var app = (function () {
         $.ajax({
             url : phpApiMgr + '/update_retos/',
             type : 'POST',
+            dataType : 'json',
             data : {
                 countCorrect: initPuntajeQuestion,
                 idQuestion: sessionStorage.getItem('lastID'),
@@ -693,37 +705,36 @@ var app = (function () {
                 'csrf_name' : sessionStorage.getItem('csrf_name'),
                 'csrf_value' : sessionStorage.getItem('csrf_value')
             }
-
         })
         .done(function (data) {
+            alert(data);
 
             handlerReto = false;
 
             sessionStorage.setItem('handled', null);
 
-            if (typeof cancelled == "undefined") {
-                $.post(phpApiMgr + '/sendNotification/', {
-                    toUser: sessionStorage.getItem('userRetado'),
-                    fromUser: sessionStorage.getItem('nikname'),
-                    'csrf_name' : sessionStorage.getItem('csrf_name'),
-                    'csrf_value' : sessionStorage.getItem('csrf_value')
-                })
-                .done(function () {
-                    myApp.hidePreloader();
-                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
-                })
-                .fail(function () {
-                    myApp.hidePreloader();
-                    myApp.alert("Notificación no enviada");
-                })
-                .always(function () {
-                    myApp.hidePreloader();
-                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
-                });
-            } else {
+            if (cancelled) {
                 myApp.hidePreloader();
                 sessionStorage.removeItem('lastID');
+            } else {
+                myApp.hidePreloader();
+                mainView.router.loadPage("views/misRetos/misRetosResumen.html");
             }
+        });
+    }
+
+    function sendPushNotification() {
+        $.post(phpApiMgr + '/sendNotification/', {
+            toUser: sessionStorage.getItem('userRetado'),
+            fromUser: sessionStorage.getItem('nikname'),
+            'csrf_name' : sessionStorage.getItem('csrf_name'),
+            'csrf_value' : sessionStorage.getItem('csrf_value')
+        })
+        .done(function(data){
+            console.log('Enviado correctamente');
+        })
+        .fail(function(data){
+            myApp.alert('Ha ocurrido un error, al enviar la notificación.');
         });
     }
 
@@ -948,7 +959,16 @@ var app = (function () {
     function getRankingByCourse(year, month) {
         myApp.showPreloader('Espere, por favor...');
 
-        StyleApp(367 ,97);
+        var alto = window.innerHeight;
+
+        if(alto >= 950) {
+            var Realalto = alto - 480;
+        } else {
+            var Realalto = alto - 300;
+        }
+
+
+        StyleApp(Realalto, 97);
 
         $('#list-ranking').addClass('auxCSS');
 
@@ -1029,6 +1049,21 @@ var app = (function () {
 
     }
 
+    function onOnline() {
+        var networkState = navigator.connection.type;
+
+        if(networkState !== Connection.NONE) {
+            isConnected = true;
+        }
+    }
+
+    function onOffline() {
+        isConnected = false;
+        myApp.alert("Se perdió la conexión a Internet. Para evitar inconvenientes la aplicación debe cerrarse.", function(){
+            app.closeApp();
+        });
+    }
+
     function gotoMainmenu() {
         mainView.router.loadPage("views/mainMenu/menu.html");
     }
@@ -1040,7 +1075,6 @@ var app = (function () {
     return {
         viewLogin           :   viewLogin,
         login               :   login,
-        InitmenuSlide       :   InitmenuSlide,
         getDataApiJSON      :   getDataApiJSON,
         PreloadQuestions    :   PreloadQuestions,
         listQuestions       :   listQuestions,
@@ -1061,7 +1095,10 @@ var app = (function () {
         countRetosRecibidos :   countRetosRecibidos,
         renderImageAvatar   :   renderImageAvatar,
         getTokenCsrf        :   getTokenCsrf,
-        StyleApp            :   StyleApp
+        StyleApp            :   StyleApp,
+        sendPushNotification:   sendPushNotification,
+        onOnline            :   onOnline,
+        onOffline           :   onOffline
     }
 
 })();
@@ -1101,8 +1138,11 @@ $$(document).on("pageInit", function (page) {
 
 myApp.onPageAfterAnimation("menu", function (page) {
 
+    document.addEventListener("online", app.onOnline, false);
+    document.addEventListener("offline", app.onOffline, false);
+
     if(sessionStorage.getItem('csrf_value') == null) {
-        //app.getTokenCsrf();
+        app.getTokenCsrf();
     }
 
     app.countRetosRecibidos();
@@ -1261,6 +1301,7 @@ myApp.onPageAfterAnimation("listadoRetos", function (page) {
 
 myApp.onPageAfterAnimation("resumenRetos", function (page) {
     app.getResumenReto();
+    app.sendPushNotification();
 });
 
 myApp.onPageAfterAnimation("ListaPreguntas", function (page) {

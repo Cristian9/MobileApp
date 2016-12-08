@@ -28,6 +28,9 @@
         },
         "cordova-plugin-google-analytics": {
             "PACKAGE_NAME": "Desafío UTP"
+        },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "Desafío UTP"
         }
     },
     "dependent_plugins": {

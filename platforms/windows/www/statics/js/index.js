@@ -5,7 +5,7 @@ function onDeviceReady() {
     window.ga.startTrackerWithId('UA-88008644-1', 10);
     window.ga.trackView('menu');
     
-    //app.getTokenCsrf();
+    app.getTokenCsrf();
     
     database = window.sqlitePlugin.openDatabase({name: 'preguntados.db', location: 'default'});
 
@@ -21,7 +21,7 @@ function onDeviceReady() {
         navigator.notification.alert('Hubo un problema con el usuario', null, 'DesafíoUTP');
     }
 
-    app.viewLogin();
+    //app.viewLogin();
 
     $('#txtuser').focus(function () {
         document.getElementById('errorDiv').classList.remove('error_active');

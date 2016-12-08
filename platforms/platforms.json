@@ -1,6 +1,4 @@
 {
     "android": "5.1.1",
-    "ios": "4.2.0",
-    "windows": "4.4.2",
-    "browser": "4.1.0"
+    "windows": "4.4.2"
 }

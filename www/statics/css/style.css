@@ -209,6 +209,11 @@ body, ul, li {
     margin: 0;
     border: 0;
 }
+
+.imageLogo {
+    width: 100%;
+}
+
 .searchbar-submit {
     margin: 0 8px;
     opacity: 1;
@@ -260,7 +265,7 @@ body, ul, li {
     -moz-background-size: 100% 100%, auto;
     -webkit-background-size: 100% 100%, auto;
     background-size: 100% 100%, auto;
-    background-attachment: fixed;
+    /*background-attachment: fixed;*/
     /*overflow: hidden;*/
 }
 
@@ -320,12 +325,13 @@ body, ul, li {
 
 .navbar {
     /*background-color: #49182d !important;*/
-    background: url(../img/logo_header.png) repeat;
-    height: 37%;
-}
-
-.navbar-inner, .toolbar-inner {
-    align-items: flex-start !important;
+    background: url(../img/header_logo.png)  no-repeat center top;
+    height: 32%;
+    -o-background-size: 100% 100%, auto;
+    -moz-background-size: 100% 100%, auto;
+    -webkit-background-size: 100% 100%, auto;
+    background-size: 100% 100%, auto;
+   /* background-attachment: fixed;*/
 }
 
 .pregunta {
@@ -788,11 +794,11 @@ ul.popular_posts li a{
     width:43%;
     list-style:none;
     padding:15px 0;
-    margin:0 6% 0 0;
-    /*margin: 2%;*/
+    /*margin:0 6% 0 0;*/
+    margin: 2%;
     display:inline-block;
     text-align:center;
-    height: 100px;
+    height: auto;
     /*padding: 10px 0 20px 17px;*/
 }
 .main-nav ul li img{
@@ -2073,15 +2079,14 @@ a.signup_twitter{
 /*===============================================*/
 /* 14. MEDIA QUERIES */
 /*===============================================*/
-@media screen and (min-width: 760px) {
-    .navbar {
-        height:37%;
-    }
-}
 
 @media screen and (min-width: 760px) {
     .main-nav ul li {
         font-size:9em;
+    }
+
+    .navbar {
+        height:32%;
     }
 }
 
@@ -2101,6 +2106,10 @@ a.signup_twitter{
         padding:10px 20px;
         margin:20px 0 0 0;
         font-size:16px;
+    }
+
+    .navbar {
+        height:32%;
     }
 }	
 @media screen and (max-width: 480px) {
