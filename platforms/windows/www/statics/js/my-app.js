@@ -22,10 +22,12 @@ var $$ = Dom7;
 
 var database = null;
 var loading = false;
-var phpApiMgr = "http://desafio.utp.edu.pe";
+//var phpApiMgr = "http://desafio.utp.edu.pe";
 var handle_edit_profile = false;
-//var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
+var handleSendmail = false;
+var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 var myScroll;
+var isConnected;
 
 var mainView = myApp.addView('.view-main', {
     // Enable dynamic Navbar
@@ -203,15 +205,27 @@ var app = (function () {
 
     function renderListUsuarios(data) {
         var html = "";
+        var class_retar, alt_attr, button;
 
         html = data.map(function (item) {
+
+            class_retar = 'btn-retar';
+            alt_attr = item.username;
+            button = 'Retar';
+
+            if (item.install == 'nodevice') {
+                class_retar = 'btn-invitar';
+                alt_attr = item.email + '|' + item.uname;
+                button = 'Invitar';
+            }
+
             return ('<li class="item-content">' +
                     '<div class="item-media"><img src="statics/img/avatar/' + item.image_avatar + '.png" width="40" /></div>' +
                     '<div class="item-inner">' +
                     '<div class="item-title">' + item.uname +
                     '<div class="item-after-down">' + item.usuario + '</div></div>' +
                     '<div class="item-after">' +
-                    '<button class="button button-fill btn-retar" alt="' + item.username + '">Retar</button>' +
+                    '<button class="button button-fill ' + class_retar + '" alt="' + alt_attr + '">' + button + '</button>' +
                     '</div>' +
                     '</div>' +
                     '</li>');
@@ -619,7 +633,10 @@ var app = (function () {
             } else {
                 clearInterval(Handle_Mi_Timer);
                 Quiz = "<h2 style='color:#74569d; text-align:center;'>Evaluando puntaje...</h2>";
-                updRetos();
+                alert(isConnected);
+                if(isConnected) {
+                    updRetos();
+                }
             }
         }
 
@@ -674,7 +691,6 @@ var app = (function () {
             data : {
                 id: sessionStorage.getItem('lastID') || TmpLastRecord
             }
-
         })
         .done(function (e) {
             if (sessionStorage.getItem('lastID') != "") {
@@ -693,6 +709,7 @@ var app = (function () {
         $.ajax({
             url : phpApiMgr + '/update_retos/',
             type : 'POST',
+            dataType : 'json',
             data : {
                 countCorrect: initPuntajeQuestion,
                 idQuestion: sessionStorage.getItem('lastID'),
@@ -701,25 +718,32 @@ var app = (function () {
                 'csrf_name' : sessionStorage.getItem('csrf_name'),
                 'csrf_value' : sessionStorage.getItem('csrf_value')
             }
-
         })
         .done(function (data) {
+            if(data) {
+                handlerReto = false;
 
-            handlerReto = false;
+                sessionStorage.setItem('handled', null);
 
-            sessionStorage.setItem('handled', null);
-
-            if (cancelled) {
                 myApp.hidePreloader();
-                sessionStorage.removeItem('lastID');
+
+                if (cancelled) {
+                    sessionStorage.removeItem('lastID');
+                } else {
+                    mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+                }
             } else {
-                myApp.hidePreloader();
-                mainView.router.loadPage("views/misRetos/misRetosResumen.html");
+                alert("Hubo un problema, revisa tu conexión a Internet y vuelva a intentarlo.", function(){
+                    $.post(phpApiMgr + '/delete/', {
+                        id_reto : sessionStorage.getItem('lastID'),
+                        'csrf_name' : sessionStorage.getItem('csrf_name'),
+                        'csrf_value' : sessionStorage.getItem('csrf_value')
+                    })
+                    .done(function(data){
+                        mainView.router.loadPage("views/mainMenu/menu.html");
+                    });
+                });
             }
-        })
-        .fail(function(){
-            myApp.hidePreloader();
-            updRetos();
         });
     }
 
@@ -824,8 +848,8 @@ var app = (function () {
         $.ajax({
             url : phpApiMgr + '/list-users/',
             data : {
-                username: sessionStorage.getItem("username"),
-                keywords: $.trim(keyword)
+                username : sessionStorage.getItem("username"),
+                keywords : $.trim(keyword)
             },
             type : 'GET',
             dataType : 'json'
@@ -874,6 +898,11 @@ var app = (function () {
         if(!handle_edit_profile) {
             var newimage = (img == "") ? 'default' : img;
 
+            $('.header-text p').html(nik);
+            $('#photoAvatar').html('<img src="statics/img/avatar/' + newimage + '.png" />');
+
+            myApp.showIndicator();
+
             $.ajax({
                 url : phpApiMgr + '/change_nick/',
                 data : {
@@ -891,6 +920,8 @@ var app = (function () {
                 sessionStorage.setItem('nikname', nik);
                 sessionStorage.setItem('image_avatar', newimage);
 
+                myApp.hideIndicator();
+
                 myApp.alert("Se ha actualizado correctamente tus datos", "Preguntados UTP");
 
                 database.transaction(function (tx) {
@@ -906,9 +937,6 @@ var app = (function () {
                 }, function () {
                     console.log('ok');
                 });
-
-                $('.header-text p').html(nik);
-                $('#photoAvatar').html('<img src="statics/img/avatar/' + newimage + '.png" />');
 
                 handle_edit_profile = true;
             });
@@ -1049,6 +1077,44 @@ var app = (function () {
 
     }
 
+    function onOnline() {
+        var networkState = navigator.connection.type;
+
+        if(networkState !== Connection.NONE) {
+            isConnected = true;
+        }
+    }
+
+    function onOffline() {
+        isConnected = false;
+        myApp.alert("Se perdió la conexión a Internet. Para evitar inconvenientes la aplicación debe cerrarse.", function(){
+            app.closeApp();
+        });
+    }
+
+    function sendMail(email, nombre, remitente) {  
+        if(!handleSendmail) {     
+            myApp.showIndicator();
+
+            $.post(phpApiMgr + '/sendMail/', {
+                email : email,
+                nombre : nombre,
+                remitente : remitente,
+                'csrf_name' : sessionStorage.getItem('csrf_name'),
+                'csrf_value' : sessionStorage.getItem('csrf_value')
+            })
+            .done(function(data){
+                handleSendmail = true;
+                if(data) {
+                    myApp.hideIndicator();
+
+                    myApp.alert('Tu amigo seguramente ya recibió la invitación');
+                    searchUser();
+                }
+            });
+        }
+    }
+
     function gotoMainmenu() {
         mainView.router.loadPage("views/mainMenu/menu.html");
     }
@@ -1075,13 +1141,16 @@ var app = (function () {
         cancelReto          :   cancelReto,
         closeApp            :   closeApp,
         gotoMainmenu        :   gotoMainmenu,
-        getDateRanking     :    getDateRanking,
+        getDateRanking      :   getDateRanking,
         getRankingByCourse  :   getRankingByCourse,
         countRetosRecibidos :   countRetosRecibidos,
         renderImageAvatar   :   renderImageAvatar,
         getTokenCsrf        :   getTokenCsrf,
         StyleApp            :   StyleApp,
-        sendPushNotification:   sendPushNotification
+        sendPushNotification:   sendPushNotification,
+        onOnline            :   onOnline,
+        onOffline           :   onOffline,
+        sendMail            :   sendMail
     }
 
 })();
@@ -1120,6 +1189,9 @@ $$(document).on("pageInit", function (page) {
 });
 
 myApp.onPageAfterAnimation("menu", function (page) {
+
+    document.addEventListener("online", app.onOnline, false);
+    document.addEventListener("offline", app.onOffline, false);
 
     if(sessionStorage.getItem('csrf_value') == null) {
         app.getTokenCsrf();
@@ -1210,6 +1282,24 @@ myApp.onPageAfterAnimation("listadoUsuarios", function (page) {
         navigator.notification.confirm(message, function (indexButton) {
             if (indexButton == 1) {
                 mainView.router.loadPage("views/ListaCursos/ListaPreguntas.html");
+            }
+        }, "Desafío UTP", ['Aceptar', 'Cancelar']);
+    });
+
+    $('#list-users').on("touchstart", ".btn-invitar", function(){
+        handleSendmail = false;
+        var dataToInvite = $.trim($(this).attr('alt'));
+
+        var sendToEmail = dataToInvite.split('|');
+
+        var email = sendToEmail[0];
+        var nombre = sendToEmail[1];
+        var remitente = sessionStorage.getItem('firstname') + ' ' + sessionStorage.getItem('lastname');
+
+        var message = "Se enviará un correo electrónico al usuario seleccionado. ¿Continuar?";
+        navigator.notification.confirm(message, function (indexButton) {
+            if (indexButton == 1) {
+                app.sendMail(email, nombre, remitente);
             }
         }, "Desafío UTP", ['Aceptar', 'Cancelar']);
     });
