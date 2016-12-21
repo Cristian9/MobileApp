@@ -33,7 +33,7 @@ function onDeviceReady() {
 
     $('#txtpassword').key("enter", function () {
         app.login();
-    })
+    });
 
     document.addEventListener("backbutton", app.closeApp, false);
 }

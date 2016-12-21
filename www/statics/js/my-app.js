@@ -75,7 +75,7 @@ var app = (function () {
 
         var top = top || 60;
 
-        var heightCuerpo = window.innerHeight - alto;//92/*46*/;
+        var heightCuerpo = window.innerHeight - alto; //92/*46*/;
         var style = document.createElement('style');
         style.type = 'text/css';
         style.innerHTML = '.auxCSS {' +
@@ -211,7 +211,7 @@ var app = (function () {
 
             class_retar = 'btn-retar';
             alt_attr = item.username;
-            button = 'Retar';
+            button = 'Desafiar';
 
             if (item.install == 'nodevice') {
                 class_retar = 'btn-invitar';
@@ -632,11 +632,10 @@ var app = (function () {
                 Quiz += "</div></div></div></div>";
             } else {
                 clearInterval(Handle_Mi_Timer);
+
                 Quiz = "<h2 style='color:#74569d; text-align:center;'>Evaluando puntaje...</h2>";
-                alert(isConnected);
-                if(isConnected) {
-                    updRetos();
-                }
+
+                updRetos();
             }
         }
 
@@ -729,11 +728,12 @@ var app = (function () {
 
                 if (cancelled) {
                     sessionStorage.removeItem('lastID');
+                    gotoMainmenu();
                 } else {
                     mainView.router.loadPage("views/misRetos/misRetosResumen.html");
                 }
             } else {
-                alert("Hubo un problema, revisa tu conexión a Internet y vuelva a intentarlo.", function(){
+                myApp.alert("Hubo un problema, revisa tu conexión a Internet y vuelva a intentarlo.", function(){
                     $.post(phpApiMgr + '/delete/', {
                         id_reto : sessionStorage.getItem('lastID'),
                         'csrf_name' : sessionStorage.getItem('csrf_name'),
@@ -840,7 +840,7 @@ var app = (function () {
     function searchUser(keyword) {
 
         $('.page_title').html('<div style="display: inline;"><i class="icon-flag-checkered mb-b">' +
-                '</i> Retar a un amigo</div><span class="preloader" style="float: right;"></span>');
+                '</i> Desafiar a un amigo</div><span class="preloader" style="float: right;"></span>');
 
         app.StyleApp(45, 97);
 
@@ -949,7 +949,6 @@ var app = (function () {
             clearInterval(Handle_Mi_Timer);
             mediaTimer.stop();
             updRetos('cancelled');
-            gotoMainmenu();
         });
     }
 
@@ -988,15 +987,21 @@ var app = (function () {
         myApp.showPreloader('Espere, por favor...');
 
         var alto = window.innerHeight;
+        var areaScroll;
 
-        if(alto >= 950) {
-            var Realalto = alto - 480;
-        } else {
-            var Realalto = alto - 300;
+        areaScroll = alto - 300;
+
+        if (alto >= 1250) {
+
+            areaScroll = alto - 760;
+
+        } else if (alto >= 950){
+
+            areaScroll = alto - 550;
+
         }
 
-
-        StyleApp(Realalto, 97);
+        StyleApp(areaScroll, 97);
 
         $('#list-ranking').addClass('auxCSS');
 
@@ -1051,7 +1056,7 @@ var app = (function () {
         .done(function (data) {
             //console.log(data[0]['retos']);
             if (data[0]['retos'] != '0') {
-                $('#misRetos').html('<span class="badge bg-red" id="countRetosRecibidos">' + data[0]['retos'] + '</span><span>Mis Retos</span>');
+                $('#misRetos').html('<span class="badge bg-red" id="countRetosRecibidos">' + data[0]['retos'] + '</span><span>Mis Desafíos</span>');
             }
         });
     }
@@ -1116,6 +1121,7 @@ var app = (function () {
     }
 
     function gotoMainmenu() {
+        myApp.hidePreloader();
         mainView.router.loadPage("views/mainMenu/menu.html");
     }
 

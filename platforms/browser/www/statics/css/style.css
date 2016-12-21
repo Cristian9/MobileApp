@@ -2182,3 +2182,9 @@ a.signup_twitter{
         line-height:28px;
     }
 }
+
+@media screen and (max-width: 350px) {
+    .main-nav ul li span {
+        font-size: 0.35em;
+    }
+}
