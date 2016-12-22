@@ -152,7 +152,15 @@ var app = (function () {
 
         html = data.map(function (e) {
 
-            var color = (e.resultado == "Has perdido") ? "red" : "green";
+            var color;
+
+            if(e.resultado == 'Has perdido') {
+                color = 'red';
+            } else if(e.resultado == 'Has ganado') {
+                color = 'green';
+            } else {
+                color = 'orange';
+            }
 
             return ('<li class="item-content">' +
                     '<div class="item-media"><img src="statics/img/avatar/' + e.image_avatar + '.png" width="40" /></div>' +
@@ -824,8 +832,10 @@ var app = (function () {
 
                 if (data.Detalle[0].resultado == 'Has ganado') {
                     rsimage.src = 'statics/img/has_ganado.png';
-                } else {
+                } else if(data.Detalle[0].resultado == 'Has perdido') {
                     rsimage.src = 'statics/img/has_perdido.png'
+                } else {
+                    rsimage.src = 'statics/img/has_empatado.png'
                 }
 
                 rsimage.onload = function () {
