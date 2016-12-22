@@ -25,6 +25,7 @@ var loading = false;
 //var phpApiMgr = "http://desafio.utp.edu.pe";
 var handle_edit_profile = false;
 var handleSendmail = false;
+var handler_cancel_reto = false;
 var phpApiMgr = "http://10.30.15.218/CodeApiMobile/public";
 var myScroll;
 var isConnected;
@@ -946,9 +947,13 @@ var app = (function () {
 
     function cancelReto() {
         myApp.confirm("Perderá si sale del juego, Seguro que deseas salir?", function () {
-            clearInterval(Handle_Mi_Timer);
-            mediaTimer.stop();
-            updRetos('cancelled');
+            if(!handler_cancel_reto) {
+                clearInterval(Handle_Mi_Timer);
+                mediaTimer.stop();
+                updRetos('cancelled');
+
+                handler_cancel_reto = true;
+            }
         });
     }
 
@@ -1122,6 +1127,7 @@ var app = (function () {
 
     function gotoMainmenu() {
         myApp.hidePreloader();
+        handler_cancel_reto = false;
         mainView.router.loadPage("views/mainMenu/menu.html");
     }
 
